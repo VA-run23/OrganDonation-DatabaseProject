@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h2 {
+            color: #333;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome to Our Platform</h2>
+
+    <div class="btn-container">
+        <!-- Login Button -->
+        <button onclick="window.location.href='/login'">Login</button>
+
+        <!-- Signup Button -->
+        <button onclick="window.location.href='/signup'">Signup</button>
+    </div>
+</body>
+</html>

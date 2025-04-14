@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preconditions</title>
+</head>
+<body>
+        <form action="/submitPrecondition" method="post">
+            <p>Do you have diabetes?</p>
+            <input type="radio" id="diabetes_yes" name="diabetes" value="1">
+            <label for="diabetes_yes">Yes</label><br>
+            
+            <input type="radio" id="diabetes_no" name="diabetes" value="0">
+            <label for="diabetes_no">No</label><br>
+        
+            <p>Do you have Hypertension or Hypotension?</p>
+            <input type="radio" id="hypertension" name="bp_condition" value="1">
+            <label for="hypertension">Hypertension</label><br>
+        
+            <input type="radio" id="hypotension" name="bp_condition" value="2">
+            <label for="hypotension">Hypotension</label><br>
+        
+            <input type="radio" id="none_bp" name="bp_condition" value="0">
+            <label for="none_bp">None</label><br>
+        
+            <p>Are you considered Obese?</p>
+            <input type="radio" id="obese_yes" name="obese" value="1">
+            <label for="obese_yes">Yes</label><br>
+        
+            <input type="radio" id="obese_no" name="obese" value="0">
+            <label for="obese_no">No</label><br>
+        
+            <p>Have you undergone cardiac surgery?</p>
+            <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1">
+            <label for="cardiac_yes">Yes</label><br>
+        
+            <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0">
+            <label for="cardiac_no">No</label><br>
+        
+            <input type="submit" value="Submit">
+        </form>
+</body>
+</html>
