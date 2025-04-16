@@ -43,6 +43,7 @@ db.connect((err) => {
             name VARCHAR(50),
             email VARCHAR(50),
             uniqueID INT PRIMARY KEY, 
+            pass varchar(50),
             phone VARCHAR(10),
             address VARCHAR(100), 
             city VARCHAR(15)
@@ -87,10 +88,10 @@ db.connect((err) => {
 
 
 app.post("/submit", (req, res) => {
-    const { name, email, uniqueID, phone, address, city } = req.body;
-    const sql = "INSERT INTO donor_data (name, email, uniqueID, phone, address, city) VALUES (?, ?, ?, ?, ?, ?)";
+    const { name, email, uniqueID, pass, phone, address, city } = req.body;
+    const sql = "INSERT INTO donor_data (name, email, uniqueID, pass, phone, address, city) VALUES (?, ?, ?, ?, ?, ?, ?)";
     
-    db.query(sql, [name, email, uniqueID, phone, address, city], (err, result) => {
+    db.query(sql, [name, email, uniqueID,pass, phone, address, city], (err, result) => {
         if (err) throw err;
         res.redirect("/existingconditions"); // Redirect after successful insertion
     });
@@ -107,6 +108,22 @@ app.post("/submitPrecondition", (req, res) => {
         res.redirect("/"); // Redirect to index.html after successful insertion
     });
 });
+
+app.post("/loginCheck", (req, res)=>{
+    const{uniqueID, pass} = req.body;
+    const sql = "SELECT * FROM donor_data WHERE uniqueID = ? AND pass = ?";
+    db.query(sql, [uniqueID, pass], (err, result)=>{
+        if(err) throw err;
+        if(result.length >0){
+            console.log("Login successful for uniqueID:", uniqueID);
+            res.redirect("/dashboard");
+        }
+    })
+})
+
+app.get("/dashboard", (req, res) =>{
+    res.sendFile(__dirname + "/dashboard.ejs");
+})
 
 
 app.listen(3000, () => {
