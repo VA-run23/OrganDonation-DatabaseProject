@@ -1,17 +1,10 @@
 create database dbb;
 use dbb;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'SQL&NeuroBytes';
+SHOW TABLES;
+-- IMPORTANT::: if any problem arises, replace the "mysql _native_password" with real password
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password;
 FLUSH PRIVILEGES;
 
--- CREATE TABLE IF NOT EXISTS donor_data (
---     name VARCHAR(50),
---     email VARCHAR(50),
---     uniqueID INT PRIMARY KEY,  -- Must match the child table's foreign key type
---     pass varchar(8),
---     phone VARCHAR(10),
---     address VARCHAR(100), 
---     city VARCHAR(15)
--- );
 
 CREATE TABLE IF NOT EXISTS donor_data (
     name VARCHAR(50) NOT NULL,
@@ -39,6 +32,9 @@ CREATE TABLE IF NOT EXISTS donor_health (
 );
 select * from donor_data;
 select * from donor_health;
+
+desc donor_data;
+desc donor_health;
 
 drop table donor_data; 
 drop table donor_health;
