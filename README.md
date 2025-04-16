@@ -1,7 +1,7 @@
 # Organ Donation Database Project
 
 ## Overview
-This project aims to create a **user-friendly interface** for tracking the availability of organs donated by registered donors. It efficiently collects, stores, and retrieves donor data, ensuring streamlined matching of organ availability with potential recipients.
+This project aims to create a **user-friendly interface** for tracking organ donation availability. It is currently under development, following agile principles, and will be continuously refined and enhanced in future commits to improve functionality and user experience.
 
 ## Features
 - **Secure Donor Registration**: Users can sign up with essential details, including unique identification, location, and organ donation preferences.
@@ -39,8 +39,16 @@ Stores health-related conditions of donors:
 - `cardiac_surgery` (TINYINT) - Prior cardiac surgeries
 -->
 
+## Project Status
+
+This project is currently under development, following agile principles. It will be continuously refined and enhanced in future commits to improve functionality and user experience.
+
 ## Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/OrganDonation-DatabaseProject.git
    cd OrganDonation-DatabaseProject
+
+
+   
+This version ensures better readability, clear setup instructions, and an expanded database schema section. Let me know if you’d like any changes! 🚀
