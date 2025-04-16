@@ -37,39 +37,29 @@ app.get("/existingconditions", (req, res)=>{
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: process.env.DB_PASSWORD, // Retrieve from .env file
+    password: process.env.DB_PASSWORD, 
     database: "dbb"
 });
 
-
 db.connect((err) => {
-    if (err) throw err;
-    console.log("Connected to MySQL!");
+    if (err) {
+        console.error("Connection failed:", err);
+        return;
+    }
+    console.log("Connected successfully!");
 
-    // // Run Table Creation Queries on Server Startup
-    // const createDonorData = `
-    //     CREATE TABLE IF NOT EXISTS donor_data (
-    //         name VARCHAR(50),
-    //         email VARCHAR(50),
-    //         uniqueID INT PRIMARY KEY, 
-    //         pass varchar(50),
-    //         phone VARCHAR(10),
-    //         address VARCHAR(100), 
-    //         city VARCHAR(15)
-    //     );
-    // `;
-
+    // Table creation queries
     const createDonorData = `
-    CREATE TABLE IF NOT EXISTS donor_data (
-        name VARCHAR(50) NOT NULL,
-        email VARCHAR(50) UNIQUE NOT NULL,
-        uniqueID INT PRIMARY KEY,  -- Unique identifier for donors
-        pass VARCHAR(50) NOT NULL,  -- Password (consider hashing for security)
-        city VARCHAR(15) NOT NULL,  -- City selection
-        bloodGroup VARCHAR(3) NOT NULL,  -- Blood group selection
-        organ ENUM('Kidney', 'Liver', 'Lung', 'Intestine', 'Pancreas') NOT NULL  -- Organ willing to donate
-    );
-`;
+        CREATE TABLE IF NOT EXISTS donor_data (
+            name VARCHAR(50) NOT NULL,
+            email VARCHAR(50) UNIQUE NOT NULL,
+            uniqueID INT PRIMARY KEY,  -- Unique identifier for donors
+            pass VARCHAR(50) NOT NULL,  -- Password (consider hashing for security)
+            city VARCHAR(15) NOT NULL,  -- City selection
+            bloodGroup VARCHAR(3) NOT NULL,  -- Blood group selection
+            organ ENUM('Kidney', 'Liver', 'Lung', 'Intestine', 'Pancreas') NOT NULL  -- Organ willing to donate
+        );
+    `;
 
     const createDonorHealth = `
         CREATE TABLE IF NOT EXISTS donor_health (
@@ -82,18 +72,22 @@ db.connect((err) => {
         );
     `;
 
-    // Execute the queries
-    db.query(createDonorData, (err, result) => {
-        if (err) throw err;
+    db.query(createDonorData, (err) => {
+        if (err) {
+            console.error("Error in creating `donor_data`:", err);
+            return;
+        }
         console.log("Table `donor_data` ensured.");
     });
 
-    db.query(createDonorHealth, (err, result) => {
-        if (err) throw err;
+    db.query(createDonorHealth, (err) => {
+        if (err) {
+            console.error("Error in creating `donor_health`:", err);
+            return;
+        }
         console.log("Table `donor_health` ensured.");
     });
 });
-
 
 
 
