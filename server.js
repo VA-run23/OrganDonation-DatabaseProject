@@ -1,10 +1,16 @@
 const express = require("express");
-const mysql = require("mysql2"); 
+const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", "./views"); // Ensure the correct path to your EJS files
 
+// Middleware for parsing request body data
+app.use(bodyParser.urlencoded({ extended: true })); // Parses form data (x-www-form-urlencoded)
+app.use(express.json()); // Parses JSON body requests
+
+// Define routes here
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
@@ -15,6 +21,7 @@ app.get("/signup", (req, res)=>{
 app.get("/login", (req, res)=>{
     res.sendFile(__dirname + "/login.html");
 })
+
 
 app.get("/existingconditions", (req, res)=>{
     res.sendFile(__dirname + "/existingconditions.html");
@@ -87,12 +94,26 @@ db.connect((err) => {
 // );
 
 
-app.post("/submit", (req, res) => {
-    const { name, email, uniqueID, pass, phone, address, city } = req.body;
-    const sql = "INSERT INTO donor_data (name, email, uniqueID, pass, phone, address, city) VALUES (?, ?, ?, ?, ?, ?, ?)";
+// app.post("/submit", (req, res) => {
+//     const { name, email, uniqueID, pass, phone, address, city } = req.body;
+//     const sql = "INSERT INTO donor_data (name, email, uniqueID, pass, phone, address, city) VALUES (?, ?, ?, ?, ?, ?, ?)";
     
-    db.query(sql, [name, email, uniqueID,pass, phone, address, city], (err, result) => {
-        if (err) throw err;
+//     db.query(sql, [name, email, uniqueID,pass, phone, address, city], (err, result) => {
+//         if (err) throw err;
+//         res.redirect("/existingconditions"); // Redirect after successful insertion
+//     });
+// });
+
+app.post("/submit", (req, res) => {
+    const { name, email, uniqueID, pass, city, bloodGroup, organ } = req.body;
+    
+    const sql = "INSERT INTO donor_data (name, email, uniqueID, pass, city, bloodGroup, organ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(sql, [name, email, uniqueID, pass, city, bloodGroup, organ], (err, result) => {
+        if (err) {
+            console.error("Database Error:", err);
+            return res.status(500).send("Internal Server Error");
+        }
         res.redirect("/existingconditions"); // Redirect after successful insertion
     });
 });
@@ -109,21 +130,60 @@ app.post("/submitPrecondition", (req, res) => {
     });
 });
 
-app.post("/loginCheck", (req, res)=>{
-    const{uniqueID, pass} = req.body;
+app.post("/loginCheck", (req, res) => {
+    const { uniqueID, pass } = req.body;
     const sql = "SELECT * FROM donor_data WHERE uniqueID = ? AND pass = ?";
-    db.query(sql, [uniqueID, pass], (err, result)=>{
-        if(err) throw err;
-        if(result.length >0){
+
+    db.query(sql, [uniqueID, pass], (err, result) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+        if (result.length > 0) {
             console.log("Login successful for uniqueID:", uniqueID);
             res.redirect("/dashboard");
+        } else {
+            res.status(401).send("Invalid Unique ID or Password");
         }
-    })
-})
+    });
+});
 
 app.get("/dashboard", (req, res) =>{
-    res.sendFile(__dirname + "/dashboard.ejs");
+    res.sendFile(__dirname + "/dashboard.html");
 })
+
+// app.get("/dashboardContent", (req, res) => {
+//     const sql = "SELECT organ, bloodGroup, city FROM donor_data"; // Ensure correct column names
+
+//     db.query(sql, (err, result) => {
+//         if (err) {
+//             console.error("Database error:", err);
+//             return res.status(500).send("Internal Server Error");
+//         }
+
+//         console.log("Fetched donors:", result); // Debugging line to verify query results
+
+//         res.render("dashboard", { donors: result }); // Pass retrieved data to EJS template
+//     });
+// });
+
+
+app.get("/dashboardContent", (req, res) => {
+    const { organ, bloodGroup, city } = req.query; // Get selected values from URL parameters
+
+    const sql = "SELECT uniqueID, email FROM donor_data WHERE organ = ? AND bloodGroup = ? AND city = ?";
+
+    db.query(sql, [organ, bloodGroup, city], (err, result) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+
+        console.log("Filtered Results:", result); // Debugging: Check fetched data
+
+        res.render("dashboardContent", { donors: result }); // Pass filtered data to EJS
+    });
+});
 
 
 app.listen(3000, () => {

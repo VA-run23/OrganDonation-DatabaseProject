@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/dashboardContent" method="GET">
+        <label for="organ">Organ:</label>
+        <select name="organ" id="organ">
+            <option value="heart">Heart</option>
+            <option value="liver">Liver</option>
+            <option value="kidney">Kidney</option>
+        </select><br><br>
+    
+        <label for="bloodGroup">Blood Group:</label>
+        <select name="bloodGroup" id="bloodGroup">
+            <option value="A+">A+</option>
+            <option value="B+">B+</option>
+            <option value="O+">O+</option>
+            <option value="AB+">AB+</option>
+        </select><br><br>
+    
+        <label for="city">City:</label>
+        <input type="text" name="city" id="city"><br><br>
+    
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>

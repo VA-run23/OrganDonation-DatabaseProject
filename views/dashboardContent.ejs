@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Donors</title>
+</head>
+<body>
+    <h2>Filtered Donor Information</h2>
+
+    <table border="1">
+        <tr>
+            <th>Unique ID</th>
+            <th>Email</th>
+        </tr>
+
+        <% if (donors.length > 0) { %>
+            <% donors.forEach(donor => { %>
+                <tr>
+                    <td><%= donor.uniqueID %></td>
+                    <td><%= donor.email %></td>
+                </tr>
+            <% }); %>
+        <% } else { %>
+            <tr>
+                <td colspan="2">No matching donors found.</td>
+            </tr>
+        <% } %>
+    </table>
+</body>
+</html>

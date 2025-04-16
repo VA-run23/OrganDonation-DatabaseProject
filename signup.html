@@ -10,16 +10,46 @@
         <!-- This submit action will trigger the Express server in server.js -->
         <input type="text" name="name" placeholder="Enter Name" required>
         <input type="email" name="email" placeholder="Enter Email" required>
-        <input type = "number" name="uniqueID" placeholder="Enter Unique ID" required> <!-- Added unique ID field -->
-        <input type= "text" name="pass" placeholder="Enter password" required>
-
-
-        <!--At the end stage of this project , From here onwards add required constraint -->
-        <input type = "number" name = "phone" placeholder="Enter Phone Number">
-        <input type = "text" name = "address" placeholder="Enter Address">
-        <input type = "text" name = "city" placeholder="Enter City">
-
-        <!-- Fields to add, blood group,gender,  age,nearest hospital, organs willing to donate while alive, kidney or liver, -->
+        <input type="number" name="uniqueID" placeholder="Enter Unique ID" required> <!-- Added unique ID field -->
+        <input type="text" name="pass" placeholder="Enter password" required>
+    
+        <!-- Optional fields -->
+        <!-- <input type="number" name="phone" placeholder="Enter Phone Number"> -->
+        <!-- <input type="text" name="address" placeholder="Enter Address"> -->        
+        <label for="city">Choose City:</label>
+        <select id="city" name="city" required>
+            <option value="">-- Select --</option>
+            <option value="Mysore">Mysore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Chikmagalur">Chikmagalur</option>
+            <option value="Kolar">Kolar</option>
+        </select>
+    
+        <label for="bloodGroup">Choose Blood Group:</label>
+        <select id="bloodGroup" name="bloodGroup" required>
+            <option value="">-- Select --</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+        </select>
+    
+        <label for="organ">Choose an Organ:</label>
+        <select id="organ" name="organ" required>
+            <option value="">-- Select --</option>
+            <option value="Kidney">Kidney</option>
+            <option value="Liver">Liver</option>
+            <option value="Lung">Lung</option>
+            <option value="Intestine">Intestine</option>
+            <option value="Pancreas">Pancreas</option>
+        </select>
+    
+        <!-- Fields to add: blood group, gender, age, nearest hospital, organs willing to donate while alive -->
+    
         <button type="submit">Submit</button> <!-- Fixed button -->
     </form>
 </body>
