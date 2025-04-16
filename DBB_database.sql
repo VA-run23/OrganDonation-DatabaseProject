@@ -2,8 +2,8 @@ create database dbb;
 use dbb;
 SHOW TABLES;
 -- IMPORTANT::: if any problem arises, replace the "mysql _native_password" with real password
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password;
-FLUSH PRIVILEGES;
+-- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password;
+-- FLUSH PRIVILEGES;
 
 
 CREATE TABLE IF NOT EXISTS donor_data (
