@@ -7,19 +7,34 @@
 </head>
 <body>
     <form action="/dashboardContent" method="GET">
+        <label for="gender">Gender:</label>
+        <select name="gender" id="gender">
+            <option value="">-- Select --</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select><br><br>
+    
         <label for="organ">Organ:</label>
         <select name="organ" id="organ">
-            <option value="heart">Heart</option>
-            <option value="liver">Liver</option>
+            <option value="">-- Select --</option>
             <option value="kidney">Kidney</option>
+            <option value="liver">Liver</option>
+            <option value="lung">Lung</option>
+            <option value="intestine">Intestine</option>
+            <option value="pancreas">Pancreas</option>
         </select><br><br>
     
         <label for="bloodGroup">Blood Group:</label>
         <select name="bloodGroup" id="bloodGroup">
+            <option value="">-- Select --</option>
             <option value="A+">A+</option>
+            <option value="A-">A-</option>
             <option value="B+">B+</option>
-            <option value="O+">O+</option>
+            <option value="B-">B-</option>
             <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
         </select><br><br>
     
         <label for="city">Choose City:</label>
@@ -29,9 +44,10 @@
             <option value="Bangalore">Bangalore</option>
             <option value="Chikmagalur">Chikmagalur</option>
             <option value="Kolar">Kolar</option>
-        </select>
+        </select><br><br>
     
         <button type="submit">Search</button>
     </form>
+    
 </body>
 </html>

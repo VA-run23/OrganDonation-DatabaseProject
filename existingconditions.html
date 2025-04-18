@@ -4,42 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preconditions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        fieldset {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        legend {
+            font-weight: bold;
+        }
+        input[type="submit"] {
+            display: block;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-        <form action="/submitPrecondition" method="post">
-            <input type = "number" name="uniqueID" placeholder="Enter Unique ID" required> <!-- Added unique ID field -->
-            <p>Do you have diabetes?</p>
+    <form action="/submitPrecondition" method="post">
+        <!-- Unique ID field dynamically filled -->
+        <label for="uniqueID">Unique ID:</label>
+        <input type="number" id="uniqueID" name="uniqueID" placeholder="Fetching..." required readonly>
+        
+        <fieldset>
+            <legend>Do you have diabetes?</legend>
             <input type="radio" id="diabetes_yes" name="diabetes" value="1">
-            <label for="diabetes_yes">Yes</label><br>
+            <label for="diabetes_yes">Yes</label>
             
             <input type="radio" id="diabetes_no" name="diabetes" value="0">
-            <label for="diabetes_no">No</label><br>
+            <label for="diabetes_no">No</label>
+        </fieldset>
         
-            <p>Do you have Hypertension or Hypotension?</p>
+        <fieldset>
+            <legend>Do you have Hypertension or Hypotension?</legend>
             <input type="radio" id="hypertension" name="bp_condition" value="1">
-            <label for="hypertension">Hypertension</label><br>
-        
+            <label for="hypertension">Hypertension</label>
+            
             <input type="radio" id="hypotension" name="bp_condition" value="2">
-            <label for="hypotension">Hypotension</label><br>
-        
+            <label for="hypotension">Hypotension</label>
+            
             <input type="radio" id="none_bp" name="bp_condition" value="0">
-            <label for="none_bp">None</label><br>
+            <label for="none_bp">None</label>
+        </fieldset>
         
-            <p>Are you considered Obese?</p>
+        <fieldset>
+            <legend>Are you considered Obese?</legend>
             <input type="radio" id="obese_yes" name="obese" value="1">
-            <label for="obese_yes">Yes</label><br>
-        
+            <label for="obese_yes">Yes</label>
+            
             <input type="radio" id="obese_no" name="obese" value="0">
-            <label for="obese_no">No</label><br>
+            <label for="obese_no">No</label>
+        </fieldset>
         
-            <p>Have you undergone cardiac surgery?</p>
+        <fieldset>
+            <legend>Have you undergone cardiac surgery?</legend>
             <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1">
-            <label for="cardiac_yes">Yes</label><br>
-        
+            <label for="cardiac_yes">Yes</label>
+            
             <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0">
-            <label for="cardiac_no">No</label><br>
-        
-            <input type="submit" value="Submit">
-        </form>
+            <label for="cardiac_no">No</label>
+        </fieldset>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <!-- Fetch Unique ID and autofill -->
+    <script>
+        fetch("/getUniqueID")
+            .then(response => response.json())
+            .then(data => {
+                if (data.uniqueID) {
+                    document.getElementById("uniqueID").value = data.uniqueID;
+                } else {
+                    console.error("Error: Unique ID not available.");
+                    document.getElementById("uniqueID").placeholder = "Error fetching ID";
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching unique ID:", error);
+                document.getElementById("uniqueID").placeholder = "Error fetching ID";
+            });
+    </script>
 </body>
 </html>

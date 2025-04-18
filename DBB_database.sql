@@ -5,22 +5,23 @@ SHOW TABLES;
 -- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password;
 -- FLUSH PRIVILEGES;
 
-
 CREATE TABLE IF NOT EXISTS donor_data (
-    name VARCHAR(50) NOT NULL,
-    email VARCHAR(50) UNIQUE NOT NULL,
-    uniqueID INT PRIMARY KEY,  -- Unique identifier for donors
-    pass VARCHAR(8) NOT NULL,  -- Password (consider hashing for security)
-    -- phone VARCHAR(10),  -- Optional field for future use
-    -- address VARCHAR(100),  -- Optional field
-    city VARCHAR(15) NOT NULL,  -- City selection
-    bloodGroup VARCHAR(3) NOT NULL,  -- Blood group selection
-    -- gender ENUM('Male', 'Female', 'Other') NOT NULL,  -- Gender selection
-    -- age INT CHECK (age >= 18),  -- Age constraint (ensuring adult donors)
-    -- nearest_hospital VARCHAR(100),  -- Optional, nearest hospital
-    organ ENUM('Kidney', 'Liver', 'Lung', 'Intestine', 'Pancreas') NOT NULL  -- Organ willing to donate
-    -- registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Track registration time
+    uniqueID INT AUTO_INCREMENT PRIMARY KEY,  -- System-generated unique ID
+    govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),  -- Ensuring a 12-digit numeric government ID
+    name VARCHAR(50) ,
+    email VARCHAR(50) UNIQUE  CHECK (email LIKE '%@%.%'),  -- Basic format validation for email
+    pass VARCHAR(255) ,  -- Store hashed passwords in production
+    age INT  CHECK (age >= 1),  -- Ensuring age is at least 1
+    gender ENUM('Male', 'Female') ,  -- Limited selection for valid gender options
+    city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar') ,  -- Limit cities to predefined options
+    bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') ,  -- Limited selection for valid blood groups
+    kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0,1)),  -- Boolean value for organ donation
+    liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
+    lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
+    intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
+    pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1))
 );
+
 
 CREATE TABLE IF NOT EXISTS donor_health (
     uniqueID INT,  -- Ensure this matches `uniqueID` in `donor_data`

@@ -9,22 +9,27 @@
     <form action="/submit" method="post">
         <!-- This submit action will trigger the Express server in server.js -->
         <input type="text" name="name" placeholder="Enter Name" required>
-        <input type="email" name="email" placeholder="Enter Email" required>
-        <input type="number" name="uniqueID" placeholder="Enter Unique ID" required> <!-- Added unique ID field -->
+        <input type="email" name="email" placeholder="Enter Email"  >
+        <input type="number" name="govtID" placeholder="Enter Aadhaar ID" required> <!-- Added unique ID field -->
         <input type="text" name="pass" placeholder="Enter password" required>
-    
-        <!-- Optional fields -->
-        <!-- <input type="number" name="phone" placeholder="Enter Phone Number"> -->
-        <!-- <input type="text" name="address" placeholder="Enter Address"> -->        
+        <input type="number" name="age" placeholder="Enter Age"   min="1"> <!-- Age field added -->
+
+        <label for="gender">Choose Gender:</label>
+        <select id="gender" name="gender"  >
+            <option value="">-- Select --</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+
         <label for="city">Choose City:</label>
-        <select id="city" name="city" required>
+        <select id="city" name="city"  >
             <option value="">-- Select --</option>
             <option value="Mysore">Mysore</option>
             <option value="Bangalore">Bangalore</option>
             <option value="Chikmagalur">Chikmagalur</option>
             <option value="Kolar">Kolar</option>
         </select>
-    
+
         <label for="bloodGroup">Choose Blood Group:</label>
         <select id="bloodGroup" name="bloodGroup" required>
             <option value="">-- Select --</option>
@@ -37,19 +42,26 @@
             <option value="O+">O+</option>
             <option value="O-">O-</option>
         </select>
-    
-        <label for="organ">Choose an Organ:</label>
-        <select id="organ" name="organ" required>
-            <option value="">-- Select --</option>
-            <option value="Kidney">Kidney</option>
-            <option value="Liver">Liver</option>
-            <option value="Lung">Lung</option>
-            <option value="Intestine">Intestine</option>
-            <option value="Pancreas">Pancreas</option>
-        </select>
-    
-        <!-- Fields to add: blood group, gender, age, nearest hospital, organs willing to donate while alive -->
-    
+
+        <fieldset>
+            <legend>Choose an Organ:</legend>
+
+            <input type="checkbox" id="kidney" name="organ" value="Kidney">
+            <label for="kidney">Kidney</label>
+        
+            <input type="checkbox" id="liver" name="organ" value="Liver">
+            <label for="liver">Liver</label>
+        
+            <input type="checkbox" id="lung" name="organ" value="Lung">
+            <label for="lung">Lung</label>
+        
+            <input type="checkbox" id="intestine" name="organ" value="Intestine">
+            <label for="intestine">Intestine</label>
+        
+            <input type="checkbox" id="pancreas" name="organ" value="Pancreas">
+            <label for="pancreas">Pancreas</label>
+        </fieldset>
+
         <button type="submit">Submit</button> <!-- Fixed button -->
     </form>
 </body>
