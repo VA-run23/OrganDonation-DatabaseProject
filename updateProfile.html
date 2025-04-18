@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update SignUp Data</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Get uniqueID from URL parameters e.g. ?uniqueID=123
+      const urlParams = new URLSearchParams(window.location.search);
+      const uniqueID = urlParams.get("uniqueID");
+      if (uniqueID) {
+        document.getElementById("uniqueID").value = uniqueID;
+        fetchUserData(uniqueID);
+      }
+    });
+
+    function fetchUserData(uniqueID) {
+      fetch(`/getUser/${uniqueID}`)
+        .then(response => response.json())
+        .then(data => {
+          if (!data || data.message) {
+            alert("User not found!");
+            return;
+          }
+          // Populate fields with returned data
+          document.getElementById("name").value = data.name || "";
+          document.getElementById("email").value = data.email || "";
+          document.getElementById("govtID").value = data.govtID || "";
+          document.getElementById("pass").value = data.pass || "";
+          document.getElementById("age").value = data.age || "";
+          document.getElementById("gender").value = data.gender || "";
+          document.getElementById("city").value = data.city || "";
+          document.getElementById("bloodGroup").value = data.bloodGroup || "";
+          // Set organ checkboxes based on 0/1 values
+          document.getElementById("kidney").checked = data.kidney === 1;
+          document.getElementById("liver").checked = data.liver === 1;
+          document.getElementById("lung").checked = data.lung === 1;
+          document.getElementById("intestine").checked = data.intestine === 1;
+          document.getElementById("pancreas").checked = data.pancreas === 1;
+          document.getElementById("uniqueID").readOnly = true;
+        })
+        .catch(error => console.error("Error fetching user data:", error));
+    }
+  </script>
+</head>
+<body>
+  <h1>Update Your Profile</h1>
+  <form id="updateForm" action="/confirmUpdate1" method="post">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter Name" required /><br /><br />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Enter Email" /><br /><br />
+
+    <label for="govtID">Govt ID:</label>
+    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required /><br /><br />
+
+    <label for="uniqueID">Unique ID:</label>
+    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required /><br /><br />
+
+    <label for="pass">Password:</label>
+    <input type="password" id="pass" name="pass" placeholder="Enter Password" required /><br /><br />
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" placeholder="Enter Age" min="1" /><br /><br />
+
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender">
+      <option value="">-- Select --</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select><br /><br />
+
+    <label for="city">City:</label>
+    <select id="city" name="city">
+      <option value="">-- Select --</option>
+      <option value="Mysore">Mysore</option>
+      <option value="Bangalore">Bangalore</option>
+      <option value="Chikmagalur">Chikmagalur</option>
+      <option value="Kolar">Kolar</option>
+    </select><br /><br />
+
+    <label for="bloodGroup">Blood Group:</label>
+    <select id="bloodGroup" name="bloodGroup" required>
+      <option value="">-- Select --</option>
+      <option value="A+">A+</option>
+      <option value="A-">A-</option>
+      <option value="B+">B+</option>
+      <option value="B-">B-</option>
+      <option value="AB+">AB+</option>
+      <option value="AB-">AB-</option>
+      <option value="O+">O+</option>
+      <option value="O-">O-</option>
+    </select><br /><br />
+
+    <fieldset>
+      <legend>Choose Organ(s):</legend>
+      <input type="checkbox" id="kidney" name="organ" value="Kidney" />
+      <label for="kidney">Kidney</label>
+
+      <input type="checkbox" id="liver" name="organ" value="Liver" />
+      <label for="liver">Liver</label>
+
+      <input type="checkbox" id="lung" name="organ" value="Lung" />
+      <label for="lung">Lung</label>
+
+      <input type="checkbox" id="intestine" name="organ" value="Intestine" />
+      <label for="intestine">Intestine</label>
+
+      <input type="checkbox" id="pancreas" name="organ" value="Pancreas" />
+      <label for="pancreas">Pancreas</label>
+    </fieldset>
+    <br />
+    <button type="submit">Confirm edit to my profile</button>
+  </form>
+</body>
+</html>
