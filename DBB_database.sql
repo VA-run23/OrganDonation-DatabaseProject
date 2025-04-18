@@ -22,20 +22,27 @@ CREATE TABLE IF NOT EXISTS donor_data (
     pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1))
 );
 
-
-CREATE TABLE IF NOT EXISTS donor_health (
-    uniqueID INT,  -- Ensure this matches `uniqueID` in `donor_data`
+CREATE TABLE IF NOT EXISTS donor_health_dependants (
+    uniqueID INT PRIMARY KEY,  -- Matches `uniqueID` in `donor_data`
     diabetes TINYINT,  -- 0 = No, 1 = Yes
     bp_condition TINYINT,  -- 0 = None, 1 = Hypertension, 2 = Hypotension
     obese TINYINT,  -- 0 = No, 1 = Yes
     cardiac_surgery TINYINT,  -- 0 = No, 1 = Yes
+    dependantName VARCHAR(255) NOT NULL,
+    dependantAadhar BIGINT NOT NULL UNIQUE, -- Ensures uniqueness
+    dependantAge INT NOT NULL,
+    totalDependants INT NOT NULL,
+	healthApproval TINYINT NOT NULL, -- Ensures health approval is provided
     FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
 );
+
+
 select * from donor_data;
-select * from donor_health;
+select * from donor_health_dependants;
 
 desc donor_data;
-desc donor_health;
+desc donor_health_dependants;
 
 drop table donor_data; 
-drop table donor_health;
+drop table donor_health_dependants;
+

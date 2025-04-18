@@ -77,6 +77,32 @@
             <label for="cardiac_no">No</label>
         </fieldset>
 
+        <!-- Dependant Information Section -->
+        <fieldset>
+            <legend>Dependant Information</legend>
+            
+            <label for="dependantName">Dependant Name:</label>
+            <input type="text" id="dependantName" name="dependantName" required>
+            
+            <label for="dependantAadhar">Dependant Aadhar Number:</label>
+            <input type="number" id="dependantAadhar" name="dependantAadhar" required>
+            
+            <label for="dependantAge">Dependant Age:</label>
+            <input type="number" id="dependantAge" name="dependantAge" required>
+            
+            <label for="totalDependants">Total Number of Dependants:</label>
+            <input type="number" id="totalDependants" name="totalDependants" required>
+        </fieldset>
+
+        <!-- Approval Statement -->
+        <fieldset>
+            <legend>Approval Statement</legend>
+            <input type="checkbox" id="healthApproval" name="healthApproval" required>
+            <label for="healthApproval">
+                I agree that my health is alright and has been approved by a medical professional. I confirm that the selected organs are healthy and I am able to donate part of them voluntarily to save the lives of others/recipients.
+            </label>
+        </fieldset>
+
         <input type="submit" value="Submit">
     </form>
 

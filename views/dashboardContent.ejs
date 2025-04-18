@@ -12,6 +12,8 @@
         <tr>
             <th>Unique ID</th>
             <th>Email</th>
+            <th>Number of Dependants</th>
+            <th>Dependant Age</th>
         </tr>
 
         <% if (donors.length > 0) { %>
@@ -19,11 +21,13 @@
                 <tr>
                     <td><%= donor.uniqueID %></td>
                     <td><%= donor.email %></td>
+                    <td><%= donor.totalDependants %></td>
+                    <td><%= donor.dependantAge %></td>
                 </tr>
             <% }); %>
         <% } else { %>
             <tr>
-                <td colspan="2">No matching donors found.</td>
+                <td colspan="4">No matching donors found.</td>
             </tr>
         <% } %>
     </table>
