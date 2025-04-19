@@ -50,5 +50,4 @@ This project is currently under development, following agile principles. It will
    cd OrganDonation-DatabaseProject
 
 
-   
-This version ensures better readability, clear setup instructions, and an expanded database schema section. Let me know if you’d like any changes! 🚀
+ I’m open to more ideas! If you notice any flaws, I’d love to hear your thoughts
