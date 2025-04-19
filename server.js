@@ -23,13 +23,20 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 
 // Serve static HTML pages
-const staticRoutes = [
-  "/", "/signup", "/login", "/updateProfile", "/preUpdate",
-  "/existingconditions", "/dashboard"
-];
-staticRoutes.forEach(route =>
-  app.get(route, (req, res) => res.sendFile(path.join(__dirname, `${route === "/" ? "/index" : route}.html`)))
-);
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "/index.html")));
+
+app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "/signup.html")));
+
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "/login.html")));
+
+app.get("/updateProfile", (req, res) => res.sendFile(path.join(__dirname, "/updateProfile.html")));
+
+app.get("/preUpdate", (req, res) => res.sendFile(path.join(__dirname, "/preUpdate.html")));
+
+app.get("/existingconditions", (req, res) => res.sendFile(path.join(__dirname, "/existingconditions.html")));
+
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "/dashboard.html")));
+
 
 // Database Connection
 const db = mysql.createConnection({
@@ -279,6 +286,40 @@ app.get("/getPrecondition/:uniqueID", (req, res) => {
     else res.status(404).json({ message: "No data found for uniqueID" });
   });
 });
+
+// DELETE USER ENDPOINT
+app.post("/deleteUser", (req, res) => {
+  const uniqueID = req.body.uniqueID;
+  
+  if (!uniqueID) {
+    return res.status(400).json({ message: "Unique ID is required to delete user!" });
+  }
+
+  const deleteQuery = "DELETE FROM donor_data WHERE uniqueID = ?";
+  db.query(deleteQuery, [uniqueID], (err, result) => {
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ message: "Internal server error!" });
+    }
+    if (result.affectedRows > 0) {
+      res.send(`
+        <script>
+          alert('User deleted successfully.');
+          window.location.href = '/'; // Redirect to index page
+        </script>
+      `);
+    } else {
+      res.send(`
+        <script>
+          alert('User not found or could not be deleted.');
+          window.location.href = '/'; // Redirect to index page
+        </script>
+      `);
+    }
+    
+  });
+});
+
 
 // Start server
 app.listen(3000, () => {
