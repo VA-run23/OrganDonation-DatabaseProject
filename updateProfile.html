@@ -51,25 +51,25 @@
   <h1>Update Your Profile</h1>
   <form id="updateForm" action="/confirmUpdate1" method="post">
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Enter Name" required /><br /><br />
+    <input type="text" id="name" name="name" placeholder="Enter Name" required readonly /><br /><br />
 
     <label for="email">Email:</label>
-    <input type="email" id="email" name="email" placeholder="Enter Email" /><br /><br />
+    <input type="email" id="email" name="email" placeholder="Enter Email" readonly/><br /><br />
 
     <label for="govtID">Govt ID:</label>
-    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required /><br /><br />
+    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required  readonly/><br /><br />
 
     <label for="uniqueID">Unique ID:</label>
-    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required /><br /><br />
+    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required readonly /><br /><br />
 
     <label for="pass">Password:</label>
     <input type="password" id="pass" name="pass" placeholder="Enter Password" required /><br /><br />
 
     <label for="age">Age:</label>
-    <input type="number" id="age" name="age" placeholder="Enter Age" min="1" /><br /><br />
+    <input type="number" id="age" name="age" placeholder="Enter Age" min="18" /><br /><br />
 
     <label for="gender">Gender:</label>
-    <select id="gender" name="gender">
+    <select id="gender" name="gender" >
       <option value="">-- Select --</option>
       <option value="Male">Male</option>
       <option value="Female">Female</option>
@@ -85,7 +85,7 @@
     </select><br /><br />
 
     <label for="bloodGroup">Blood Group:</label>
-    <select id="bloodGroup" name="bloodGroup" required>
+    <select id="bloodGroup" name="bloodGroup" required readonly>
       <option value="">-- Select --</option>
       <option value="A+">A+</option>
       <option value="A-">A-</option>

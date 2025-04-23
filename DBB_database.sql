@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS donor_data (
     liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
     lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
     intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
-    pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1))
+    pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1)),
+    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS donor_health_dependants (

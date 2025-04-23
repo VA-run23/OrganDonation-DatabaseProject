@@ -51,22 +51,23 @@ db.connect((err) => {
   console.log("✅ Connected to database!");
 
   const createDonorData = `
-    CREATE TABLE IF NOT EXISTS donor_data (
-      uniqueID INT AUTO_INCREMENT PRIMARY KEY,
-      govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
-      name VARCHAR(50),
-      email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
-      pass VARCHAR(255),
-      age INT CHECK (age >= 1),
-      gender ENUM('Male', 'Female'),
-      city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
-      bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
-      kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0,1)),
-      liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
-      lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
-      intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
-      pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1))
-    );
+CREATE TABLE IF NOT EXISTS donor_data (
+  uniqueID INT AUTO_INCREMENT PRIMARY KEY,
+  govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
+  name VARCHAR(50),
+  email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
+  pass VARCHAR(255),
+  age INT CHECK (age >= 1),
+  gender ENUM('Male', 'Female'),
+  city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
+  bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
+  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0,1)),
+  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
+  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
+  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
+  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1)),
+  lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
   `;
 
   const createDonorHealth = `
@@ -153,8 +154,9 @@ app.post("/loginCheck", (req, res) => {
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
+  //    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate
   let sql = `
-    SELECT donor_data.uniqueID, donor_data.email,
+    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate,
            donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
     FROM donor_data
     INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
@@ -188,9 +190,13 @@ app.post("/preUpdateCheck", (req, res) => {
 // Confirm Update Step 1
 app.post("/confirmUpdate1", (req, res) => {
   const { uniqueID, name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
-  const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-  const organFlags = organs.map(o => organ.includes(o) ? 1 : 0);
 
+  // Ensure `organ` is properly defined and an array
+  const validOrgans = Array.isArray(organ) ? organ : [];
+  const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
+  const organFlags = organs.map(o => validOrgans.includes(o) ? 1 : 0);
+
+  // Combined query to handle deselection and selection in a single step
   const query = `
     UPDATE donor_data
     SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?,
@@ -200,7 +206,9 @@ app.post("/confirmUpdate1", (req, res) => {
   const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags, uniqueID];
 
   db.query(query, values, (err, result) => {
-    if (err) return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+    if (err) {
+      return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+    }
     if (result.affectedRows > 0) {
       res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
     } else {
@@ -208,6 +216,7 @@ app.post("/confirmUpdate1", (req, res) => {
     }
   });
 });
+
 
 // Confirm Update Step 2
 app.post("/confirmUpdate2", (req, res) => {
