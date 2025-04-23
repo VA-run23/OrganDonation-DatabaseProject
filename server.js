@@ -154,22 +154,33 @@ app.post("/loginCheck", (req, res) => {
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
-  //    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate
+  // SQL query with ORDER BY clause to sort by lastUpdate in descending order
   let sql = `
-    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate,
+    SELECT donor_data.uniqueID, donor_data.email, donor_data.lastUpdate,
            donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
     FROM donor_data
     INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
     WHERE donor_data.bloodGroup = ? AND donor_data.city = ?
   `;
   const filters = [bloodGroup, city];
+  
+  // Add organ filter if specified
   if (organ) sql += ` AND donor_data.${organ} = 1`;
 
+  // Sort results by lastUpdate in descending order
+  sql += ` ORDER BY donor_data.lastUpdate DESC`;
+
+  // Execute the query
   db.query(sql, filters, (err, result) => {
-    if (err) return res.status(500).send("Internal Server Error");
+    if (err) {
+      return res.status(500).send("Internal Server Error");
+    }
+
+    // Render the dashboardContent view with sorted donor data
     res.render("dashboardContent", { donors: result });
   });
 });
+
 
 // Pre-update Check
 app.post("/preUpdateCheck", (req, res) => {
