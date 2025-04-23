@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS donor_data (
   name VARCHAR(50),
   email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
   pass VARCHAR(255),
-  age INT CHECK (age >= 1),
+  age INT CHECK (age >= 18),
   gender ENUM('Male', 'Female'),
   city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
   bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
@@ -100,6 +100,16 @@ CREATE TABLE IF NOT EXISTS donor_data (
 // Registration
 app.post("/submit", (req, res) => {
   const { name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
+    // Validate Government ID
+    if (govtID < 100000000000 || govtID > 999999999999) {
+      return res.send(`<script>alert("❌ Government ID must be a 12-digit number."); window.history.back();</script>`);
+    }
+  
+    // Validate Age
+    if (age < 18) {
+      return res.send(`<script>alert("❌ Age must be 18 or older."); window.history.back();</script>`);
+    }
+  
   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
   const organFlags = organs.map(o => organ.includes(o) ? 1 : 0);
 
@@ -133,8 +143,15 @@ app.post("/submitPrecondition", (req, res) => {
   `;
 
   db.query(sql, [uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval], (err) => {
-    if (err) return res.status(500).send("Internal Server Error");
-    res.redirect("/");
+    if (err) {
+      if (err.code === 'ER_DUP_ENTRY') { 
+        res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
+      } else {
+        res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
+      }
+    } else {
+      res.redirect("/");
+    }
   });
 });
 
