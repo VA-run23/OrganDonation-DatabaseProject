@@ -47,8 +47,8 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-  if (err) return console.error("❌ Connection failed:", err);
-  console.log("✅ Connected to database!");
+  if (err) return console.error("Connection failed:", err);
+  console.log(" Connected to database!");
 
   const createDonorData = `
 CREATE TABLE IF NOT EXISTS donor_data (
@@ -87,11 +87,11 @@ CREATE TABLE IF NOT EXISTS donor_data (
   `;
 
   db.query(createDonorData, (err) =>
-    err ? console.error("❌ Error creating donor_data:", err) : console.log("✅ donor_data table ensured.")
+    err ? console.error("Error creating donor_data:", err) : console.log(" donor_data table ensured.")
   );
 
   db.query(createDonorHealth, (err) =>
-    err ? console.error("❌ Error creating donor_health_dependants:", err) : console.log("✅ donor_health_dependants table ensured.")
+    err ? console.error("Error creating donor_health_dependants:", err) : console.log(" donor_health_dependants table ensured.")
   );
 });
 
@@ -102,12 +102,12 @@ app.post("/submit", (req, res) => {
   const { name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
     // Validate Government ID
     if (govtID < 100000000000 || govtID > 999999999999) {
-      return res.send(`<script>alert("❌ Government ID must be a 12-digit number."); window.history.back();</script>`);
+      return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
     }
   
     // Validate Age
     if (age < 18) {
-      return res.send(`<script>alert("❌ Age must be 18 or older."); window.history.back();</script>`);
+      return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
     }
   
   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
@@ -122,9 +122,9 @@ app.post("/submit", (req, res) => {
   db.query(sql, values, (err, result) => {
     if (err) {
       if (err.code === "ER_DUP_ENTRY") {
-        return res.send(`<script>alert("❌ Government ID or Email already registered."); window.history.back();</script>`);
+        return res.send(`<script>alert("Government ID or Email already registered."); window.history.back();</script>`);
       }
-      console.error("❌ Database Error:", err);
+      console.error("Database Error:", err);
       return res.status(500).send("Internal Server Error");
     }
     req.session.uniqueID = result.insertId;
@@ -163,7 +163,7 @@ app.post("/loginCheck", (req, res) => {
   db.query(sql, [uniqueID, pass], (err, result) => {
     if (err) return res.status(500).send("Internal Server Error");
     if (result.length > 0) return res.redirect("/dashboard");
-    res.status(401).send("❌ Invalid Unique ID or Password");
+    res.status(401).send("Invalid Unique ID or Password");
   });
 });
 
