@@ -41,17 +41,110 @@ app.get("/existingconditions", (req, res) => res.sendFile(path.join(__dirname, "
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "/dashboard.html")));
 
 
-// Database Connection
+// // Database Connection
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: process.env.DB_PASSWORD,
+//   database: "dbb"
+// });
+
+// db.connect((err) => {
+//   if (err) return console.error("Connection failed:", err);
+//   console.log(" Connected to database!");
+
+//   const createDonorData = `
+// CREATE TABLE IF NOT EXISTS donor_data (
+//   uniqueID INT AUTO_INCREMENT PRIMARY KEY,
+//   govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
+//   name VARCHAR(50),
+//   email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
+//   pass VARCHAR(255),
+//   age INT CHECK (age >= 18),
+//   gender ENUM('Male', 'Female'),
+//   city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
+//   bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
+//   kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0,1)),
+//   liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
+//   lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
+//   intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
+//   pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1)),
+//   lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+// );
+//   `;
+
+//   const createDonorHealth = `
+//     CREATE TABLE IF NOT EXISTS donor_health_dependants (
+//       uniqueID INT PRIMARY KEY,
+//       diabetes TINYINT,
+//       bp_condition TINYINT,
+//       obese TINYINT,
+//       cardiac_surgery TINYINT,
+//       dependantName VARCHAR(255) NOT NULL,
+//       dependantAadhar BIGINT NOT NULL UNIQUE  CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
+//       dependantAge INT NOT NULL,
+//       totalDependants INT NOT NULL,
+//       healthApproval TINYINT,
+//       FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+//     );
+//   `;
+
+//   db.query(createDonorData, (err) =>
+//     err ? console.error("Error creating donor_data:", err) : console.log(" donor_data table ensured.")
+//   );
+
+//   db.query(createDonorHealth, (err) =>
+//     err ? console.error("Error creating donor_health_dependants:", err) : console.log(" donor_health_dependants table ensured.")
+//   );
+// });
+
+// Routes
+
+// // Registration
+// app.post("/submit", (req, res) => {
+//   const { name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
+//     // Validate Government ID
+//     if (govtID < 100000000000 || govtID > 999999999999) {
+//       return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
+//     }
+  
+//     // Validate Age
+//     if (age < 18) {
+//       return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
+//     }
+  
+//   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
+//   const organFlags = organs.map(o => organ.includes(o) ? 1 : 0);
+
+//   const sql = `
+//     INSERT INTO donor_data (name, email, govtID, pass, age, gender, city, bloodGroup, kidney, liver, lung, intestine, pancreas)
+//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//   `;
+//   const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags];
+
+//   db.query(sql, values, (err, result) => {
+//     if (err) {
+//       if (err.code === "ER_DUP_ENTRY") {
+//         return res.send(`<script>alert("Government ID or Email already registered."); window.history.back();</script>`);
+//       }
+//       console.error("Database Error:", err);
+//       return res.status(500).send("Internal Server Error");
+//     }
+//     req.session.uniqueID = result.insertId;
+//     res.send(`<script>alert("✅ Registered! Your Unique Donor ID is: ${result.insertId}"); window.location.href = "/existingconditions";</script>`);
+//   });
+// });
+
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: process.env.DB_PASSWORD,
-  database: "dbb"
+  database: "dbb",
 });
 
 db.connect((err) => {
   if (err) return console.error("Connection failed:", err);
-  console.log(" Connected to database!");
+  console.log("Connected to database!");
 
   const createDonorData = `
 CREATE TABLE IF NOT EXISTS donor_data (
@@ -64,37 +157,49 @@ CREATE TABLE IF NOT EXISTS donor_data (
   gender ENUM('Male', 'Female'),
   city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
   bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
-  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0,1)),
-  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0,1)),
-  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0,1)),
-  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0,1)),
-  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0,1)),
   lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
   `;
 
+  const createDonorOrgans = `
+CREATE TABLE IF NOT EXISTS donor_organs (
+  organID INT AUTO_INCREMENT PRIMARY KEY,
+  uniqueID INT NOT NULL,
+  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
+  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
+  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
+  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
+  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
+  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+);
+  `;
+
   const createDonorHealth = `
-    CREATE TABLE IF NOT EXISTS donor_health_dependants (
-      uniqueID INT PRIMARY KEY,
-      diabetes TINYINT,
-      bp_condition TINYINT,
-      obese TINYINT,
-      cardiac_surgery TINYINT,
-      dependantName VARCHAR(255) NOT NULL,
-      dependantAadhar BIGINT NOT NULL UNIQUE  CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
-      dependantAge INT NOT NULL,
-      totalDependants INT NOT NULL,
-      healthApproval TINYINT,
-      FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
-    );
+CREATE TABLE IF NOT EXISTS donor_health_dependants (
+  uniqueID INT PRIMARY KEY,
+  diabetes TINYINT,
+  bp_condition TINYINT,
+  obese TINYINT,
+  cardiac_surgery TINYINT,
+  dependantName VARCHAR(255) NOT NULL,
+  dependantAadhar BIGINT NOT NULL UNIQUE CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
+  dependantAge INT NOT NULL,
+  totalDependants INT NOT NULL,
+  healthApproval TINYINT,
+  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+);
   `;
 
   db.query(createDonorData, (err) =>
-    err ? console.error("Error creating donor_data:", err) : console.log(" donor_data table ensured.")
+    err ? console.error("Error creating donor_data:", err) : console.log("donor_data table ensured.")
+  );
+
+  db.query(createDonorOrgans, (err) =>
+    err ? console.error("Error creating donor_organs:", err) : console.log("donor_organs table ensured.")
   );
 
   db.query(createDonorHealth, (err) =>
-    err ? console.error("Error creating donor_health_dependants:", err) : console.log(" donor_health_dependants table ensured.")
+    err ? console.error("Error creating donor_health_dependants:", err) : console.log("donor_health_dependants table ensured.")
   );
 });
 
@@ -103,26 +208,24 @@ CREATE TABLE IF NOT EXISTS donor_data (
 // Registration
 app.post("/submit", (req, res) => {
   const { name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
-    // Validate Government ID
-    if (govtID < 100000000000 || govtID > 999999999999) {
-      return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
-    }
-  
-    // Validate Age
-    if (age < 18) {
-      return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
-    }
-  
-  const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-  const organFlags = organs.map(o => organ.includes(o) ? 1 : 0);
 
-  const sql = `
-    INSERT INTO donor_data (name, email, govtID, pass, age, gender, city, bloodGroup, kidney, liver, lung, intestine, pancreas)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  // Validate Government ID
+  if (govtID < 100000000000 || govtID > 999999999999) {
+    return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
+  }
+
+  // Validate Age
+  if (age < 18) {
+    return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
+  }
+
+  const donorDataQuery = `
+    INSERT INTO donor_data (name, email, govtID, pass, age, gender, city, bloodGroup)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
-  const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags];
+  const donorDataValues = [name, email, govtID, pass, age, gender, city, bloodGroup];
 
-  db.query(sql, values, (err, result) => {
+  db.query(donorDataQuery, donorDataValues, (err, result) => {
     if (err) {
       if (err.code === "ER_DUP_ENTRY") {
         return res.send(`<script>alert("Government ID or Email already registered."); window.history.back();</script>`);
@@ -130,8 +233,26 @@ app.post("/submit", (req, res) => {
       console.error("Database Error:", err);
       return res.status(500).send("Internal Server Error");
     }
-    req.session.uniqueID = result.insertId;
-    res.send(`<script>alert("✅ Registered! Your Unique Donor ID is: ${result.insertId}"); window.location.href = "/existingconditions";</script>`);
+
+    const uniqueID = result.insertId;
+    const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
+    const organFlags = organs.map((o) => organ.includes(o) ? 1 : 0);
+
+    const donorOrgansQuery = `
+      INSERT INTO donor_organs (uniqueID, kidney, liver, lung, intestine, pancreas)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    const donorOrgansValues = [uniqueID, ...organFlags];
+
+    db.query(donorOrgansQuery, donorOrgansValues, (organErr) => {
+      if (organErr) {
+        console.error("Organ Table Error:", organErr);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      req.session.uniqueID = uniqueID;
+      res.send(`<script>alert("✅ Registered! Your Unique Donor ID is: ${uniqueID}"); window.location.href = "/existingconditions";</script>`);
+    });
   });
 });
 
@@ -170,22 +291,54 @@ app.post("/loginCheck", (req, res) => {
   });
 });
 
+// // Dashboard Filter
+// app.get("/dashboardContent", (req, res) => {
+//   const { organ, bloodGroup, city } = req.query;
+
+//   //    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate
+//   let sql = `
+//     SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate,
+//            donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
+//     FROM donor_data
+//     INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
+//     WHERE donor_data.bloodGroup = ? AND donor_data.city = ?
+//   `;
+//   const filters = [bloodGroup, city];
+//   if (organ) sql += ` AND donor_data.${organ} = 1`;
+//   sql += ` ORDER BY donor_data.lastUpdate DESC`;
+
+//   db.query(sql, filters, (err, result) => {
+//     if (err) return res.status(500).send("Internal Server Error");
+//     res.render("dashboardContent", { donors: result });
+//   });
+// });
+
+
 // Dashboard Filter
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
-  //    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate
+  // Base SQL Query
   let sql = `
-    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate,
+    SELECT donor_data.uniqueID, donor_data.email, donor_data.lastUpdate,
            donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
     FROM donor_data
     INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
+    LEFT JOIN donor_organs ON donor_data.uniqueID = donor_organs.uniqueID
     WHERE donor_data.bloodGroup = ? AND donor_data.city = ?
   `;
+  
   const filters = [bloodGroup, city];
-  if (organ) sql += ` AND donor_data.${organ} = 1`;
+
+  // Adding Organ Filter if Provided
+  if (organ) {
+    sql += ` AND donor_organs.${organ} = 1`;
+  }
+
+  // Sorting by Last Update
   sql += ` ORDER BY donor_data.lastUpdate DESC`;
 
+  // Execute Query
   db.query(sql, filters, (err, result) => {
     if (err) return res.status(500).send("Internal Server Error");
     res.render("dashboardContent", { donors: result });
@@ -208,7 +361,36 @@ app.post("/preUpdateCheck", (req, res) => {
   });
 });
 
-// Confirm Update Step 1
+// // Confirm Update Step 1
+// app.post("/confirmUpdate1", (req, res) => {
+//   const { uniqueID, name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
+
+//   // Ensure `organ` is properly defined and an array
+//   const validOrgans = Array.isArray(organ) ? organ : [];
+//   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
+//   const organFlags = organs.map(o => validOrgans.includes(o) ? 1 : 0);
+
+//   // Combined query to handle deselection and selection in a single step
+//   const query = `
+//     UPDATE donor_data
+//     SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?,
+//         kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
+//     WHERE uniqueID = ?
+//   `;
+//   const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags, uniqueID];
+
+//   db.query(query, values, (err, result) => {
+//     if (err) {
+//       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+//     }
+//     if (result.affectedRows > 0) {
+//       res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
+//     } else {
+//       res.status(404).json({ message: "User not found!" });
+//     }
+//   });
+// });
+
 app.post("/confirmUpdate1", (req, res) => {
   const { uniqueID, name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
 
@@ -217,26 +399,45 @@ app.post("/confirmUpdate1", (req, res) => {
   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
   const organFlags = organs.map(o => validOrgans.includes(o) ? 1 : 0);
 
-  // Combined query to handle deselection and selection in a single step
-  const query = `
+  // Update general donor data
+  const donorDataQuery = `
     UPDATE donor_data
-    SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?,
-        kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
+    SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
     WHERE uniqueID = ?
   `;
-  const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags, uniqueID];
+  const donorDataValues = [name, email, govtID, pass, age, gender, city, bloodGroup, uniqueID];
 
-  db.query(query, values, (err, result) => {
+  db.query(donorDataQuery, donorDataValues, (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
     }
+
     if (result.affectedRows > 0) {
-      res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
+      // Update organ-specific data
+      const donorOrgansQuery = `
+        UPDATE donor_organs
+        SET kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
+        WHERE uniqueID = ?
+      `;
+      const donorOrgansValues = [...organFlags, uniqueID];
+
+      db.query(donorOrgansQuery, donorOrgansValues, (organErr, organResult) => {
+        if (organErr) {
+          return res.status(500).json({ message: "Internal server error!", error: organErr.sqlMessage });
+        }
+
+        if (organResult.affectedRows > 0) {
+          res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
+        } else {
+          res.status(404).json({ message: "Organs update failed or donor not found!" });
+        }
+      });
     } else {
       res.status(404).json({ message: "User not found!" });
     }
   });
 });
+
 
 
 // Confirm Update Step 2
@@ -285,17 +486,41 @@ app.get("/getUniqueID", (req, res) => {
   else res.status(400).json({ error: "Unique ID not found in session" });
 });
 
-// Get user data
+// // Get user data
+// app.get("/getUser/:uniqueID", (req, res) => {
+//   const { uniqueID } = req.params;
+//   const query = "SELECT * FROM donor_data WHERE uniqueID = ?";
+
+//   db.query(query, [uniqueID], (err, result) => {
+//     if (err) return res.status(500).json({ message: "Internal server error!" });
+//     if (result.length > 0) res.json(result[0]);
+//     else res.status(404).json({ message: "User not found!" });
+//   });
+// });
+
 app.get("/getUser/:uniqueID", (req, res) => {
   const { uniqueID } = req.params;
-  const query = "SELECT * FROM donor_data WHERE uniqueID = ?";
 
-  db.query(query, [uniqueID], (err, result) => {
-    if (err) return res.status(500).json({ message: "Internal server error!" });
-    if (result.length > 0) res.json(result[0]);
-    else res.status(404).json({ message: "User not found!" });
+  const sql = `
+    SELECT donor_data.*, donor_organs.kidney, donor_organs.liver, donor_organs.lung, 
+           donor_organs.intestine, donor_organs.pancreas
+    FROM donor_data
+    LEFT JOIN donor_organs ON donor_data.uniqueID = donor_organs.uniqueID
+    WHERE donor_data.uniqueID = ?
+  `;
+
+  db.query(sql, [uniqueID], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+    }
+    if (result.length > 0) {
+      res.json(result[0]); // Send the combined data for donor and organs
+    } else {
+      res.status(404).json({ message: "User not found!" });
+    }
   });
 });
+
 
 // Serve form for preconditions
 app.get("/updatePreconditionsAndDependants", (req, res) => {

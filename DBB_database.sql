@@ -37,13 +37,26 @@ CREATE TABLE IF NOT EXISTS donor_health_dependants (
     FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS donor_organs (
+  organID INT AUTO_INCREMENT PRIMARY KEY,
+  uniqueID INT NOT NULL,
+  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
+  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
+  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
+  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
+  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
+  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+);
 
 select * from donor_data;
+select * from donor_organs;
 select * from donor_health_dependants;
 
 desc donor_data;
+desc donor_organs;
 desc donor_health_dependants;
 
 drop table donor_data; 
+drop table donor_organs;
 drop table donor_health_dependants;
 
