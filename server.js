@@ -1,3 +1,6 @@
+//Try to implement donor and receiver and seperately
+
+
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
@@ -78,7 +81,7 @@ CREATE TABLE IF NOT EXISTS donor_data (
       obese TINYINT,
       cardiac_surgery TINYINT,
       dependantName VARCHAR(255) NOT NULL,
-      dependantAadhar BIGINT NOT NULL UNIQUE,
+      dependantAadhar BIGINT NOT NULL UNIQUE  CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
       dependantAge INT NOT NULL,
       totalDependants INT NOT NULL,
       healthApproval TINYINT,
