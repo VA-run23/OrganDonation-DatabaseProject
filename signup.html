@@ -43,8 +43,8 @@
             <option value="O-">O-</option>
         </select>
 
-        <fieldset>
-            <legend>Choose an Organ:</legend>
+        <!-- <fieldset>
+            <legend>Organs transplanted in you so far:  </legend>
 
             <input type="checkbox" id="kidney" name="organ" value="Kidney">
             <label for="kidney">Kidney</label>
@@ -61,6 +61,60 @@
             <input type="checkbox" id="pancreas" name="organ" value="Pancreas">
             <label for="pancreas">Pancreas</label>
         </fieldset>
+
+        <fieldset>
+            <legend>Choose organs(part of organ) willing to donate while alive: </legend>
+
+            <input type="checkbox" id="kidney" name="organ" value="Kidney">
+            <label for="kidney">Kidney</label>
+        
+            <input type="checkbox" id="liver" name="organ" value="Liver">
+            <label for="liver">Liver</label>
+        
+            <input type="checkbox" id="lung" name="organ" value="Lung">
+            <label for="lung">Lung</label>
+        
+            <input type="checkbox" id="intestine" name="organ" value="Intestine">
+            <label for="intestine">Intestine</label>
+        
+            <input type="checkbox" id="pancreas" name="organ" value="Pancreas">
+            <label for="pancreas">Pancreas</label>
+        </fieldset> -->
+
+        <legend>Organs transplanted in you so far:</legend>
+        <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney">
+        <label for="transplanted_kidney">Kidney</label><br>
+        
+        <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver">
+        <label for="transplanted_liver">Liver</label><br>
+        
+        <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung">
+        <label for="transplanted_lung">Lung</label><br>
+        
+        <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine">
+        <label for="transplanted_intestine">Intestine</label><br>
+        
+        <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas">
+        <label for="transplanted_pancreas">Pancreas</label><br>
+    </fieldset>
+
+    <fieldset>
+        <legend>Choose organs (part of organ) willing to donate while alive:</legend>
+        <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney">
+        <label for="donated_kidney">Kidney</label><br>
+        
+        <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver">
+        <label for="donated_liver">Liver</label><br>
+        
+        <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung">
+        <label for="donated_lung">Lung</label><br>
+        
+        <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine">
+        <label for="donated_intestine">Intestine</label><br>
+        
+        <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas">
+        <label for="donated_pancreas">Pancreas</label><br>
+    </fieldset>
 
         <button type="submit">Submit</button> <!-- Fixed button -->
     </form>

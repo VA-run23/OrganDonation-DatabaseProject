@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Update SignUp Data</title>
-  <!-- <script>
+<script>
     document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
       const uniqueID = urlParams.get("uniqueID");
@@ -44,7 +44,7 @@
         })
         .catch(error => console.error("Error fetching user data:", error));
     }
-  </script> -->
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -168,7 +168,7 @@
   </form>
 
   
-  <!-- DELETE USER FORM -->
+
   <form id="deleteForm" action="/deleteUser" method="post">
     <h2>Delete Your Account</h2>
     <p>Warning: This action cannot be undone.</p>
@@ -180,5 +180,182 @@
     
   </form>
 
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Your Profile</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    fieldset { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; }
+    legend { font-weight: bold; }
+    label { display: inline-block; width: 150px; }
+    input, select { margin-bottom: 10px; }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const uniqueID = urlParams.get("uniqueID");
+  
+      if (uniqueID) {
+        document.getElementById("uniqueID").value = uniqueID;
+        document.getElementById("deleteUniqueID").value = uniqueID; // For delete form if needed.
+        fetchUserData(uniqueID);
+      }
+    });
+    
+    function fetchUserData(uniqueID) {
+      fetch(`/getUser/${uniqueID}`)
+        .then(response => response.json())
+        .then(data => {
+          if (!data || data.message) {
+            alert("User not found!");
+            return;
+          }
+          // Populate general donor data
+          document.getElementById("name").value = data.name || "";
+          document.getElementById("email").value = data.email || "";
+          document.getElementById("govtID").value = data.govtID || "";
+          document.getElementById("pass").value = data.pass || "";
+          document.getElementById("age").value = data.age || "";
+          document.getElementById("gender").value = data.gender || "";
+          document.getElementById("city").value = data.city || "";
+          document.getElementById("bloodGroup").value = data.bloodGroup || "";
+  
+          // Populate organ data if available.
+          if (data.donatedOrgans) {
+            document.getElementById("donated_kidney").checked = data.donatedOrgans.kidney == 1;
+            document.getElementById("donated_liver").checked = data.donatedOrgans.liver == 1;
+            document.getElementById("donated_lung").checked = data.donatedOrgans.lung == 1;
+            document.getElementById("donated_intestine").checked = data.donatedOrgans.intestine == 1;
+            document.getElementById("donated_pancreas").checked = data.donatedOrgans.pancreas == 1;
+          }
+          if (data.transplantedOrgans) {
+            document.getElementById("transplanted_kidney").checked = data.transplantedOrgans.kidney == 1;
+            document.getElementById("transplanted_liver").checked = data.transplantedOrgans.liver == 1;
+            document.getElementById("transplanted_lung").checked = data.transplantedOrgans.lung == 1;
+            document.getElementById("transplanted_intestine").checked = data.transplantedOrgans.intestine == 1;
+            document.getElementById("transplanted_pancreas").checked = data.transplantedOrgans.pancreas == 1;
+          }
+  
+          // Prevent editing of unique identifiers if desired
+          document.getElementById("uniqueID").readOnly = true;
+          document.getElementById("govtID").readOnly = true;
+          document.getElementById("email").readOnly = true;
+          document.getElementById("bloodGroup").disabled = true;
+        })
+        .catch(error => console.error("Error fetching user data:", error));
+    }
+  </script>
+</head>
+<body>
+  <h1>Update Your Profile</h1>
+  <form id="updateForm" action="/confirmUpdate1" method="post">
+    <!-- General Information -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter Name" required /><br />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Enter Email" required /><br />
+
+    <label for="govtID">Govt ID:</label>
+    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required /><br />
+
+    <label for="uniqueID">Unique ID:</label>
+    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required /><br />
+
+    <label for="pass">Password:</label>
+    <input type="password" id="pass" name="pass" placeholder="Enter Password" required /><br />
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" placeholder="Enter Age" min="18" required /><br />
+
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender" required>
+      <option value="">-- Select --</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select><br />
+
+    <label for="city">City:</label>
+    <select id="city" name="city" required>
+      <option value="">-- Select --</option>
+      <option value="Mysore">Mysore</option>
+      <option value="Bangalore">Bangalore</option>
+      <option value="Chikmagalur">Chikmagalur</option>
+      <option value="Kolar">Kolar</option>
+    </select><br />
+
+    <label for="bloodGroup">Blood Group:</label>
+    <select id="bloodGroup" name="bloodGroup" required>
+      <option value="">-- Select --</option>
+      <option value="A+">A+</option>
+      <option value="A-">A-</option>
+      <option value="B+">B+</option>
+      <option value="B-">B-</option>
+      <option value="AB+">AB+</option>
+      <option value="AB-">AB-</option>
+      <option value="O+">O+</option>
+      <option value="O-">O-</option>
+    </select><br /><br />
+
+    <!-- Fieldset for Donated Organs -->
+    <fieldset>
+      <legend>Organs you are willing to donate:</legend>
+      <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney">
+      <label for="donated_kidney">Kidney</label><br>
+
+      <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver">
+      <label for="donated_liver">Liver</label><br>
+
+      <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung">
+      <label for="donated_lung">Lung</label><br>
+
+      <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine">
+      <label for="donated_intestine">Intestine</label><br>
+
+      <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas">
+      <label for="donated_pancreas">Pancreas</label><br>
+    </fieldset>
+    <br />
+
+    <!-- Fieldset for Transplanted Organs -->
+    <fieldset>
+      <legend>Organs transplanted into you so far:</legend>
+      <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney">
+      <label for="transplanted_kidney">Kidney</label><br>
+
+      <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver">
+      <label for="transplanted_liver">Liver</label><br>
+
+      <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung">
+      <label for="transplanted_lung">Lung</label><br>
+
+      <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine">
+      <label for="transplanted_intestine">Intestine</label><br>
+
+      <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas">
+      <label for="transplanted_pancreas">Pancreas</label><br>
+    </fieldset>
+    <br />
+
+    <button type="submit">Confirm Edit</button>
+  </form>
+  
+  <!-- DELETE USER FORM (Optional) -->
+  <form id="deleteForm" action="/deleteUser" method="post">
+    <h2>Delete Your Account</h2>
+    <p>Warning: This action cannot be undone.</p>
+    <label for="deleteUniqueID">Unique ID:</label>
+    <input type="number" id="deleteUniqueID" name="uniqueID" required readonly><br /><br />
+    <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+      Delete My Account
+    </button>
+  </form>
 </body>
 </html>
