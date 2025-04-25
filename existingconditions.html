@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preconditions</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,78 +37,80 @@
     </style>
 </head>
 <body>
-    <form action="/submitPrecondition" method="post">
-        <!-- Unique ID field dynamically filled -->
-        <label for="uniqueID">Unique ID:</label>
-        <input type="number" id="uniqueID" name="uniqueID" placeholder="Fetching..." required readonly>
-        
-        <fieldset>
-            <legend>Do you have diabetes?</legend>
-            <input type="radio" id="diabetes_yes" name="diabetes" value="1">
-            <label for="diabetes_yes">Yes</label>
+    <div class="container mt-5">
+        <form action="/submitPrecondition" method="post">
+            <!-- Unique ID field dynamically filled -->
+            <label for="uniqueID">Unique ID:</label>
+            <input type="number" id="uniqueID" name="uniqueID" placeholder="Fetching..." required readonly>
             
-            <input type="radio" id="diabetes_no" name="diabetes" value="0" checked>
-            <label for="diabetes_no">No</label>
-        </fieldset>
-        
-        <fieldset>
-            <legend>Do you have Hypertension or Hypotension?</legend>
-            <input type="radio" id="hypertension" name="bp_condition" value="1">
-            <label for="hypertension">Hypertension</label>
+            <fieldset>
+                <legend>Do you have diabetes?</legend>
+                <input type="radio" id="diabetes_yes" name="diabetes" value="1">
+                <label for="diabetes_yes">Yes</label>
+                
+                <input type="radio" id="diabetes_no" name="diabetes" value="0" checked>
+                <label for="diabetes_no">No</label>
+            </fieldset>
             
-            <input type="radio" id="hypotension" name="bp_condition" value="2">
-            <label for="hypotension">Hypotension</label>
+            <fieldset>
+                <legend>Do you have Hypertension or Hypotension?</legend>
+                <input type="radio" id="hypertension" name="bp_condition" value="1">
+                <label for="hypertension">Hypertension</label>
+                
+                <input type="radio" id="hypotension" name="bp_condition" value="2">
+                <label for="hypotension">Hypotension</label>
+                
+                <input type="radio" id="none_bp" name="bp_condition" value="0" checked>
+                <label for="none_bp">None</label>
+            </fieldset>
             
-            <input type="radio" id="none_bp" name="bp_condition" value="0" checked>
-            <label for="none_bp">None</label>
-        </fieldset>
-        
-        <fieldset>
-            <legend>Are you considered Obese?</legend>
-            <input type="radio" id="obese_yes" name="obese" value="1">
-            <label for="obese_yes">Yes</label>
+            <fieldset>
+                <legend>Are you considered Obese?</legend>
+                <input type="radio" id="obese_yes" name="obese" value="1">
+                <label for="obese_yes">Yes</label>
+                
+                <input type="radio" id="obese_no" name="obese" value="0" checked>
+                <label for="obese_no">No</label>
+            </fieldset>
             
-            <input type="radio" id="obese_no" name="obese" value="0" checked>
-            <label for="obese_no">No</label>
-        </fieldset>
-        
-        <fieldset>
-            <legend>Have you undergone cardiac surgery?</legend>
-            <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1">
-            <label for="cardiac_yes">Yes</label>
-            
-            <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0" checked>
-            <label for="cardiac_no">No</label>
-        </fieldset>
-
-        <!-- Dependant Information Section -->
-        <fieldset>
-            <legend>Dependant Information</legend>
-            
-            <label for="dependantName">Primary Dependant Name:</label>
-            <input type="text" id="dependantName" name="dependantName" required>
-            
-            <label for="dependantAadhar">Primary Dependant Aadhar Number:</label>
-            <input type="number" id="dependantAadhar" name="dependantAadhar" required>
-            
-            <label for="dependantAge">Dependant Age:</label>
-            <input type="number" id="dependantAge" name="dependantAge" required>
-            
-            <label for="totalDependants">Total Number of Dependants:</label>
-            <input type="number" id="totalDependants" name="totalDependants" required>
-        </fieldset>
-
-        <!-- Approval Statement -->
-        <fieldset>
-            <legend>Approval Statement</legend>
-            <input type="checkbox" id="healthApproval" name="healthApproval" required>
-            <label for="healthApproval">
-                I agree that my health is alright and has been approved by a medical professional. I confirm that the selected organs are healthy and I am able to donate part of them voluntarily to save the lives of others/recipients.
-            </label>
-        </fieldset>
-
-        <input type="submit" value="Submit">
-    </form>
+            <fieldset>
+                <legend>Have you undergone cardiac surgery?</legend>
+                <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1">
+                <label for="cardiac_yes">Yes</label>
+                
+                <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0" checked>
+                <label for="cardiac_no">No</label>
+            </fieldset>
+    
+            <!-- Dependant Information Section -->
+            <fieldset>
+                <legend>Dependant Information</legend>
+                
+                <label for="dependantName">Primary Dependant Name:</label>
+                <input type="text" id="dependantName" name="dependantName" required>
+                
+                <label for="dependantAadhar">Primary Dependant Aadhar Number:</label>
+                <input type="number" id="dependantAadhar" name="dependantAadhar" required>
+                
+                <label for="dependantAge">Dependant Age:</label>
+                <input type="number" id="dependantAge" name="dependantAge" required>
+                
+                <label for="totalDependants">Total Number of Dependants:</label>
+                <input type="number" id="totalDependants" name="totalDependants" required>
+            </fieldset>
+    
+            <!-- Approval Statement -->
+            <fieldset>
+                <legend>Approval Statement</legend>
+                <input type="checkbox" id="healthApproval" name="healthApproval" required>
+                <label for="healthApproval">
+                    I agree that my health is alright and has been approved by a medical professional. I confirm that the selected organs are healthy and I am able to donate part of them voluntarily to save the lives of others/recipients.
+                </label>
+            </fieldset>
+    
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 
     <!-- Fetch Unique ID and autofill -->
     <script>
@@ -123,5 +129,15 @@
                 document.getElementById("uniqueID").placeholder = "Error fetching ID";
             });
     </script>
+
+    <!-- GSAP Animation for smooth entrance -->
+    <script>
+        gsap.from(".container", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+    </script>
+    
+    <!-- Bootstrap JS and Dependencies (jQuery and Popper.js) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

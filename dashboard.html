@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,5 +49,78 @@
         <button type="submit">Search</button>
     </form>
     <button onclick="history.back()">Back</button>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <form action="/dashboardContent" method="GET">
+            <label for="gender">Gender:</label>
+            <select name="gender" id="gender" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select><br><br>
+        
+            <label for="organ">Organ:</label>
+            <select name="organ" id="organ" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="kidney">Kidney</option>
+                <option value="liver">Liver</option>
+                <option value="lung">Lung</option>
+                <option value="intestine">Intestine</option>
+                <option value="pancreas">Pancreas</option>
+            </select><br><br>
+        
+            <label for="bloodGroup">Blood Group:</label>
+            <select name="bloodGroup" id="bloodGroup" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select><br><br>
+        
+            <label for="city">Choose City:</label>
+            <select id="city" name="city" required class="form-control">
+                <option value="">-- Select --</option>
+                <option value="Mysore">Mysore</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Chikmagalur">Chikmagalur</option>
+                <option value="Kolar">Kolar</option>
+            </select><br><br>
+        
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <button onclick="history.back()" class="btn btn-secondary mt-3">Back</button>
+    </div>
+    
+    <!-- GSAP Animation Script -->
+    <script>
+        // Animate the form on page load with a subtle slide and fade effect
+        gsap.from("form", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+        // Animate buttons with a slight stagger effect
+        gsap.from("button", { duration: 1, opacity: 0, delay: 0.5, stagger: 0.3, ease: "power1.out" });
+    </script>
+    
+    <!-- Bootstrap JS and Dependencies (jQuery and Popper.js) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
