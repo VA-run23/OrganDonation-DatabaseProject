@@ -1,201 +1,46 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Update SignUp Data</title>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const uniqueID = urlParams.get("uniqueID");
-  
-      if (uniqueID) {
-        document.getElementById("uniqueID").value = uniqueID;
-        document.getElementById("deleteUniqueID").value = uniqueID; // Prefill delete form
-        fetchUserData(uniqueID);
-      }
-    });
-  
-    function fetchUserData(uniqueID) {
-      fetch(`/getUser/${uniqueID}`)
-        .then(response => response.json())
-        .then(data => {
-          if (!data || data.message) {
-            alert("User not found!");
-            return;
-          }
-          // Populate fields with returned data
-          document.getElementById("name").value = data.name || "";
-          document.getElementById("email").value = data.email || "";
-          document.getElementById("govtID").value = data.govtID || "";
-          document.getElementById("pass").value = data.pass || "";
-          document.getElementById("age").value = data.age || "";
-          document.getElementById("gender").value = data.gender || "";
-          document.getElementById("city").value = data.city || "";
-          document.getElementById("bloodGroup").value = data.bloodGroup || "";
-  
-          document.getElementById("kidney").checked = data.kidney === 1;
-          document.getElementById("liver").checked = data.liver === 1;
-          document.getElementById("lung").checked = data.lung === 1;
-          document.getElementById("intestine").checked = data.intestine === 1;
-          document.getElementById("pancreas").checked = data.pancreas === 1;
-  
-          document.getElementById("uniqueID").readOnly = true;
-        })
-        .catch(error => console.error("Error fetching user data:", error));
-    }
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const uniqueID = urlParams.get("uniqueID");
-  
-      if (uniqueID) {
-        document.getElementById("uniqueID").value = uniqueID;
-        document.getElementById("deleteUniqueID").value = uniqueID; // Prefill delete form
-        fetchUserData(uniqueID);
-      }
-    });
-
-    function fetchUserData(uniqueID) {
-  fetch(`/getUser/${uniqueID}`)
-    .then(response => response.json())
-    .then(data => {
-      if (!data || data.message) {
-        alert("User not found!");
-        return;
-      }
-
-      // Populate fields with general donor data
-      document.getElementById("name").value = data.name || "";
-      document.getElementById("email").value = data.email || "";
-      document.getElementById("govtID").value = data.govtID || "";
-      document.getElementById("pass").value = data.pass || "";
-      document.getElementById("age").value = data.age || "";
-      document.getElementById("gender").value = data.gender || "";
-      document.getElementById("city").value = data.city || "";
-      document.getElementById("bloodGroup").value = data.bloodGroup || "";
-
-      // Populate fields with organ-specific data
-      if (data.kidney !== undefined) {
-  document.getElementById("kidney").checked = !!data.kidney;
-  document.getElementById("liver").checked = !!data.liver;
-  document.getElementById("lung").checked = !!data.lung;
-  document.getElementById("intestine").checked = !!data.intestine;
-  document.getElementById("pancreas").checked = !!data.pancreas;
-} else {
-  console.warn("Organ data not found in response.");
-}
-
-      document.getElementById("uniqueID").readOnly = true;
-    })
-    .catch(error => console.error("Error fetching user data:", error));
-}
-
-</script>
-
-  
-</head>
-<body>
-  <h1>Update Your Profile</h1>
-  <form id="updateForm" action="/confirmUpdate1" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Enter Name" required readonly /><br /><br />
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" placeholder="Enter Email" readonly/><br /><br />
-
-    <label for="govtID">Govt ID:</label>
-    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required  readonly/><br /><br />
-
-    <label for="uniqueID">Unique ID:</label>
-    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required readonly /><br /><br />
-
-    <label for="pass">Password:</label>
-    <input type="password" id="pass" name="pass" placeholder="Enter Password" required /><br /><br />
-
-    <label for="age">Age:</label>
-    <input type="number" id="age" name="age" placeholder="Enter Age" min="18" /><br /><br />
-
-    <label for="gender">Gender:</label>
-    <select id="gender" name="gender" >
-      <option value="">-- Select --</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select><br /><br />
-
-    <label for="city">City:</label>
-    <select id="city" name="city">
-      <option value="">-- Select --</option>
-      <option value="Mysore">Mysore</option>
-      <option value="Bangalore">Bangalore</option>
-      <option value="Chikmagalur">Chikmagalur</option>
-      <option value="Kolar">Kolar</option>
-    </select><br /><br />
-
-    <label for="bloodGroup">Blood Group:</label>
-    <select id="bloodGroup" name="bloodGroup" required readonly>
-      <option value="">-- Select --</option>
-      <option value="A+">A+</option>
-      <option value="A-">A-</option>
-      <option value="B+">B+</option>
-      <option value="B-">B-</option>
-      <option value="AB+">AB+</option>
-      <option value="AB-">AB-</option>
-      <option value="O+">O+</option>
-      <option value="O-">O-</option>
-    </select><br /><br />
-
-    <fieldset>
-      <legend>Choose Organ(s):</legend>
-      <input type="checkbox" id="kidney" name="organ" value="Kidney" />
-      <label for="kidney">Kidney</label>
-
-      <input type="checkbox" id="liver" name="organ" value="Liver" />
-      <label for="liver">Liver</label>
-
-      <input type="checkbox" id="lung" name="organ" value="Lung" />
-      <label for="lung">Lung</label>
-
-      <input type="checkbox" id="intestine" name="organ" value="Intestine" />
-      <label for="intestine">Intestine</label>
-
-      <input type="checkbox" id="pancreas" name="organ" value="Pancreas" />
-      <label for="pancreas">Pancreas</label>
-    </fieldset>
-    <br />
-    <button type="submit">Confirm edit to my profile</button>
-  </form>
-
-  
-
-  <form id="deleteForm" action="/deleteUser" method="post">
-    <h2>Delete Your Account</h2>
-    <p>Warning: This action cannot be undone.</p>
-    <label for="deleteUniqueID">Unique ID:</label>
-    <input type="number" id="deleteUniqueID" name="uniqueID" required readonly /><br /><br />
-    <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
-      Delete My Account
-    </button>
-    
-  </form>
-
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Update Your Profile</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    fieldset { margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; }
-    legend { font-weight: bold; }
-    label { display: inline-block; width: 150px; }
-    input, select { margin-bottom: 10px; }
+    /* Original inline styles preserved; additional professional enhancements added */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    fieldset {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    legend {
+      font-weight: bold;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+    }
+    input, select {
+      margin-bottom: 10px;
+    }
+    /* Additional custom styles */
+    .navbar {
+      margin-bottom: 30px;
+    }
+    .footer {
+      background-color: #343a40;
+      color: #fff;
+      padding: 10px 0;
+      margin-top: 30px;
+    }
   </style>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -254,108 +99,192 @@
   </script>
 </head>
 <body>
-  <h1>Update Your Profile</h1>
-  <form id="updateForm" action="/confirmUpdate1" method="post">
-    <!-- General Information -->
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Enter Name" required /><br />
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" placeholder="Enter Email" required /><br />
-
-    <label for="govtID">Govt ID:</label>
-    <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required /><br />
-
-    <label for="uniqueID">Unique ID:</label>
-    <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required /><br />
-
-    <label for="pass">Password:</label>
-    <input type="password" id="pass" name="pass" placeholder="Enter Password" required /><br />
-
-    <label for="age">Age:</label>
-    <input type="number" id="age" name="age" placeholder="Enter Age" min="18" required /><br />
-
-    <label for="gender">Gender:</label>
-    <select id="gender" name="gender" required>
-      <option value="">-- Select --</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select><br />
-
-    <label for="city">City:</label>
-    <select id="city" name="city" required>
-      <option value="">-- Select --</option>
-      <option value="Mysore">Mysore</option>
-      <option value="Bangalore">Bangalore</option>
-      <option value="Chikmagalur">Chikmagalur</option>
-      <option value="Kolar">Kolar</option>
-    </select><br />
-
-    <label for="bloodGroup">Blood Group:</label>
-    <select id="bloodGroup" name="bloodGroup" required>
-      <option value="">-- Select --</option>
-      <option value="A+">A+</option>
-      <option value="A-">A-</option>
-      <option value="B+">B+</option>
-      <option value="B-">B-</option>
-      <option value="AB+">AB+</option>
-      <option value="AB-">AB-</option>
-      <option value="O+">O+</option>
-      <option value="O-">O-</option>
-    </select><br /><br />
-
-    <!-- Fieldset for Donated Organs -->
-    <fieldset>
-      <legend>Organs you are willing to donate:</legend>
-      <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney">
-      <label for="donated_kidney">Kidney</label><br>
-
-      <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver">
-      <label for="donated_liver">Liver</label><br>
-
-      <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung">
-      <label for="donated_lung">Lung</label><br>
-
-      <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine">
-      <label for="donated_intestine">Intestine</label><br>
-
-      <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas">
-      <label for="donated_pancreas">Pancreas</label><br>
-    </fieldset>
-    <br />
-
-    <!-- Fieldset for Transplanted Organs -->
-    <fieldset>
-      <legend>Organs transplanted into you so far:</legend>
-      <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney">
-      <label for="transplanted_kidney">Kidney</label><br>
-
-      <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver">
-      <label for="transplanted_liver">Liver</label><br>
-
-      <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung">
-      <label for="transplanted_lung">Lung</label><br>
-
-      <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine">
-      <label for="transplanted_intestine">Intestine</label><br>
-
-      <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas">
-      <label for="transplanted_pancreas">Pancreas</label><br>
-    </fieldset>
-    <br />
-
-    <button type="submit">Confirm Edit</button>
-  </form>
-  
-  <!-- DELETE USER FORM (Optional) -->
-  <form id="deleteForm" action="/deleteUser" method="post">
-    <h2>Delete Your Account</h2>
-    <p>Warning: This action cannot be undone.</p>
-    <label for="deleteUniqueID">Unique ID:</label>
-    <input type="number" id="deleteUniqueID" name="uniqueID" required readonly><br /><br />
-    <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
-      Delete My Account
+  <!-- Header / Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Organ Donation</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
-  </form>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Additional nav links can be added here -->
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Update Profile Form -->
+  <div class="container">
+    <div class="card shadow p-4 mb-5">
+      <h1 class="text-center mb-4">Update Your Profile</h1>
+      <form id="updateForm" action="/confirmUpdate1" method="post">
+        <!-- General Information -->
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" placeholder="Enter Name" required readonly class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" placeholder="Enter Email" required class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="govtID">Govt ID:</label>
+          <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="uniqueID">Unique ID:</label>
+          <input type="number" id="uniqueID" name="uniqueID" placeholder="Enter Unique ID" required class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="pass">Password:</label>
+          <input type="password" id="pass" name="pass" placeholder="Enter Password" required class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="age">Age:</label>
+          <input type="number" id="age" name="age" placeholder="Enter Age" min="18" required class="form-control">
+        </div>
+  
+        <div class="form-group">
+          <label for="gender">Gender:</label>
+          <select id="gender" name="gender" required class="form-control" disabled>
+            <option value="">-- Select --</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        
+  
+        <div class="form-group">
+          <label for="city">City:</label>
+          <select id="city" name="city" required class="form-control">
+            <option value="">-- Select --</option>
+            <option value="Mysore">Mysore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Chikmagalur">Chikmagalur</option>
+            <option value="Kolar">Kolar</option>
+          </select>
+        </div>
+  
+        <div class="form-group">
+          <label for="bloodGroup">Blood Group:</label>
+          <select id="bloodGroup" name="bloodGroup" required class="form-control">
+            <option value="">-- Select --</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        <br />
+  
+        <!-- Fieldset for Donated Organs -->
+        <fieldset class="mb-3">
+          <legend>Organs you are willing to donate:</legend>
+          <div class="form-check">
+            <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney" class="form-check-input">
+            <label for="donated_kidney" class="form-check-label">Kidney</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver" class="form-check-input">
+            <label for="donated_liver" class="form-check-label">Liver</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung" class="form-check-input">
+            <label for="donated_lung" class="form-check-label">Lung</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine" class="form-check-input">
+            <label for="donated_intestine" class="form-check-label">Intestine</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas" class="form-check-input">
+            <label for="donated_pancreas" class="form-check-label">Pancreas</label>
+          </div>
+        </fieldset>
+        <br />
+  
+        <!-- Fieldset for Transplanted Organs -->
+        <fieldset class="mb-3">
+          <legend>Organs transplanted into you so far:</legend>
+          <div class="form-check">
+            <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney" class="form-check-input">
+            <label for="transplanted_kidney" class="form-check-label">Kidney</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver" class="form-check-input">
+            <label for="transplanted_liver" class="form-check-label">Liver</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung" class="form-check-input">
+            <label for="transplanted_lung" class="form-check-label">Lung</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine" class="form-check-input">
+            <label for="transplanted_intestine" class="form-check-label">Intestine</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas" class="form-check-input">
+            <label for="transplanted_pancreas" class="form-check-label">Pancreas</label>
+          </div>
+        </fieldset>
+        <br />
+  
+        <div class="text-center">
+          <button type="submit" class="btn btn-success btn-lg">Confirm Edit</button>
+        </div>
+      </form>
+    </div>
+  
+    <!-- DELETE USER FORM (Optional) -->
+    <div class="card shadow p-4 mb-5">
+      <h2 class="text-center">Delete Your Account</h2>
+      <p class="text-center text-danger">Warning: This action cannot be undone.</p>
+      <form id="deleteForm" action="/deleteUser" method="post">
+        <div class="form-group">
+          <label for="deleteUniqueID">Unique ID:</label>
+          <input type="number" id="deleteUniqueID" name="uniqueID" required readonly class="form-control">
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+            Delete My Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="footer text-center">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Organ Donation. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- GSAP Animation for smooth entrance -->
+  <script>
+    gsap.from("nav", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+    gsap.from(".card", { duration: 1, opacity: 0, y: 50, delay: 0.5, ease: "power1.out", stagger: 0.2 });
+    gsap.from("h1, h2", { duration: 1, opacity: 0, y: -30, delay: 0.7, ease: "power1.out", stagger: 0.2 });
+    gsap.from("form", { duration: 1, opacity: 0, delay: 1, ease: "power1.out" });
+    gsap.from("button", { duration: 1, opacity: 0, delay: 1.2, y: 20, ease: "power1.out", stagger: 0.1 });
+    gsap.from("footer", { duration: 1, opacity: 0, delay: 1.5, y: 20, ease: "power1.out" });
+  </script>
+  
+  <!-- Bootstrap JS and Dependencies (jQuery and Popper.js) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

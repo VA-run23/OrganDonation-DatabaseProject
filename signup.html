@@ -1,123 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SignUp Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SignUp Page</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    /* Custom professional styles */
+    body {
+      background: #f8f9fa;
+      padding-bottom: 50px;
+    }
+    .card {
+      margin-top: 30px;
+      padding: 20px;
+    }
+    .navbar-brand {
+      font-weight: bold;
+    }
+    footer {
+      background: #ffffff;
+      padding: 10px 0;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-    <form action="/submit" method="post">
-        <!-- This submit action will trigger the Express server in server.js -->
-        <input type="text" name="name" placeholder="Enter Name" required>
-        <input type="email" name="email" placeholder="Enter Email"  >
-        <input type="number" name="govtID" placeholder="Enter Aadhaar ID" required> <!-- Added unique ID field -->
-        <input type="text" name="pass" placeholder="Enter password" required>
-        <input type="number" name="age" placeholder="Enter Age"   min="1"> <!-- Age field added -->
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <a class="navbar-brand" href="#">VOrgans</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+       <ul class="navbar-nav ml-auto">
+         <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+         <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+       </ul>
+    </div>
+  </nav>
 
-        <label for="gender">Choose Gender:</label>
-        <select id="gender" name="gender"  >
-            <option value="">-- Select --</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
+  <div class="container">
+    <div class="card shadow">
+      <!-- Original Form Maintained As-Is -->
+      <form action="/submit" method="post">
+          <!-- This submit action will trigger the Express server in server.js -->
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Enter Name" required class="form-control">
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="Enter Email" class="form-control">
+          </div>
+          <div class="form-group">
+            <input type="number" name="govtID" placeholder="Enter Aadhaar ID" required class="form-control">
+            <!-- Added unique ID field -->
+          </div>
+          <div class="form-group">
+            <input type="text" name="pass" placeholder="Enter password" required class="form-control">
+          </div>
+          <div class="form-group">
+            <input type="number" name="age" placeholder="Enter Age" min="1" class="form-control">
+            <!-- Age field added -->
+          </div>
 
-        <label for="city">Choose City:</label>
-        <select id="city" name="city"  >
-            <option value="">-- Select --</option>
-            <option value="Mysore">Mysore</option>
-            <option value="Bangalore">Bangalore</option>
-            <option value="Chikmagalur">Chikmagalur</option>
-            <option value="Kolar">Kolar</option>
-        </select>
+          <div class="form-group">
+            <label for="gender">Choose Gender:</label>
+            <select id="gender" name="gender" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+          </div>
 
-        <label for="bloodGroup">Choose Blood Group:</label>
-        <select id="bloodGroup" name="bloodGroup" required>
-            <option value="">-- Select --</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-        </select>
+          <div class="form-group">
+            <label for="city">Choose City:</label>
+            <select id="city" name="city" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="Mysore">Mysore</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Chikmagalur">Chikmagalur</option>
+                <option value="Kolar">Kolar</option>
+            </select>
+          </div>
 
-        <!-- <fieldset>
-            <legend>Organs transplanted in you so far:  </legend>
+          <div class="form-group">
+            <label for="bloodGroup">Choose Blood Group:</label>
+            <select id="bloodGroup" name="bloodGroup" required class="form-control">
+                <option value="">-- Select --</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+          </div>
 
-            <input type="checkbox" id="kidney" name="organ" value="Kidney">
-            <label for="kidney">Kidney</label>
-        
-            <input type="checkbox" id="liver" name="organ" value="Liver">
-            <label for="liver">Liver</label>
-        
-            <input type="checkbox" id="lung" name="organ" value="Lung">
-            <label for="lung">Lung</label>
-        
-            <input type="checkbox" id="intestine" name="organ" value="Intestine">
-            <label for="intestine">Intestine</label>
-        
-            <input type="checkbox" id="pancreas" name="organ" value="Pancreas">
-            <label for="pancreas">Pancreas</label>
-        </fieldset>
+          <fieldset class="form-group">
+            <legend>Organs transplanted in you so far:</legend>
+            <div class="form-check">
+              <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney" class="form-check-input">
+              <label for="transplanted_kidney" class="form-check-label">Kidney</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver" class="form-check-input">
+              <label for="transplanted_liver" class="form-check-label">Liver</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung" class="form-check-input">
+              <label for="transplanted_lung" class="form-check-label">Lung</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine" class="form-check-input">
+              <label for="transplanted_intestine" class="form-check-label">Intestine</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas" class="form-check-input">
+              <label for="transplanted_pancreas" class="form-check-label">Pancreas</label>
+            </div>
+          </fieldset>
 
-        <fieldset>
-            <legend>Choose organs(part of organ) willing to donate while alive: </legend>
+          <fieldset class="form-group">
+            <legend>Choose organs (part of organ) willing to donate while alive:</legend>
+            <div class="form-check">
+              <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney" class="form-check-input">
+              <label for="donated_kidney" class="form-check-label">Kidney</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver" class="form-check-input">
+              <label for="donated_liver" class="form-check-label">Liver</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung" class="form-check-input">
+              <label for="donated_lung" class="form-check-label">Lung</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine" class="form-check-input">
+              <label for="donated_intestine" class="form-check-label">Intestine</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas" class="form-check-input">
+              <label for="donated_pancreas" class="form-check-label">Pancreas</label>
+            </div>
+          </fieldset>
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button> <!-- Fixed button -->
+          </div>
+      </form>
+    </div>
+  </div>
 
-            <input type="checkbox" id="kidney" name="organ" value="Kidney">
-            <label for="kidney">Kidney</label>
-        
-            <input type="checkbox" id="liver" name="organ" value="Liver">
-            <label for="liver">Liver</label>
-        
-            <input type="checkbox" id="lung" name="organ" value="Lung">
-            <label for="lung">Lung</label>
-        
-            <input type="checkbox" id="intestine" name="organ" value="Intestine">
-            <label for="intestine">Intestine</label>
-        
-            <input type="checkbox" id="pancreas" name="organ" value="Pancreas">
-            <label for="pancreas">Pancreas</label>
-        </fieldset> -->
+<!-- Fixed Footer -->
+<footer class="bg-light fixed-bottom">
+    <div class="container text-center py-2">
+        <p class="mb-0">&copy; 2025 VOrgans. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- GSAP Animation for smooth entrance -->
+  <script>
+      gsap.from(".card", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+      gsap.from("form", { duration: 1, opacity: 0, delay: 0.5, y: 20, ease: "power1.out" });
+      gsap.from("button", { duration: 1, opacity: 0, delay: 1, y: 20, ease: "power1.out", stagger: 0.1 });
+      gsap.from("footer", { duration: 1, opacity: 0, delay: 1.5, y: 20, ease: "power1.out" });
+  </script>
 
-        <legend>Organs transplanted in you so far:</legend>
-        <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney">
-        <label for="transplanted_kidney">Kidney</label><br>
-        
-        <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver">
-        <label for="transplanted_liver">Liver</label><br>
-        
-        <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung">
-        <label for="transplanted_lung">Lung</label><br>
-        
-        <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine">
-        <label for="transplanted_intestine">Intestine</label><br>
-        
-        <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas">
-        <label for="transplanted_pancreas">Pancreas</label><br>
-    </fieldset>
-
-    <fieldset>
-        <legend>Choose organs (part of organ) willing to donate while alive:</legend>
-        <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney">
-        <label for="donated_kidney">Kidney</label><br>
-        
-        <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver">
-        <label for="donated_liver">Liver</label><br>
-        
-        <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung">
-        <label for="donated_lung">Lung</label><br>
-        
-        <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine">
-        <label for="donated_intestine">Intestine</label><br>
-        
-        <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas">
-        <label for="donated_pancreas">Pancreas</label><br>
-    </fieldset>
-
-        <button type="submit">Submit</button> <!-- Fixed button -->
-    </form>
-    <button onclick="history.back()">Back</button>
+  <!-- Bootstrap JS and Dependencies (jQuery and Popper.js) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

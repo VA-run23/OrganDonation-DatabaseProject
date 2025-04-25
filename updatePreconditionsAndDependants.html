@@ -4,11 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Preconditions</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
+      /* Original inline styles preserved; additional professional enhancements added */
       body {
           font-family: Arial, sans-serif;
           margin: 20px;
           padding: 20px;
+          background-color: #f8f9fa;
       }
       fieldset {
           border: 1px solid #ccc;
@@ -30,8 +36,12 @@
       input[type="submit"]:hover {
           background-color: #218838;
       }
+      /* Additional Bootstrap decoration */
+      .card {
+          margin-top: 30px;
+          padding: 20px;
+      }
   </style>
-
   <script>
       document.addEventListener("DOMContentLoaded", () => {
           // Get uniqueID from the URL query parameters.
@@ -117,73 +127,114 @@
   </script>
 </head>
 <body>
-  <form action="/confirmUpdate2" method="post">
-      <!-- Unique ID field dynamically filled -->
-      <label for="uniqueID">Unique ID:</label>
-      <input type="number" id="uniqueID" name="uniqueID" placeholder="Fetching..." required readonly>
-      
-      <fieldset>
-          <legend>Do you have diabetes?</legend>
-          <input type="radio" id="diabetes_yes" name="diabetes" value="1">
-          <label for="diabetes_yes">Yes</label>
-          <input type="radio" id="diabetes_no" name="diabetes" value="0">
-          <label for="diabetes_no">No</label>
-      </fieldset>
-      
-      <fieldset>
-          <legend>Do you have Hypertension or Hypotension?</legend>
-          <input type="radio" id="hypertension" name="bp_condition" value="1">
-          <label for="hypertension">Hypertension</label>
-          <input type="radio" id="hypotension" name="bp_condition" value="2">
-          <label for="hypotension">Hypotension</label>
-          <input type="radio" id="none_bp" name="bp_condition" value="0">
-          <label for="none_bp">None</label>
-      </fieldset>
-      
-      <fieldset>
-          <legend>Are you considered Obese?</legend>
-          <input type="radio" id="obese_yes" name="obese" value="1">
-          <label for="obese_yes">Yes</label>
-          <input type="radio" id="obese_no" name="obese" value="0">
-          <label for="obese_no">No</label>
-      </fieldset>
-      
-      <fieldset>
-          <legend>Have you undergone cardiac surgery?</legend>
-          <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1">
-          <label for="cardiac_yes">Yes</label>
-          <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0">
-          <label for="cardiac_no">No</label>
-      </fieldset>
-  
-      <!-- Dependant Information Section -->
-      <fieldset>
-          <legend>Primary Dependant Information</legend>
-          <label for="dependantName">Dependant Name:</label>
-          <input type="text" id="dependantName" name="dependantName" required readonly>
+  <div class="container">
+    <div class="card shadow">
+      <form action="/confirmUpdate2" method="post">
+          <!-- Unique ID field dynamically filled -->
+          <div class="form-group">
+            <label for="uniqueID">Unique ID:</label>
+            <input type="number" id="uniqueID" name="uniqueID" placeholder="Fetching..." required readonly class="form-control">
+          </div>
           
-          <label for="dependantAadhar">Dependant Aadhar Number:</label>
-          <input type="number" id="dependantAadhar" name="dependantAadhar" required readonly>
+          <fieldset class="mb-3">
+              <legend>Do you have diabetes?</legend>
+              <div class="form-check">
+                  <input type="radio" id="diabetes_yes" name="diabetes" value="1" class="form-check-input">
+                  <label for="diabetes_yes" class="form-check-label">Yes</label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" id="diabetes_no" name="diabetes" value="0" class="form-check-input">
+                  <label for="diabetes_no" class="form-check-label">No</label>
+              </div>
+          </fieldset>
           
-          <label for="dependantAge">Dependant Age:</label>
-          <input type="number" id="dependantAge" name="dependantAge" required>
+          <fieldset class="mb-3">
+              <legend>Do you have Hypertension or Hypotension?</legend>
+              <div class="form-check">
+                  <input type="radio" id="hypertension" name="bp_condition" value="1" class="form-check-input">
+                  <label for="hypertension" class="form-check-label">Hypertension</label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" id="hypotension" name="bp_condition" value="2" class="form-check-input">
+                  <label for="hypotension" class="form-check-label">Hypotension</label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" id="none_bp" name="bp_condition" value="0" class="form-check-input">
+                  <label for="none_bp" class="form-check-label">None</label>
+              </div>
+          </fieldset>
           
-          <label for="totalDependants">Total Number of Dependants:</label>
-          <input type="number" id="totalDependants" name="totalDependants" required>
-      </fieldset>
+          <fieldset class="mb-3">
+              <legend>Are you considered Obese?</legend>
+              <div class="form-check">
+                  <input type="radio" id="obese_yes" name="obese" value="1" class="form-check-input">
+                  <label for="obese_yes" class="form-check-label">Yes</label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" id="obese_no" name="obese" value="0" class="form-check-input">
+                  <label for="obese_no" class="form-check-label">No</label>
+              </div>
+          </fieldset>
+          
+          <fieldset class="mb-3">
+              <legend>Have you undergone cardiac surgery?</legend>
+              <div class="form-check">
+                  <input type="radio" id="cardiac_yes" name="cardiac_surgery" value="1" class="form-check-input">
+                  <label for="cardiac_yes" class="form-check-label">Yes</label>
+              </div>
+              <div class="form-check">
+                  <input type="radio" id="cardiac_no" name="cardiac_surgery" value="0" class="form-check-input">
+                  <label for="cardiac_no" class="form-check-label">No</label>
+              </div>
+          </fieldset>
   
-      <!-- Approval Statement -->
-      <fieldset>
-          <legend>Approval Statement</legend>
-          <input type="checkbox" id="healthApproval" name="healthApproval" value="1" required>
-          <label for="healthApproval">
-              I agree that my health is alright and has been approved by a medical professional.
-              I confirm that the selected organs are healthy and I am able to donate part of them 
-              voluntarily to save the lives of others/recipients.
-          </label>
-      </fieldset>
+          <!-- Dependant Information Section -->
+          <fieldset class="mb-3">
+              <legend>Primary Dependant Information</legend>
+              <div class="form-group">
+                <label for="dependantName">Dependant Name:</label>
+                <input type="text" id="dependantName" name="dependantName" required readonly class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="dependantAadhar">Dependant Aadhar Number:</label>
+                <input type="number" id="dependantAadhar" name="dependantAadhar" required readonly class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="dependantAge">Dependant Age:</label>
+                <input type="number" id="dependantAge" name="dependantAge" required class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="totalDependants">Total Number of Dependants:</label>
+                <input type="number" id="totalDependants" name="totalDependants" required class="form-control">
+              </div>
+          </fieldset>
   
-      <input type="submit" value="Submit">
-  </form>
+          <!-- Approval Statement -->
+          <fieldset class="mb-3">
+              <legend>Approval Statement</legend>
+              <div class="form-check">
+                  <input type="checkbox" id="healthApproval" name="healthApproval" value="1" required class="form-check-input">
+                  <label for="healthApproval" class="form-check-label">
+                      I agree that my health is alright and has been approved by a medical professional.
+                      I confirm that the selected organs are healthy and I am able to donate part of them 
+                      voluntarily to save the lives of others/recipients.
+                  </label>
+              </div>
+          </fieldset>
+  
+          <div class="text-center">
+              <input type="submit" value="Submit" class="btn btn-success btn-lg">
+          </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- GSAP Animation for smooth entrance -->
+  <script>
+      gsap.from(".card", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+      gsap.from("form", { duration: 1, opacity: 0, delay: 0.5, y: 20, ease: "power1.out" });
+      gsap.from("input[type='submit']", { duration: 1, opacity: 0, delay: 1, y: 20, ease: "power1.out" });
+  </script>
+  
 </body>
 </html>

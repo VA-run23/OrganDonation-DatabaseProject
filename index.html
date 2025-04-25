@@ -1,48 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h2 {
-            color: #333;
-        }
-        .btn-container {
-            margin-top: 20px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    h2 {
+      color: #333;
+    }
+    .btn-container {
+      margin-top: 20px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
-    <h2>Welcome to Our Platform</h2>
-
-    <div class="btn-container">
-        <!-- Login Button -->
-        <button onclick="window.location.href='/login'">Login to check organ availability</button>
-
-        <!-- Signup Button -->
-        <button onclick="window.location.href='/signup'">Signup</button>
-
-        <!-- Update Route Button -->
-        <button onclick="window.location.href='/preUpdate'">Update Profile</button>
+  <!-- Bootstrap Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
+    <a class="navbar-brand" href="#">VOrgans</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+        <li class="nav-item"><a class="nav-link" href="/preUpdate">Update Profile</a></li>
+        <!-- <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li> -->
+      </ul>
     </div>
+  </nav>
+  
+  <div class="container mt-5">
+    <!-- Animated Organ Donation Showcase Section -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6 organdonation">
+            <h3>Be a Hero, Save Lives</h3>
+            <p>Your choice to donate can change lives. Join us in making a difference.</p>
+        </div>
+        <div class="col-md-6 organdonation">
+            <h3>Donate Life, Inspire Hope</h3>
+            <p>Every organ donation not only saves lives but offers a new beginning. Embrace the spirit of giving and be a part of the change.</p>
+        </div>
+    </div>
+    
+    
+    <!-- Professional Card Container -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2>Welcome to VOrgans: A Gift of Life</h2>
+        <p>Your decision to donate a part of your living organs is a profound act of compassion and humanity. Through voluntary registration, you have the opportunity to make a difference in someone’s life while creating a legacy of generosity and hope.</p>
+        <p>Join us in building a community dedicated to transforming lives, one organ at a time. Together, we can inspire kindness, spread awareness, and save countless lives.</p>
+        
+        <div class="btn-container">
+          <!-- Login Button -->
+          <button onclick="window.location.href='/login'">Login to check organ availability</button>
+
+          <!-- Signup Button -->
+          <button onclick="window.location.href='/signup'">Signup</button>
+
+          <!-- Update Route Button -->
+          <button onclick="window.location.href='/preUpdate'">Update Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Footer -->
+  <footer class="mt-5 py-3 bg-light">
+    <div class="container text-center">
+      <small>&copy; 2025 VOrgans. All rights reserved.</small>
+    </div>
+  </footer>
+  
+  <!-- GSAP Animation for smooth entrance -->
+  <script>
+    gsap.from("nav", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+    gsap.from(".organdonation", { duration: 1.5, opacity: 0, x: -100, ease: "power1.out", stagger: 0.2, delay: 0.3 });
+    gsap.from(".card", { duration: 1, opacity: 0, y: -30, ease: "power1.out", delay: 0.8 });
+    gsap.from("h2", { duration: 1, opacity: 0, y: -20, delay: 1, ease: "power1.out" });
+    gsap.from("p", { duration: 1, opacity: 0, y: 20, delay: 1.2, ease: "power1.out", stagger: 0.2 });
+    gsap.from(".btn-container", { duration: 1, opacity: 0, y: 30, delay: 1.4, ease: "power1.out" });
+    gsap.from("footer", { duration: 1, opacity: 0, y: 50, delay: 1.6, ease: "power1.out" });
+  </script>
+  
+  <!-- Bootstrap JS and Dependencies (jQuery and Popper.js) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
