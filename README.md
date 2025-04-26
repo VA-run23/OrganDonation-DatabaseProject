@@ -18,26 +18,6 @@ This project aims to create a **user-friendly interface** for tracking organ don
 - **CSS**: Styling for a visually appealing UI.
 - **Bootstrap**: Enhances responsive design and usability.
 
-<!--
-## Database Schema
-### `donor_data` Table
-Stores donor information including:
-- `name` (VARCHAR) - Donor's full name
-- `email` (VARCHAR, UNIQUE) - Email for identification
-- `uniqueID` (INT, PRIMARY KEY) - Unique identifier
-- `pass` (VARCHAR) - Password (consider hashing for security)
-- `city` (VARCHAR) - City of residence
-- `bloodGroup` (VARCHAR) - Blood group for compatibility
-- `organ` (ENUM) - Organ donation preference
-
-### `donor_health` Table
-Stores health-related conditions of donors:
-- `uniqueID` (INT, FOREIGN KEY) - Links to donor_data
-- `diabetes` (TINYINT) - Whether the donor has diabetes
-- `bp_condition` (TINYINT) - Blood pressure condition
-- `obese` (TINYINT) - Obesity status
-- `cardiac_surgery` (TINYINT) - Prior cardiac surgeries
--->
 
 ## Project Status
 
