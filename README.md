@@ -31,6 +31,3 @@ This project is currently under development, following agile principles. It will
 
 
  I’m open to more ideas! If you notice any flaws, I’d love to hear your thoughts
-
- ![Profile Contribution](https://raw.githubusercontent.com/VA-run23/OrganDonation-DatabaseProject/main/profile-3d-contrib/profile-green.svg)
-
