@@ -1,6 +1,3 @@
-//Try to implement donor and receiver and seperately
-
-
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
@@ -52,7 +49,7 @@ db.connect((err) => {
   console.log("Connected to database!");
 
   const createDonorData = `
-CREATE TABLE IF NOT EXISTS donor_data (
+CREATE TABLE IF NOT EXISTS user_data (
   uniqueID INT AUTO_INCREMENT PRIMARY KEY,
   govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
   name VARCHAR(50),
@@ -76,7 +73,7 @@ CREATE TABLE IF NOT EXISTS transplanted_organs (
   lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
   intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
   pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
 `;
 
@@ -89,13 +86,13 @@ CREATE TABLE IF NOT EXISTS donor_organs (
   lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
   intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
   pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
   `;
 
 
   const createDonorHealth = `
-CREATE TABLE IF NOT EXISTS donor_health_dependants (
+CREATE TABLE IF NOT EXISTS userHealth_Dependants (
   uniqueID INT PRIMARY KEY,
   diabetes TINYINT,
   bp_condition TINYINT,
@@ -106,14 +103,14 @@ CREATE TABLE IF NOT EXISTS donor_health_dependants (
   dependantAge INT NOT NULL,
   totalDependants INT NOT NULL,
   healthApproval TINYINT,
-  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
   `;
 
   db.query(createDonorData, (err) =>
     err 
-      ? console.error("Error creating donor_data:", err.message) 
-      : console.log(`[${new Date().toISOString()}] donor_data table ensured.`)
+      ? console.error("Error creating user_data:", err.message) 
+      : console.log(`[${new Date().toISOString()}] user_data table ensured.`)
   );
   
   db.query(createTransplantedOrgans, (err) => {
@@ -130,98 +127,14 @@ CREATE TABLE IF NOT EXISTS donor_health_dependants (
   
   db.query(createDonorHealth, (err) =>
     err 
-      ? console.error("Error creating donor_health_dependants:", err.message) 
-      : console.log(`[${new Date().toISOString()}] donor_health_dependants table ensured.`)
+      ? console.error("Error creating userHealth_Dependants:", err.message) 
+      : console.log(`[${new Date().toISOString()}] userHealth_Dependants table ensured.`)
   );
   
 });
 
 // Routes
 // Registration
-// app.post("/submit", (req, res) => {
-//   const { name, email, govtID, pass, age, gender, city, bloodGroup, donatedOrgans, transplantedOrgans } = req.body;
-
-//   // Validate Government ID
-//   if (govtID < 100000000000 || govtID > 999999999999) {
-//     return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
-//   }
-
-//   // Validate Age
-//   if (age < 18) {
-//     return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
-//   }
-//   if (age > 80) {
-//     return res.send(`<script>alert("Age must be 80 or below. You are not eligible to donate any organs as it may harm the donor."); window.history.back();</script>`);
-//   }
-
-//   // Ensure donatedOrgans and transplantedOrgans are arrays
-//   const safeDonatedOrgans = Array.isArray(donatedOrgans) ? donatedOrgans : [];
-//   const safeTransplantedOrgans = Array.isArray(transplantedOrgans) ? transplantedOrgans : [];
-
-//   // Validate Organ Data
-//   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-//   const donatedFlags = organs.map((o) => safeDonatedOrgans.includes(o) ? 1 : 0);
-//   const transplantedFlags = organs.map((o) => safeTransplantedOrgans.includes(o) ? 1 : 0);
-
-//   // Check for Transplanted Organs Conflict
-//   const conflictOrgans = organs.filter((o, index) => transplantedFlags[index] === 1 && donatedFlags[index] === 1);
-
-//   if (conflictOrgans.length > 0) {
-//     return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
-//   }
-
-//   // Insert Donor Data
-//   const dataQuery = `
-//     INSERT INTO donor_data (name, email, govtID, pass, age, gender, city, bloodGroup)
-//     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//   `;
-//   const dataValues = [name, email, govtID, pass, age, gender, city, bloodGroup];
-
-//   db.query(dataQuery, dataValues, (err, result) => {
-//     if (err) {
-//       if (err.code === "ER_DUP_ENTRY") {
-//         return res.send(`<script>alert("Government ID or Email already registered."); window.history.back();</script>`);
-//       }
-//       console.error("Database Error:", err);
-//       return res.status(500).send("Internal Server Error");
-//     }
-
-//     const uniqueID = result.insertId;
-
-//     // Insert Donated Organs
-//     const donatedOrgansQuery = `
-//       INSERT INTO donor_organs (uniqueID, kidney, liver, lung, intestine, pancreas)
-//       VALUES (?, ?, ?, ?, ?, ?)
-//     `;
-//     const donatedOrgansValues = [uniqueID, ...donatedFlags];
-
-//     db.query(donatedOrgansQuery, donatedOrgansValues, (donatedErr) => {
-//       if (donatedErr) {
-//         console.error("Donor Organs Error:", donatedErr);
-//         return res.status(500).send("Internal Server Error");
-//       }
-
-//       // Insert Transplanted Organs
-//       const transplantedOrgansQuery = `
-//         INSERT INTO transplanted_organs (uniqueID, kidney, liver, lung, intestine, pancreas)
-//         VALUES (?, ?, ?, ?, ?, ?)
-//       `;
-//       const transplantedOrgansValues = [uniqueID, ...transplantedFlags];
-
-//       db.query(transplantedOrgansQuery, transplantedOrgansValues, (transplantedErr) => {
-//         if (transplantedErr) {
-//           console.error("Transplanted Organs Error:", transplantedErr);
-//           return res.status(500).send("Internal Server Error");
-//         }
-
-//         req.session.uniqueID = uniqueID;
-//         res.send(`<script>alert("✅ Registered! Your Unique Donor ID is: ${uniqueID}"); window.location.href = "/existingconditions";</script>`);
-//       });
-//     });
-//   });
-// });
-
-
 app.post("/submit", (req, res) => {
   const { 
     name, 
@@ -281,9 +194,9 @@ app.post("/submit", (req, res) => {
     return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
   }
 
-  // Insert Donor Data into donor_data table
+  // Insert Donor Data into user_data table
   const dataQuery = `
-    INSERT INTO donor_data (name, email, govtID, pass, age, gender, city, bloodGroup)
+    INSERT INTO user_data (name, email, govtID, pass, age, gender, city, bloodGroup)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const dataValues = [name, email, govtID, pass, age, gender, city, bloodGroup];
@@ -340,7 +253,7 @@ app.post("/submitPrecondition", (req, res) => {
   // Check if user is healthy to donate
   // if (diabetes || bp_condition || obese || cardiac_surgery || !healthApproval) {
   //   // Delete donor data if user is not healthy
-  //   const deleteDonorDataQuery = `DELETE FROM donor_data WHERE uniqueID = ?`;
+  //   const deleteDonorDataQuery = `DELETE FROM user_data WHERE uniqueID = ?`;
 
   //   db.query(deleteDonorDataQuery, [uniqueID], (deleteErr) => {
   //     if (deleteErr) {
@@ -355,7 +268,7 @@ app.post("/submitPrecondition", (req, res) => {
   // }
 
   const sql = `
-    INSERT INTO donor_health_dependants (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval)
+    INSERT INTO userHealth_Dependants (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
@@ -376,7 +289,7 @@ app.post("/submitPrecondition", (req, res) => {
 // Login Check
 app.post("/loginCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
-  const sql = "SELECT * FROM donor_data WHERE uniqueID = ? AND pass = ?";
+  const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
     if (err) return res.status(500).send("Internal Server Error");
@@ -386,40 +299,18 @@ app.post("/loginCheck", (req, res) => {
 });
 
 // // Dashboard Filter
-// app.get("/dashboardContent", (req, res) => {
-//   const { organ, bloodGroup, city } = req.query;
-
-//   //    SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate
-//   let sql = `
-//     SELECT donor_data.uniqueID, donor_data.email,donor_data.lastUpdate,
-//            donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
-//     FROM donor_data
-//     INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
-//     WHERE donor_data.bloodGroup = ? AND donor_data.city = ?
-//   `;
-//   const filters = [bloodGroup, city];
-//   if (organ) sql += ` AND donor_data.${organ} = 1`;
-//   sql += ` ORDER BY donor_data.lastUpdate DESC`;
-
-//   db.query(sql, filters, (err, result) => {
-//     if (err) return res.status(500).send("Internal Server Error");
-//     res.render("dashboardContent", { donors: result });
-//   });
-// });
-
-
 // Dashboard Filter
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
   // Base SQL Query
   let sql = `
-    SELECT donor_data.uniqueID, donor_data.email, donor_data.lastUpdate,
-           donor_health_dependants.totalDependants, donor_health_dependants.dependantAge
-    FROM donor_data
-    INNER JOIN donor_health_dependants ON donor_data.uniqueID = donor_health_dependants.uniqueID
-    LEFT JOIN donor_organs ON donor_data.uniqueID = donor_organs.uniqueID
-    WHERE donor_data.bloodGroup = ? AND donor_data.city = ?
+    SELECT user_data.uniqueID, user_data.email, user_data.lastUpdate,
+           userHealth_Dependants.totalDependants, userHealth_Dependants.dependantAge
+    FROM user_data
+    INNER JOIN userHealth_Dependants ON user_data.uniqueID = userHealth_Dependants.uniqueID
+    LEFT JOIN donor_organs ON user_data.uniqueID = donor_organs.uniqueID
+    WHERE user_data.bloodGroup = ? AND user_data.city = ?
   `;
   
   const filters = [bloodGroup, city];
@@ -430,7 +321,7 @@ app.get("/dashboardContent", (req, res) => {
   }
 
   // Sorting by Last Update
-  sql += ` ORDER BY donor_data.lastUpdate DESC`;
+  sql += ` ORDER BY user_data.lastUpdate DESC`;
 
   // Execute Query
   db.query(sql, filters, (err, result) => {
@@ -442,7 +333,7 @@ app.get("/dashboardContent", (req, res) => {
 // Pre-update Check
 app.post("/preUpdateCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
-  const sql = "SELECT * FROM donor_data WHERE uniqueID = ? AND pass = ?";
+  const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
     if (err) return res.status(500).json({ message: "Internal server error!" });
@@ -456,82 +347,6 @@ app.post("/preUpdateCheck", (req, res) => {
 });
 
 // // Confirm Update Step 1
-// app.post("/confirmUpdate1", (req, res) => {
-//   const { uniqueID, name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
-
-//   // Ensure `organ` is properly defined and an array
-//   const validOrgans = Array.isArray(organ) ? organ : [];
-//   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-//   const organFlags = organs.map(o => validOrgans.includes(o) ? 1 : 0);
-
-//   // Combined query to handle deselection and selection in a single step
-//   const query = `
-//     UPDATE donor_data
-//     SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?,
-//         kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
-//     WHERE uniqueID = ?
-//   `;
-//   const values = [name, email, govtID, pass, age, gender, city, bloodGroup, ...organFlags, uniqueID];
-
-//   db.query(query, values, (err, result) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-//     }
-//     if (result.affectedRows > 0) {
-//       res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
-//     } else {
-//       res.status(404).json({ message: "User not found!" });
-//     }
-//   });
-// });
-
-// app.post("/confirmUpdate1", (req, res) => {
-//   const { uniqueID, name, email, govtID, pass, age, gender, city, bloodGroup, organ } = req.body;
-
-//   // Ensure `organ` is properly defined and an array
-//   const validOrgans = Array.isArray(organ) ? organ : [];
-//   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-//   const organFlags = organs.map(o => validOrgans.includes(o) ? 1 : 0);
-
-//   // Update general donor data
-//   const donorDataQuery = `
-//     UPDATE donor_data
-//     SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
-//     WHERE uniqueID = ?
-//   `;
-//   const donorDataValues = [name, email, govtID, pass, age, gender, city, bloodGroup, uniqueID];
-
-//   db.query(donorDataQuery, donorDataValues, (err, result) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-//     }
-
-//     if (result.affectedRows > 0) {
-//       // Update organ-specific data
-//       const donorOrgansQuery = `
-//         UPDATE donor_organs
-//         SET kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
-//         WHERE uniqueID = ?
-//       `;
-//       const donorOrgansValues = [...organFlags, uniqueID];
-
-//       db.query(donorOrgansQuery, donorOrgansValues, (organErr, organResult) => {
-//         if (organErr) {
-//           return res.status(500).json({ message: "Internal server error!", error: organErr.sqlMessage });
-//         }
-
-//         if (organResult.affectedRows > 0) {
-//           res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
-//         } else {
-//           res.status(404).json({ message: "Organs update failed or donor not found!" });
-//         }
-//       });
-//     } else {
-//       res.status(404).json({ message: "User not found!" });
-//     }
-//   });
-// });
-
 app.post("/confirmUpdate1", (req, res) => {
   const { 
     uniqueID, 
@@ -568,9 +383,9 @@ app.post("/confirmUpdate1", (req, res) => {
     return res.send(`<script>alert("Conflict detected: You cannot donate an organ that has already been transplanted (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
   }
 
-  // Update donor general data in donor_data table
+  // Update donor general data in user_data table
   const donorDataQuery = `
-    UPDATE donor_data
+    UPDATE user_data
     SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
     WHERE uniqueID = ?
   `;
@@ -578,7 +393,7 @@ app.post("/confirmUpdate1", (req, res) => {
 
   db.query(donorDataQuery, donorDataValues, (err, result) => {
     if (err) {
-      console.error("Error updating donor_data:", err);
+      console.error("Error updating user_data:", err);
       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
     }
 
@@ -629,7 +444,7 @@ app.post("/confirmUpdate2", (req, res) => {
   const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
 
   const sql = `
-    INSERT INTO donor_health_dependants (
+    INSERT INTO userHealth_Dependants (
       uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
       dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -671,70 +486,6 @@ app.get("/getUniqueID", (req, res) => {
 });
 
 // // Get user data
-// app.get("/getUser/:uniqueID", (req, res) => {
-//   const { uniqueID } = req.params;
-//   const query = "SELECT * FROM donor_data WHERE uniqueID = ?";
-
-//   db.query(query, [uniqueID], (err, result) => {
-//     if (err) return res.status(500).json({ message: "Internal server error!" });
-//     if (result.length > 0) res.json(result[0]);
-//     else res.status(404).json({ message: "User not found!" });
-//   });
-// });
-
-// app.get("/getUser/:uniqueID", (req, res) => {
-//   const { uniqueID } = req.params;
-
-//   const sql = `
-//     SELECT donor_data.*, donor_organs.kidney, donor_organs.liver, donor_organs.lung, 
-//            donor_organs.intestine, donor_organs.pancreas
-//     FROM donor_data
-//     LEFT JOIN donor_organs ON donor_data.uniqueID = donor_organs.uniqueID
-//     WHERE donor_data.uniqueID = ?
-//   `;
-
-//   db.query(sql, [uniqueID], (err, result) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-//     }
-//     if (result.length > 0) {
-//       res.json(result[0]); // Send the combined data for donor and organs
-//     } else {
-//       res.status(404).json({ message: "User not found!" });
-//     }
-//   });
-// });
-
-
-// app.get("/getUser/:uniqueID", (req, res) => {
-//   const { uniqueID } = req.params;
-
-//   const sql = `
-//     SELECT dd.*, 
-//            do.kidney AS donated_kidney, do.liver AS donated_liver,
-//            do.lung AS donated_lung, do.intestine AS donated_intestine, do.pancreas AS donated_pancreas,
-//            trans.kidney AS transplanted_kidney, trans.liver AS transplanted_liver,
-//            trans.lung AS transplanted_lung, trans.intestine AS transplanted_intestine, trans.pancreas AS transplanted_pancreas
-//     FROM donor_data dd
-//     LEFT JOIN donor_organs do ON dd.uniqueID = do.uniqueID
-//     LEFT JOIN transplanted_organs trans ON dd.uniqueID = trans.uniqueID
-//     WHERE dd.uniqueID = ?
-//   `;
-
-//   db.query(sql, [uniqueID], (err, result) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-//     }
-//     if (result.length > 0) {
-//       // Optionally, you can further process the result to combine organ data into nested objects.
-//       res.json(result[0]);
-//     } else {
-//       res.status(404).json({ message: "User not found!" });
-//     }
-//   });
-// });
-
-
 app.get("/getUser/:uniqueID", (req, res) => {
   const { uniqueID } = req.params;
 
@@ -744,7 +495,7 @@ app.get("/getUser/:uniqueID", (req, res) => {
            do.lung AS donated_lung, do.intestine AS donated_intestine, do.pancreas AS donated_pancreas,
            trans.kidney AS transplanted_kidney, trans.liver AS transplanted_liver,
            trans.lung AS transplanted_lung, trans.intestine AS transplanted_intestine, trans.pancreas AS transplanted_pancreas
-    FROM donor_data dd
+    FROM user_data dd
     LEFT JOIN donor_organs do ON dd.uniqueID = do.uniqueID
     LEFT JOIN transplanted_organs trans ON dd.uniqueID = trans.uniqueID
     WHERE dd.uniqueID = ?
@@ -803,7 +554,7 @@ app.get("/getPrecondition/:uniqueID", (req, res) => {
   const { uniqueID } = req.params;
   if (!uniqueID) return res.status(400).json({ error: "Unique ID is required!" });
 
-  const query = "SELECT * FROM donor_health_dependants WHERE uniqueID = ?";
+  const query = "SELECT * FROM userHealth_Dependants WHERE uniqueID = ?";
   db.query(query, [uniqueID], (err, results) => {
     if (err) return res.status(500).json({ error: "Internal server error!" });
     if (results.length > 0) res.json(results[0]);
@@ -819,7 +570,7 @@ app.post("/deleteUser", (req, res) => {
     return res.status(400).json({ message: "Unique ID is required to delete user!" });
   }
 
-  const deleteQuery = "DELETE FROM donor_data WHERE uniqueID = ?";
+  const deleteQuery = "DELETE FROM user_data WHERE uniqueID = ?";
   db.query(deleteQuery, [uniqueID], (err, result) => {
     if (err) {
       console.error("Error deleting user:", err);

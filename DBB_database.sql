@@ -5,7 +5,7 @@ SHOW TABLES;
 -- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password;
 -- FLUSH PRIVILEGES;
 
--- CREATE TABLE IF NOT EXISTS donor_data (
+-- CREATE TABLE IF NOT EXISTS user_data (
 --     uniqueID INT AUTO_INCREMENT PRIMARY KEY,  -- System-generated unique ID
 --     govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),  -- Ensuring a 12-digit numeric government ID
 --     name VARCHAR(50) ,
@@ -24,7 +24,7 @@ SHOW TABLES;
 -- );
 
 
-CREATE TABLE IF NOT EXISTS donor_data (
+CREATE TABLE IF NOT EXISTS user_data (
   uniqueID INT AUTO_INCREMENT PRIMARY KEY,
   govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
   name VARCHAR(50),
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS donor_data (
 );
 
 
-CREATE TABLE IF NOT EXISTS donor_health_dependants (
-    uniqueID INT PRIMARY KEY,  -- Matches `uniqueID` in `donor_data`
+CREATE TABLE IF NOT EXISTS userHealth_Dependants (
+    uniqueID INT PRIMARY KEY,  -- Matches `uniqueID` in `user_data`
     diabetes TINYINT,  -- 0 = No, 1 = Yes
     bp_condition TINYINT,  -- 0 = None, 1 = Hypertension, 2 = Hypotension
     obese TINYINT,  -- 0 = No, 1 = Yes
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS donor_health_dependants (
     dependantAge INT NOT NULL,
     totalDependants INT NOT NULL,
 	healthApproval TINYINT NOT NULL, -- Ensures health approval is provided
-    FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+    FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS transplanted_organs (
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS transplanted_organs (
   lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
   intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
   pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE 
+  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE 
 );
 
 CREATE TABLE IF NOT EXISTS donor_organs (
@@ -71,22 +71,22 @@ CREATE TABLE IF NOT EXISTS donor_organs (
   lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
   intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
   pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES donor_data(uniqueID) ON DELETE CASCADE
+  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
 
-select * from donor_data;
+select * from user_data;
 select * from donor_organs;
 select * from transplanted_organs;
-select * from donor_health_dependants;
+select * from userHealth_Dependants;
 
-desc donor_data;
+desc user_data;
 desc donor_organs;
-desc donor_health_dependants;
+desc userHealth_Dependants;
 
-drop table donor_data;
+drop table user_data;
 drop table transplanted_organs; 
 drop table donor_organs;
-drop table donor_health_dependants;
+drop table userHealth_Dependants;
 
 
 INSERT INTO transplanted_organs (uniqueID, kidney, liver, lung, intestine, pancreas) VALUES
@@ -296,7 +296,7 @@ INSERT INTO donor_organs (uniqueID, kidney, liver, lung, intestine, pancreas) VA
 
 
 
-INSERT INTO donor_data (govtID, name, email, pass, age, gender, city, bloodGroup) VALUES
+INSERT INTO user_data (govtID, name, email, pass, age, gender, city, bloodGroup) VALUES
 (100000000001, 'John Doe', 'john.doe1@example.com', 'password123', 25, 'Male', 'Bangalore', 'A+'),
 (100000000002, 'Jane Smith', 'jane.smith2@example.com', 'password123', 32, 'Female', 'Mysore', 'O-'),
 (100000000003, 'Alex Johnson', 'alex.johnson3@example.com', 'password123', 28, 'Male', 'Kolar', 'B+'),
@@ -402,7 +402,7 @@ INSERT INTO donor_data (govtID, name, email, pass, age, gender, city, bloodGroup
 
 
 
-INSERT INTO donor_health_dependants 
+INSERT INTO userHealth_Dependants 
 (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval) 
 VALUES
 (1, 0, 0, 0, 0, 'Emily Ward', 111122223333, 45, 2, 1),
