@@ -31,3 +31,6 @@ This project is currently under development, following agile principles. It will
 
 
  I’m open to more ideas! If you notice any flaws, I’d love to hear your thoughts
+ <br>
+![](https://komarev.com/ghpvc/?username=VA-run&label=Visitors&color=blue)
+
