@@ -200,6 +200,29 @@ app.post("/submit", (req, res) => {
     return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
   }
 
+  //   // Check for conflict: if an organ is both marked as transplanted and as donated.
+  // const conflictOrgans = organs.filter((o, index) => transplantedFlags[index] === 1 && donatedFlags[index] === 1);
+  
+  // // Debug logging for conflicts
+  // console.log("Conflict Organs:", conflictOrgans);
+
+  // if (conflictOrgans.length > 0) {
+  //   return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
+  // }
+
+  // // Check if more than 2 transplanted organs are selected
+  // const transplantedCount = transplantedFlags.reduce((sum, val) => sum + val, 0);
+  // if (transplantedCount > 2) {
+  //   return res.send(`<script>alert("You cannot register: More than two transplanted organs indicates poor health."); window.history.back();</script>`);
+  // }
+
+  // // Check if more than 3 organs are selected for donation
+  // const donatedCount = donatedFlags.reduce((sum, val) => sum + val, 0);
+  // if (donatedCount > 3) {
+  //   return res.send(`<script>alert("Donating more than three organs can be harmful. Please select fewer organs."); window.history.back();</script>`);
+  // }
+
+
   // Insert Donor Data into user_data table
   const dataQuery = `
     INSERT INTO user_data (name, email, govtID, pass, age, gender, city, bloodGroup)
