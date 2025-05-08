@@ -8,8 +8,96 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+
+      /* Navigation Styles */
+      nav {
+      background: linear-gradient(90deg, #008080, #006666);
+      padding: 15px;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    nav > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    nav a {
+      color: white;
+      font-size: 26px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .nav-links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+    }
+    .nav-links ul li {
+      margin-left: 20px;
+    }
+    .nav-links ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .nav-links ul li a:hover {
+      color: #ccf;
+    }
+  
+
+        /* Footer styling */
+        footer {
+          background: linear-gradient(90deg, #008080, #006666);
+          color: white;
+          text-align: center;
+          padding: 15px;
+          font-size: 14px;
+          box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+        }
+      
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          section {
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: center;
+          }
+      
+          .text, .video, .carousel, .noble {
+            max-width: 100%;
+            flex: 1 1 100%;
+          }
+      
+          .swiper {
+            height: 200px;
+          }
+      
+          .card {
+            width: 100%;
+            max-width: 300px;
+          }
+        }
+</style>
 </head>
 <body>
+    <nav>
+        <div>
+          <a href="#">VOrgans</a>
+          <div class="nav-links">
+            <ul>
+              <li><a href="/login">Login</a></li>
+              <li><a href="/signup">Signup</a></li>
+              <li><a href="/preUpdate">Update Profile</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     <div class="container mt-5">
         <form action="/dashboardContent" method="GET">
             <label for="gender">Gender:</label>
@@ -55,6 +143,10 @@
         </form>
         <button onclick="history.back()" class="btn btn-secondary mt-3">Back</button>
     </div>
+    <footer>
+        <small>&copy; 2025 VOrgans. All rights reserved.</small>
+      </footer>
+    
     
     <!-- GSAP Animation Script -->
     <script>

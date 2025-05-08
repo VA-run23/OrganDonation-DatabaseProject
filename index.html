@@ -2,184 +2,286 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Welcome | VOrgans</title>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
   <!-- Swiper -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <style>
+    /* Basic Reset */
     * {
       box-sizing: border-box;
     }
-
+  
     html, body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #f0f9f9, #e0f7fa);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #f0f9f9);
       color: #004d40;
+      overflow-x: hidden;
     }
-
+  
     body {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
-
+  
+    /* Navigation Styles */
     nav {
-      background-color: #008080;
+      background: linear-gradient(90deg, #008080, #006666);
       padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
-
+    nav > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     nav a {
       color: white;
-      font-size: 24px;
+      font-size: 26px;
       text-decoration: none;
       font-weight: bold;
     }
-
-    nav ul {
+    .nav-links ul {
       list-style: none;
       padding: 0;
-      margin: 10px 0 0 0;
+      margin: 0;
+      display: flex;
     }
-
-    nav ul li {
-      display: inline;
-      margin: 0 10px;
+    .nav-links ul li {
+      margin-left: 20px;
     }
-
-    nav ul li a {
+    .nav-links ul li a {
       color: white;
       text-decoration: none;
       font-size: 16px;
+      transition: color 0.3s;
     }
-
+    .nav-links ul li a:hover {
+      color: #ccf;
+    }
+  
+    /* Card Buttons Section */
+    .card-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px 20px 10px;
+      background-color: #e0f7fa;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: linear-gradient(135deg, #ffffff, #ccf3f3);
+      color: #004d40;
+      padding: 25px;
+      width: 220px;
+      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      background: linear-gradient(135deg, #b2dfdb, #a1d6d3);
+      transform: translateY(-8px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    .card h3 {
+      margin: 10px 0 5px;
+      font-size: 22px;
+    }
+    .card p {
+      margin: 0;
+      font-size: 15px;
+    }
+  
+    /* Main Content Styling */
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 40px;
-      padding: 20px;
+      padding: 20px 40px;
+      max-width: 1200px;
+      margin: 20px auto;
     }
-
+  
     section {
       display: flex;
+      flex-direction: row;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+      align-items: stretch;
+      flex-wrap: nowrap;
       gap: 20px;
+      padding: 20px;
+      background-color: #ffffffcc;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    .text, .image, .carousel, .video {
+  
+    .text {
       flex: 1 1 45%;
       max-width: 45%;
     }
-
-    .text p, .text h2, .text h3 {
+    .text h2,
+    .text h3 {
       margin: 10px 0;
-      line-height: 1.4;
+      font-weight: 600;
+      color: #004d40;
     }
-
+    .text p {
+      margin: 10px 0;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+  
+    .video, .carousel {
+      flex: 1 1 50%;
+      max-width: 50%;
+      min-width: 0;
+    }
+  
     .video video {
       width: 100%;
-      height: auto;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-
+  
     .image img {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-
+  
+    /* Noble Donation Text Section */
+    .noble {
+      flex: 1 1 50%;
+      max-width: 50%;
+      background-color: #e0f7fa;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #004d40;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+    .noble h2 {
+      margin-bottom: 10px;
+    }
+  
+    /* Swiper Carousel */
     .swiper {
       width: 100%;
       height: 300px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       overflow: hidden;
     }
-
     .swiper-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-
-    .buttons {
+  
+    /* Registration info styling */
+    .registration-info {
       text-align: center;
-      margin-top: 20px;
-    }
-
-    button {
-      background-color: #008080;
-      color: white;
-      padding: 12px 20px;
+      padding: 20px;
+      background-color: #f0f9f9;
       font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      margin: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s;
+      color: #004d40;
     }
-
-    button:hover {
-      background-color: #00bfa5;
-    }
-
+  
+    /* Footer styling */
     footer {
-      background-color: #008080;
+      background: linear-gradient(90deg, #008080, #006666);
       color: white;
       text-align: center;
-      padding: 10px;
+      padding: 15px;
+      font-size: 14px;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
     }
-
+  
+    /* Responsive Design */
     @media (max-width: 768px) {
       section {
         flex-direction: column;
+        flex-wrap: wrap;
         align-items: center;
       }
-
-      .text, .image, .carousel, .video {
+  
+      .text, .video, .carousel, .noble {
         max-width: 100%;
+        flex: 1 1 100%;
       }
-
+  
       .swiper {
         height: 200px;
       }
+  
+      .card {
+        width: 100%;
+        max-width: 300px;
+      }
     }
   </style>
+  
 </head>
 <body>
-
+  <!-- Navigation -->
   <nav>
-    <a href="#">VOrgans</a>
-    <ul>
-      <li><a href="/login">Login</a></li>
-      <li><a href="/signup">Signup</a></li>
-      <li><a href="/preUpdate">Update Profile</a></li>
-    </ul>
+    <div>
+      <a href="#">VOrgans</a>
+      <div class="nav-links">
+        <ul>
+          <li><a href="/login">Login</a></li>
+          <li><a href="/signup">Signup</a></li>
+          <li><a href="/preUpdate">Update Profile</a></li>
+        </ul>
+      </div>
+    </div>
   </nav>
 
+  <!-- Cards Section -->
+  <div class="card-buttons">
+    <div class="card" onclick="window.location.href='/login'">
+      <h3>Login</h3>
+      <p>Check organ availability</p>
+    </div>
+    <div class="card" onclick="window.location.href='/signup'">
+      <h3>Signup</h3>
+      <p>Register yourself for a better cause</p>
+    </div>
+    <div class="card" onclick="window.location.href='/preUpdate'">
+      <h3>Update Profile</h3>
+      <p>Keep your info current</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
   <main>
-    <!-- First section: Text left, Video right -->
+    <!-- Section 1: Welcome & Inspirational Message -->
     <section>
       <div class="text">
         <h2>Welcome to VOrgans: A Gift of Life</h2>
-        <p>Your decision to donate a part of your living organs is a profound act of compassion and humanity.</p>
-        <p>Through voluntary registration, you have the opportunity to make a difference in someone’s life.</p>
+        <p>Your decision to donate organs is a profound act of compassion and humanity. When you choose to help, you are not just offering an organ—you are giving someone a second chance at life.</p>
+        <p>By registering with VOrgans, you join a community that believes in hope, resilience, and the transformative power of giving. Every donor writes a story of courage, and every act of kindness inspires others to do the same.</p>
         <h3>Be a Hero, Save Lives</h3>
-        <p>Your choice to donate can change lives.</p>
+        <p>Embrace the power of compassion and let your legacy be one of hope. Together, we can transform lives and build a healthier future for all.</p>
       </div>
       <div class="video">
         <video autoplay muted loop playsinline>
@@ -188,29 +290,36 @@
       </div>
     </section>
 
-    <!-- Second section: Image left, Carousel right -->
+    <!-- Section 2: The Noble Act of Living Donation -->
     <section>
-      <div class="image">
-        <img src="./images/VOLUNTEER_ORGAN_IMG.png" alt="Volunteer Organ Donation Image">
-      </div>
+      <!-- Carousel on the left -->
       <div class="carousel">
         <div class="swiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide"><img src="./images/VOLUNTEER_ORGAN_IMG.png" alt="Volunteer Image"></div>
-            <div class="swiper-slide"><img src="./images/INDEX_IMAGE.png" alt="Organ Donation Image"></div>
+            <div class="swiper-slide">
+              <img src="./images/VOLUNTEER_ORGAN_IMG.png" alt="Volunteer Image">
+            </div>
+            <div class="swiper-slide">
+              <img src="./images/INDEX_IMAGE.png" alt="Organ Donation Image">
+            </div>
           </div>
         </div>
       </div>
+      <!-- Noble text on the right -->
+      <div class="noble">
+        <h2>The Noble Act of Living Donation</h2>
+        <p>Donating an organ while you are alive is not merely a medical procedure; it is a powerful statement of hope, courage, and selflessness. It demonstrates an unwavering belief in the good that unites us all.</p>
+        <p>Your decision to donate can ease the suffering of others and instill hope in communities. This altruistic journey serves as a beacon of inspiration that encourages compassionate action throughout the world.</p>
+      </div>
     </section>
-
-    <!-- Buttons -->
-    <div class="buttons">
-      <button onclick="window.location.href='/login'">Login to check organ availability</button>
-      <button onclick="window.location.href='/signup'">Signup</button>
-      <button onclick="window.location.href='/preUpdate'">Update Profile</button>
-    </div>
   </main>
 
+  <!-- Registration Information -->
+  <div class="registration-info">
+    By registering on our website, you become a potential organ donor or recipient. Keep your details up to date and check your emails regularly so you can be available to save lives.
+  </div>
+
+  <!-- Footer -->
   <footer>
     <small>&copy; 2025 VOrgans. All rights reserved.</small>
   </footer>
@@ -220,8 +329,9 @@
     // GSAP Animations
     gsap.from("nav", { duration: 1, y: -50, opacity: 0 });
     gsap.from("section", { duration: 1, opacity: 0, y: 50, stagger: 0.3, delay: 0.3 });
+    gsap.from(".registration-info", { duration: 1, opacity: 0, y: 30, delay: 1.5 });
 
-    // Swiper
+    // Swiper Initialization
     const swiper = new Swiper('.swiper', {
       loop: true,
       autoplay: {
