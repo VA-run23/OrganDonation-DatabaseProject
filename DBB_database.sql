@@ -1,3 +1,4 @@
+-- Active: 1746685122884@@127.0.0.1@3306@dbb
 create database dbb;
 use dbb;
 SHOW TABLES;
