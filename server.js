@@ -216,11 +216,11 @@ app.post("/submit", (req, res) => {
   //   return res.send(`<script>alert("You cannot register: More than two transplanted organs indicates poor health."); window.history.back();</script>`);
   // }
 
-  // // Check if more than 3 organs are selected for donation
-  // const donatedCount = donatedFlags.reduce((sum, val) => sum + val, 0);
-  // if (donatedCount > 3) {
-  //   return res.send(`<script>alert("Donating more than three organs can be harmful. Please select fewer organs."); window.history.back();</script>`);
-  // }
+  // Check if more than 3 organs are selected for donation
+  const donatedCount = donatedFlags.reduce((sum, val) => sum + val, 0);
+  if (donatedCount > 3) {
+    return res.send(`<script>alert("Donating more than three organs can be harmful. Please select fewer organs."); window.history.back();</script>`);
+  }
 
 
   // Insert Donor Data into user_data table

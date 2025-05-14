@@ -8,9 +8,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <style>
-    /* Custom professional styles */
-
+<style>
+/* Navigation Styles */
     /* Navigation Styles */
     nav {
       background: linear-gradient(90deg, #008080, #006666);
@@ -76,62 +75,81 @@
       color: #ccf;
     }
 
-        /* Footer styling */
-        footer {
-          background: linear-gradient(90deg, #008080, #006666);
-          color: white;
-          text-align: center;
-          padding: 15px;
-          font-size: 14px;
-          box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-        }
-      
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          section {
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-items: center;
-          }
-      
-          .text, .video, .carousel, .noble {
-            max-width: 100%;
-            flex: 1 1 100%;
-          }
-      
-          .swiper {
-            height: 200px;
-          }
-      
-          .card {
-            width: 100%;
-            max-width: 300px;
-          }
-        }
+/* Footer styling */
+footer {
+  background: linear-gradient(90deg, #008080, #006666);
+  color: white;
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  section {
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .text, .video, .carousel, .noble {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .swiper {
+    height: 200px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+.navbar-nav .nav-link {
+  color: white !important;
+}
 </style>
+
+  
 </head>
 <body>
   
   
   <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <a class="navbar-brand" href="/" style="color: white;">VOrgans</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <!-- <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav">
        <ul class="navbar-nav ml-auto">
-         <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-         <li class="nav-item"><a class="nav-link" href="/signup">Signup</a></li>
+         <li class="nav-item" style="color: white;"><a class="nav-link" href="/login">Login</a></li>
+         <li class="nav-item" style="color: white;"><a class="nav-link" href="/signup">Signup</a></li>
        </ul>
-    </div> -->
+    </div>
+  </nav> -->
+
+    <nav>
+    <div>
+      <a href="/">VOrgans</a>
+      <div class="nav-links">
+        <ul>
+          <li><a href="/login">Login</a></li>
+          <li><a href="/signup">Signup</a></li>
+          <li><a href="/preUpdate">Update Profile</a></li>
+        </ul>
+      </div>
+    </div>
   </nav>
 
   <div class="container">
     <div class="card shadow">
       <!-- Original Form Maintained As-Is -->
-      <form action="/submit" method="post">
+<form action="/submit" style="padding: 20px 15px 30px;  margin-bottom: 70px;" method="post">
           <!-- This submit action will trigger the Express server in server.js -->
           <div class="form-group">
             <input type="text" name="name" placeholder="Enter Name" required class="form-control">
@@ -241,7 +259,7 @@
   </div>
 
 <!-- Fixed Footer -->
-<footer class="bg-light fixed-bottom">
+<footer style="margin-top: 30px;" class="bg-light fixed-bottom">
     <div class="container text-center py-2">
         <p class="mb-0">&copy; 2025 VOrgans. All rights reserved.</p>
     </div>
