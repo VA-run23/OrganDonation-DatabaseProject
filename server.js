@@ -316,16 +316,37 @@ app.post("/submitPrecondition", (req, res) => {
 
 
 // Login Check
+// app.post("/loginCheck", (req, res) => {
+//   const { uniqueID, pass } = req.body;
+//   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
+
+//   db.query(sql, [uniqueID, pass], (err, result) => {
+//     if (err) return res.status(500).send("Internal Server Error");
+//     if (result.length > 0) return res.redirect("/dashboard");
+//     res.status(401).send("Invalid Unique ID or Password");
+//   });
+// });
+
 app.post("/loginCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
-    if (err) return res.status(500).send("Internal Server Error");
-    if (result.length > 0) return res.redirect("/dashboard");
-    res.status(401).send("Invalid Unique ID or Password");
+    if (err) {
+      return res.send(`<script>alert("Internal Server Error"); window.location.href = "/existingconditions";</script>`);
+    }
+
+    if (result.length > 0) {
+      // Login success – redirect to dashboard
+      return res.redirect("/dashboard");
+    }
+
+    // Invalid credentials – show alert and redirect
+    res.send(`<script>alert("Invalid credentials"); window.location.href = "/login";</script>`);
   });
 });
+
+
 
 // // Dashboard Filter
 // Dashboard Filter
@@ -360,20 +381,39 @@ app.get("/dashboardContent", (req, res) => {
 });
 
 // Pre-update Check
+// app.post("/preUpdateCheck", (req, res) => {
+//   const { uniqueID, pass } = req.body;
+//   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
+
+//   db.query(sql, [uniqueID, pass], (err, result) => {
+//     if (err) return res.status(500).json({ message: "Internal server error!" });
+//     if (result.length > 0) {
+//       req.session.uniqueID = uniqueID;
+//       res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
+//     } else {
+//       res.status(401).json({ message: "Invalid credentials!" });
+//     }
+//   });
+// });
+
 app.post("/preUpdateCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
-    if (err) return res.status(500).json({ message: "Internal server error!" });
+    if (err) {
+      return res.send(`<script>alert("Internal Server Error"); window.location.href = "/preUpdate";</script>`);
+    }
+
     if (result.length > 0) {
       req.session.uniqueID = uniqueID;
-      res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
-    } else {
-      res.status(401).json({ message: "Invalid credentials!" });
+      return res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
     }
+
+    res.send(`<script>alert("Invalid credentials"); window.location.href = "/preUpdate";</script>`);
   });
 });
+
 
 // // Confirm Update Step 1
 app.post("/confirmUpdate1", (req, res) => {

@@ -17,7 +17,27 @@
     * {
       box-sizing: border-box;
     }
-  
+
+    #brandName {
+      font-weight: bold;
+      font-size: 1.5rem;
+      background: linear-gradient(270deg, #ff4d4d, #ffa64d, #ffff4d, #4dff4d, #4dffff, #4d4dff, #b84dff, #ff4da6);
+      background-size: 1600% 1600%;
+      -webkit-background-clip: text;
+      /* -webkit-background-clip: text; 
+     This is crucial for text-based gradients 
+     You can ignore the warning */
+      -webkit-text-fill-color: transparent;
+      animation: rainbowText 8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes rainbowText {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -26,13 +46,13 @@
       color: #004d40;
       overflow-x: hidden;
     }
-  
+
     body {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
-  
+
     /* Navigation Styles */
     nav {
       background: linear-gradient(90deg, #008080, #006666);
@@ -40,6 +60,7 @@
       color: white;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
+
     nav > div {
       display: flex;
       justify-content: space-between;
@@ -48,31 +69,55 @@
       max-width: 1200px;
       margin: 0 auto;
     }
+
     nav a {
       color: white;
       font-size: 26px;
       text-decoration: none;
       font-weight: bold;
     }
+
     .nav-links ul {
       list-style: none;
       padding: 0;
       margin: 0;
       display: flex;
     }
+
     .nav-links ul li {
       margin-left: 20px;
     }
+
     .nav-links ul li a {
+      position: relative;
       color: white;
       text-decoration: none;
       font-size: 16px;
       transition: color 0.3s;
     }
+
+    /* Animated underline */
+    .nav-links ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #ccf;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .nav-links ul li a:hover::after {
+      transform: scaleX(1);
+    }
+
     .nav-links ul li a:hover {
       color: #ccf;
     }
-  
+
     /* Card Buttons Section */
     .card-buttons {
       display: flex;
@@ -82,6 +127,7 @@
       background-color: #e0f7fa;
       flex-wrap: wrap;
     }
+
     .card {
       background: linear-gradient(135deg, #ffffff, #ccf3f3);
       color: #004d40;
@@ -93,21 +139,23 @@
       cursor: pointer;
       transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
     }
+
     .card:hover {
       background: linear-gradient(135deg, #b2dfdb, #a1d6d3);
       transform: translateY(-8px);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     }
+
     .card h3 {
       margin: 10px 0 5px;
       font-size: 22px;
     }
+
     .card p {
       margin: 0;
       font-size: 15px;
     }
-  
-    /* Main Content Styling */
+
     main {
       flex: 1;
       display: flex;
@@ -117,7 +165,7 @@
       max-width: 1200px;
       margin: 20px auto;
     }
-  
+
     section {
       display: flex;
       flex-direction: row;
@@ -130,42 +178,43 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-  
+
     .text {
       flex: 1 1 45%;
       max-width: 45%;
     }
+
     .text h2,
     .text h3 {
       margin: 10px 0;
       font-weight: 600;
       color: #004d40;
     }
+
     .text p {
       margin: 10px 0;
       line-height: 1.6;
       font-size: 16px;
     }
-  
+
     .video, .carousel {
       flex: 1 1 50%;
       max-width: 50%;
       min-width: 0;
     }
-  
+
     .video video {
       width: 100%;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-  
+
     .image img {
       width: 100%;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-  
-    /* Noble Donation Text Section */
+
     .noble {
       flex: 1 1 50%;
       max-width: 50%;
@@ -179,11 +228,11 @@
       min-width: 0;
       overflow-wrap: break-word;
     }
+
     .noble h2 {
       margin-bottom: 10px;
     }
-  
-    /* Swiper Carousel */
+
     .swiper {
       width: 100%;
       height: 400px;
@@ -191,13 +240,13 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       overflow: hidden;
     }
+
     .swiper-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-  
-    /* Registration info styling */
+
     .registration-info {
       text-align: center;
       padding: 20px;
@@ -205,8 +254,7 @@
       font-size: 16px;
       color: #004d40;
     }
-  
-    /* Footer styling */
+
     footer {
       background: linear-gradient(90deg, #008080, #006666);
       color: white;
@@ -215,37 +263,34 @@
       font-size: 14px;
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
     }
-  
-    /* Responsive Design */
+
     @media (max-width: 768px) {
       section {
         flex-direction: column;
         flex-wrap: wrap;
         align-items: center;
       }
-  
+
       .text, .video, .carousel, .noble {
         max-width: 100%;
         flex: 1 1 100%;
       }
-  
+
       .swiper {
         height: 200px;
       }
-  
+
       .card {
         width: 100%;
         max-width: 300px;
       }
     }
   </style>
-  
 </head>
 <body>
-  <!-- Navigation -->
   <nav>
     <div>
-      <a href="#">VOrgans</a>
+      <a href="/">VOrgans</a>
       <div class="nav-links">
         <ul>
           <li><a href="/login">Login</a></li>
@@ -256,7 +301,6 @@
     </div>
   </nav>
 
-  <!-- Cards Section -->
   <div class="card-buttons">
     <div class="card" onclick="window.location.href='/login'">
       <h3>Login</h3>
@@ -272,14 +316,12 @@
     </div>
   </div>
 
-  <!-- Main Content -->
   <main>
-    <!-- Section 1: Welcome & Inspirational Message -->
     <section>
       <div class="text">
-        <h2>Welcome to VOrgans: A Gift of Life</h2>
+        <h2>Welcome to <span id="brandName">VOrgans</span>: A Gift of Life</h2>
         <p>Your decision to donate organs is a profound act of compassion and humanity. When you choose to help, you are not just offering an organ—you are giving someone a second chance at life.</p>
-        <p>By registering with VOrgans, you join a community that believes in hope, resilience, and the transformative power of giving. Every donor writes a story of courage, and every act of kindness inspires others to do the same.</p>
+        <p>By registering with <span id="brandName">VOrgans</span>, you join a community that believes in hope, resilience, and the transformative power of giving. Every donor writes a story of courage, and every act of kindness inspires others to do the same.</p>
         <h3>Be a Hero, Save Lives</h3>
         <p>Embrace the power of compassion and let your legacy be one of hope. Together, we can transform lives and build a healthier future for all.</p>
       </div>
@@ -290,39 +332,19 @@
       </div>
     </section>
 
-    <!-- Section 2: The Noble Act of Living Donation -->
     <section>
-      <!-- Carousel on the left -->
       <div class="carousel">
         <div class="swiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/IMG_1.png" alt="Organ Donation Image">
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/IMG_2.png" alt="Organ Donation Image">
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/IMG_3.jpg" alt="Organ Donation Image">
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/IMG_4.PNG" alt="Organ Donation Image">
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/IMG_5.png" alt="Organ Donation Image">
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/IMG_6.png" alt="Organ Donation Image">
-            </div>
+            <div class="swiper-slide"><img src="./images/IMG_1.png" alt="Organ Donation Image"></div>
+            <div class="swiper-slide"><img src="./images/IMG_2.png" alt="Organ Donation Image"></div>
+            <div class="swiper-slide"><img src="./images/IMG_3.jpg" alt="Organ Donation Image"></div>
+            <div class="swiper-slide"><img src="./images/IMG_4.PNG" alt="Organ Donation Image"></div>
+            <div class="swiper-slide"><img src="./images/IMG_5.png" alt="Organ Donation Image"></div>
+            <div class="swiper-slide"><img src="./images/IMG_6.png" alt="Organ Donation Image"></div>
           </div>
-        
-          <!-- Optional Navigation buttons 
-          <div class="swiper-button-next"></div>
-          <div class="swiper-button-prev"></div>-->
         </div>
-        
       </div>
-      <!-- Noble text on the right -->
       <div class="noble">
         <h2>The Noble Act of Living Donation</h2>
         <p>Donating an organ while you are alive is not merely a medical procedure; it is a powerful statement of hope, courage, and selflessness. It demonstrates an unwavering belief in the good that unites us all.</p>
@@ -331,17 +353,14 @@
     </section>
   </main>
 
-  <!-- Registration Information -->
   <div class="registration-info">
     By registering on our website, you become a potential organ donor or recipient. Keep your details up to date and check your emails regularly so you can be available to save lives.
   </div>
 
-  <!-- Footer -->
   <footer>
     <small>&copy; 2025 VOrgans. All rights reserved.</small>
   </footer>
 
-  <!-- Scripts -->
   <script>
     // GSAP Animations
     gsap.from("nav", { duration: 1, y: -50, opacity: 0 });
@@ -360,6 +379,18 @@
         crossFade: true,
       },
     });
+    fetch("/loginCheck", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uniqueID, pass })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.alert) {
+      alert(data.alert);
+    }
+});
+
   </script>
 </body>
 </html>
