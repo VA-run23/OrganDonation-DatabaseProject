@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS userHealth_Dependants (
     diabetes TINYINT,  -- 0 = No, 1 = Yes
     bp_condition TINYINT,  -- 0 = None, 1 = Hypertension, 2 = Hypotension
     obese TINYINT,  -- 0 = No, 1 = Yes
-    cardiac_surgery TINYINT,  -- 0 = No, 1 = Yes
+`    cardiac_surgery TINYINT,  -- 0 = No, 1 = Yes
     dependantName VARCHAR(255) NOT NULL,
     dependantAadhar BIGINT NOT NULL UNIQUE, -- Ensures uniqueness
     dependantAge INT NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS donor_organs (
 );
 
 select * from user_data;
-select * from donor_organs;
+select * from donor_org`ans;
 select * from transplanted_organs;
 select * from userHealth_Dependants;
 
@@ -85,10 +85,11 @@ desc user_data;
 desc donor_organs;
 desc userHealth_Dependants;
 
+drop table userHealth;
+drop table userdependants;
 drop table user_data;
 drop table transplanted_organs; 
 drop table donor_organs;
-drop table userHealth_Dependants;
 
 
 delete  from user_data;

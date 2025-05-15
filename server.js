@@ -99,30 +99,44 @@ CREATE TABLE IF NOT EXISTS donor_organs (
 
 
   const createDonorHealth = `
-CREATE TABLE IF NOT EXISTS userHealth_Dependants (
-  uniqueID INT PRIMARY KEY,
-  diabetes TINYINT,
-  bp_condition TINYINT,
-  obese TINYINT,
-  cardiac_surgery TINYINT,
+CREATE TABLE IF NOT EXISTS userHealth (
+  dependantID INT PRIMARY KEY,
+  diabetes TINYINT DEFAULT 0,
+  bp_condition TINYINT DEFAULT 0,
+  obese TINYINT DEFAULT 0,
+  cardiac_surgery TINYINT DEFAULT 0,
+  healthApproval TINYINT DEFAULT 0,
+  FOREIGN KEY (dependantID) REFERENCES userDependants(dependantID) ON DELETE CASCADE
+);
+
+  `;
+  const createuserDependants=` 
+CREATE TABLE IF NOT EXISTS userDependants (
+  dependantID INT AUTO_INCREMENT PRIMARY KEY,
+  uniqueID INT NOT NULL,
   dependantName VARCHAR(255) NOT NULL,
   dependantAadhar BIGINT NOT NULL UNIQUE CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
   dependantAge INT NOT NULL,
   totalDependants INT NOT NULL,
-  healthApproval TINYINT,
   FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
 );
   `;
 
+  db.query(createuserDependants, (err) =>
+    err
+      ? console.error("Error creating userDependants:", err.message)
+      : console.log(`[${new Date().toISOString()}] userDependants table ensured.`)
+  );
+
   db.query(createDonorData, (err) =>
-    err 
-      ? console.error("Error creating user_data:", err.message) 
+    err
+      ? console.error("Error creating user_data:", err.message)
       : console.log(`[${new Date().toISOString()}] user_data table ensured.`)
   );
-  
+
   db.query(createTransplantedOrgans, (err) => {
-    err 
-      ? console.error("Error creating transplanted_organs:", err.message) 
+    err
+      ? console.error("Error creating transplanted_organs:", err.message)
       : console.log(`[${new Date().toISOString()}] transplanted_organs table ensured.`);
   });
   
@@ -343,88 +357,53 @@ res.send(`
   });
 });
 
-
-// app.post("/submitPrecondition", (req, res) => {
-//   const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
-
-//   const sql = `
-//     INSERT INTO userHealth_Dependants (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval)
-//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//   `;
-
-//   db.query(sql, [uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval], (err) => {
-//     if (err) {
-//       if (err.code === 'ER_DUP_ENTRY') { 
-//         res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
-//       } else {
-//         res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
-//       }
-//     } else {
-//       res.redirect("/");
-//     }
-//   });
-// });
-
-
+//This part is done
 app.post("/submitPrecondition", (req, res) => {
   const {
     uniqueID,
-    diabetes,
-    bp_condition,
-    obese,
-    cardiac_surgery,
     dependantName,
     dependantAadhar,
     dependantAge,
     totalDependants,
+    diabetes = 0,
+    bp_condition = 0,
+    obese = 0,
+    cardiac_surgery = 0,
+
   } = req.body;
-  const healthApproval = parseInt(req.body.healthApproval) || 0;
+  healthApproval = req.body.healthApproval === "on" ? 1 : 0;
 
-
-  // Basic validation
-  if (
-    !uniqueID ||
-    !dependantName ||
-    !dependantAadhar ||
-    !dependantAge ||
-    !totalDependants ||
-    healthApproval === undefined
-  ) {
-    return res.send(`<script>alert('Please fill all required fields.'); window.history.back();</script>`);
-  }
-
-  const sql = `
-    INSERT INTO userHealth_Dependants (
-      uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
-      dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  // Step 1: Insert into userDependants
+  const insertDependantSql = `
+    INSERT INTO userDependants 
+      (uniqueID, dependantName, dependantAadhar, dependantAge, totalDependants)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  const values = [
-    parseInt(uniqueID),
-    parseInt(diabetes),
-    parseInt(bp_condition),
-    parseInt(obese),
-    parseInt(cardiac_surgery),
-    dependantName,
-    parseInt(dependantAadhar),
-    parseInt(dependantAge),
-    parseInt(totalDependants),
-    parseInt(healthApproval)
-  ];
-
-  db.query(sql, values, (err) => {
+  db.query(insertDependantSql, [uniqueID, dependantName, dependantAadhar, dependantAge, totalDependants], (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        res.send(`<script>alert('The dependant Aadhar already exists.'); window.history.back();</script>`);
+        return res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
       } else {
-        console.error("Database error:", err);
-        res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
+        return res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
       }
-    } else {
-      res.redirect("/");
     }
+
+    const dependantID = result.insertId;
+
+    // Step 2: Insert into userHealth_Dependants with the new dependantID
+    const insertHealthSql = `
+      INSERT INTO userHealth
+        (dependantID, diabetes, bp_condition, obese, cardiac_surgery, healthApproval)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(insertHealthSql, [dependantID, diabetes, bp_condition, obese, cardiac_surgery, healthApproval], (err2) => {
+      if (err2) {
+        return res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
+      }
+      res.redirect("/");
+    });
   });
 });
 
@@ -448,55 +427,78 @@ app.post("/loginCheck", (req, res) => {
   });
 });
 
-
-
 // // Dashboard Filter
-// Dashboard Filter
+// app.get("/dashboardContent", (req, res) => {
+//   const { organ, bloodGroup, city } = req.query;
+
+//   // Base SQL Query
+//   let sql = `
+//     SELECT user_data.uniqueID, user_data.email,user_data.phone, user_data.lastUpdate,
+//            userHealth_Dependants.totalDependants, userHealth_Dependants.dependantAge
+//     FROM user_data
+//     INNER JOIN userHealth_Dependants ON user_data.uniqueID = userHealth_Dependants.uniqueID
+//     LEFT JOIN donor_organs ON user_data.uniqueID = donor_organs.uniqueID
+//     WHERE user_data.bloodGroup = ? AND user_data.city = ?
+//   `;
+  
+//   const filters = [bloodGroup, city];
+
+//   // Adding Organ Filter if Provided
+//   if (organ) {
+//     sql += ` AND donor_organs.${organ} = 1`;
+//   }
+
+//   // Sorting by Last Update
+//   sql += ` ORDER BY user_data.lastUpdate DESC`;
+
+//   // Execute Query
+//   db.query(sql, filters, (err, result) => {
+//     if (err) return res.status(500).send("Internal Server Error");
+//     res.render("dashboardContent", { donors: result });
+//   });
+// });
+
+
+
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
-  // Base SQL Query
   let sql = `
-    SELECT user_data.uniqueID, user_data.email,user_data.phone, user_data.lastUpdate,
-           userHealth_Dependants.totalDependants, userHealth_Dependants.dependantAge
-    FROM user_data
-    INNER JOIN userHealth_Dependants ON user_data.uniqueID = userHealth_Dependants.uniqueID
-    LEFT JOIN donor_organs ON user_data.uniqueID = donor_organs.uniqueID
-    WHERE user_data.bloodGroup = ? AND user_data.city = ?
+    SELECT 
+      u.uniqueID, 
+      u.email, 
+      u.phone, 
+      u.lastUpdate,
+      d.totalDependants,
+      d.dependantAge
+    FROM user_data u
+    LEFT JOIN (
+      SELECT uniqueID, MIN(dependantAge) AS dependantAge, MAX(totalDependants) AS totalDependants
+      FROM userDependants
+      GROUP BY uniqueID
+    ) d ON u.uniqueID = d.uniqueID
+    LEFT JOIN donor_organs o ON u.uniqueID = o.uniqueID
+    WHERE u.bloodGroup = ? AND u.city = ?
   `;
-  
+
   const filters = [bloodGroup, city];
 
-  // Adding Organ Filter if Provided
+  // Add organ filter dynamically
   if (organ) {
-    sql += ` AND donor_organs.${organ} = 1`;
+    sql += ` AND o.${organ} = 1`;
   }
 
-  // Sorting by Last Update
-  sql += ` ORDER BY user_data.lastUpdate DESC`;
+  sql += ` ORDER BY u.lastUpdate DESC`;
 
-  // Execute Query
   db.query(sql, filters, (err, result) => {
-    if (err) return res.status(500).send("Internal Server Error");
+    if (err) {
+      console.error("Error executing dashboard query:", err);
+      return res.status(500).send("Internal Server Error");
+    }
     res.render("dashboardContent", { donors: result });
   });
 });
 
-// Pre-update Check
-// app.post("/preUpdateCheck", (req, res) => {
-//   const { uniqueID, pass } = req.body;
-//   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
-
-//   db.query(sql, [uniqueID, pass], (err, result) => {
-//     if (err) return res.status(500).json({ message: "Internal server error!" });
-//     if (result.length > 0) {
-//       req.session.uniqueID = uniqueID;
-//       res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
-//     } else {
-//       res.status(401).json({ message: "Invalid credentials!" });
-//     }
-//   });
-// });
 
 app.post("/preUpdateCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
