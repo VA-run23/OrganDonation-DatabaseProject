@@ -170,6 +170,7 @@
           document.getElementById("name").value = data.name || "";
           document.getElementById("email").value = data.email || "";
           document.getElementById("govtID").value = data.govtID || "";
+                    document.getElementById("phone").value = data.phone || "";
           document.getElementById("pass").value = data.pass || "";
           document.getElementById("age").value = data.age || "";
           document.getElementById("gender").value = data.gender || "";
@@ -196,6 +197,7 @@
           document.getElementById("uniqueID").readOnly = true;
           document.getElementById("govtID").readOnly = true;
           document.getElementById("email").readOnly = true;
+          document.getElementById("phone").readOnly = true;
           document.getElementById("bloodGroup").disabled = true;
         })
         .catch(error => console.error("Error fetching user data:", error));
@@ -231,7 +233,12 @@
           <label for="email">Email:</label>
           <input type="email" id="email" name="email" placeholder="Enter Email" required class="form-control">
         </div>
-  
+  <div class="form-group">
+    <label for="phone">Phone:</label>
+    <input type="tel" name="phone"id="phone" placeholder="Enter Phone Number" class="form-control"
+           pattern="\d{10}" maxlength="10" title="Enter a 10-digit phone number">
+</div>
+
         <div class="form-group">
           <label for="govtID">Govt ID:</label>
           <input type="text" id="govtID" name="govtID" placeholder="Enter Govt ID" required class="form-control">
