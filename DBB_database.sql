@@ -1,4 +1,4 @@
--- Active: 1746685122884@@127.0.0.1@3306@dbb
+	-- Active: 1746685122884@@127.0.0.1@3306@dbb
 create database dbb;
 use dbb;
 SHOW TABLES;
@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS user_data (
   govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
   name VARCHAR(50),
   email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
+  phone VARCHAR(10) UNIQUE CHECK (phone REGEXP '^[0-9]{10}$'),  -- Ensures a 10-digit phone number
   pass VARCHAR(255),
   age INT CHECK (age >= 18),
   gender ENUM('Male', 'Female'),
@@ -89,6 +90,9 @@ drop table transplanted_organs;
 drop table donor_organs;
 drop table userHealth_Dependants;
 
+
+delete  from user_data;
+delete from userhealth_dependants;
 
 INSERT INTO transplanted_organs (uniqueID, kidney, liver, lung, intestine, pancreas) VALUES
 (1, 1, 0, 0, 0, 0),

@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS user_data (
   govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
   name VARCHAR(50),
   email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
+  phone VARCHAR(10) UNIQUE CHECK (phone REGEXP '^[0-9]{10}$'),
   pass VARCHAR(255),
   age INT CHECK (age >= 18),
   gender ENUM('Male', 'Female'),
@@ -145,6 +146,7 @@ app.post("/submit", (req, res) => {
   const { 
     name, 
     email, 
+    phone,
     govtID, 
     pass, 
     age, 
@@ -155,6 +157,7 @@ app.post("/submit", (req, res) => {
     transplantedOrgans 
   } = req.body;
 
+  
   // Validate Government ID
   if (govtID < 100000000000 || govtID > 999999999999) {
     return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
@@ -196,45 +199,88 @@ app.post("/submit", (req, res) => {
   // Debug logging for conflicts
   console.log("Conflict Organs:", conflictOrgans);
 
-  if (conflictOrgans.length > 0) {
-    return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
-  }
+if (conflictOrgans.length > 0) {
+  return res.send(`
+    <html>
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      </head>
+      <body>
+        <script>
+          Swal.fire({
+            icon: 'error',
+            title: 'Conflict Detected',
+            html: 'You cannot donate transplanted organs:<br><strong style="color: red;">${conflictOrgans.join(", ")}</strong>',
+            confirmButtonText: 'Go Back',
+            confirmButtonColor: '#d33'
+          }).then(() => {
+            window.history.back();
+          });
+        </script>
+      </body>
+    </html>
+  `);
+}
 
-  //   // Check for conflict: if an organ is both marked as transplanted and as donated.
-  // const conflictOrgans = organs.filter((o, index) => transplantedFlags[index] === 1 && donatedFlags[index] === 1);
-  
-  // // Debug logging for conflicts
-  // console.log("Conflict Organs:", conflictOrgans);
-
-  // if (conflictOrgans.length > 0) {
-  //   return res.send(`<script>alert("Conflict detected: You cannot donate transplanted organs (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
-  // }
-
-  // // Check if more than 2 transplanted organs are selected
-  // const transplantedCount = transplantedFlags.reduce((sum, val) => sum + val, 0);
-  // if (transplantedCount > 2) {
-  //   return res.send(`<script>alert("You cannot register: More than two transplanted organs indicates poor health."); window.history.back();</script>`);
-  // }
 
   // Check if more than 3 organs are selected for donation
   const donatedCount = donatedFlags.reduce((sum, val) => sum + val, 0);
-  if (donatedCount > 3) {
-    return res.send(`<script>alert("Donating more than three organs can be harmful. Please select fewer organs."); window.history.back();</script>`);
-  }
+if (donatedCount > 3) {
+  return res.send(`
+    <html>
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      </head>
+      <body>
+        <script>
+          Swal.fire({
+            icon: 'warning',
+            title: 'Too Many Organs Selected',
+            html: 'Donating <strong style="color: red;">more than three organs</strong> can be harmful.<br>Please select fewer organs.',
+            confirmButtonText: 'Go Back',
+            confirmButtonColor: '#f39c12'
+          }).then(() => {
+            window.history.back();
+          });
+        </script>
+      </body>
+    </html>
+  `);
+}
 
 
   // Insert Donor Data into user_data table
   const dataQuery = `
-    INSERT INTO user_data (name, email, govtID, pass, age, gender, city, bloodGroup)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO user_data (name, email, phone, govtID, pass, age, gender, city, bloodGroup)
+    VALUES (?, ?, ?, ?, ?,?, ?, ?, ? )
   `;
-  const dataValues = [name, email, govtID, pass, age, gender, city, bloodGroup];
+  const dataValues = [name, email, phone, govtID, pass, age, gender, city, bloodGroup];
 
   db.query(dataQuery, dataValues, (err, result) => {
     if (err) {
-      if (err.code === "ER_DUP_ENTRY") {
-        return res.send(`<script>alert("Government ID or Email already registered."); window.history.back();</script>`);
-      }
+if (err.code === "ER_DUP_ENTRY") {
+  return res.send(`
+    <html>
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      </head>
+      <body>
+        <script>
+          Swal.fire({
+            icon: 'error',
+            title: 'Duplicate Entry',
+            html: 'The <strong style="color: #e74c3c;">Government ID</strong> or <strong style="color: #e74c3c;">Email</strong> is already registered.<br>Please use different credentials.',
+            confirmButtonText: 'Go Back',
+            confirmButtonColor: '#e74c3c'
+          }).then(() => {
+            window.history.back();
+          });
+        </script>
+      </body>
+    </html>
+  `);
+}
+
       console.error("Database Error:", err);
       return res.status(500).send("Internal Server Error");
     }
@@ -268,44 +314,112 @@ app.post("/submit", (req, res) => {
         }
 
         req.session.uniqueID = uniqueID;
-        res.send(`<script>alert("✅ Registered! Your Unique Donor ID is: ${uniqueID}"); window.location.href = "/existingconditions";</script>`);
+res.send(`
+  <html>
+    <head>
+      <!-- Include SweetAlert2 from CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+      <script>
+        Swal.fire({
+          icon: 'success',
+          title: '✅ Registered!',
+          text: 'Your Unique Donor ID is: ${uniqueID}',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didClose: () => {
+            window.location.href = "/existingconditions";
+          }
+        });
+      </script>
+    </body>
+  </html>
+`);
+
       });
     });
   });
 });
 
 
+// app.post("/submitPrecondition", (req, res) => {
+//   const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
+
+//   const sql = `
+//     INSERT INTO userHealth_Dependants (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval)
+//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//   `;
+
+//   db.query(sql, [uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval], (err) => {
+//     if (err) {
+//       if (err.code === 'ER_DUP_ENTRY') { 
+//         res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
+//       } else {
+//         res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
+//       }
+//     } else {
+//       res.redirect("/");
+//     }
+//   });
+// });
+
+
 app.post("/submitPrecondition", (req, res) => {
-  const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants } = req.body;
-  const healthApproval = req.body.healthApproval ? 1 : 0;
+  const {
+    uniqueID,
+    diabetes,
+    bp_condition,
+    obese,
+    cardiac_surgery,
+    dependantName,
+    dependantAadhar,
+    dependantAge,
+    totalDependants,
+  } = req.body;
+  const healthApproval = parseInt(req.body.healthApproval) || 0;
 
-  // Check if user is healthy to donate
-  // if (diabetes || bp_condition || obese || cardiac_surgery || !healthApproval) {
-  //   // Delete donor data if user is not healthy
-  //   const deleteDonorDataQuery = `DELETE FROM user_data WHERE uniqueID = ?`;
 
-  //   db.query(deleteDonorDataQuery, [uniqueID], (deleteErr) => {
-  //     if (deleteErr) {
-  //       console.error("Error deleting donor data:", deleteErr);
-  //       return res.send(`<script>alert('Internal Server Error while deleting donor data.'); window.location.href = "/signup";</script>`);
-  //     }
-
-  //     res.send(`<script>alert('You are not eligible to donate any organs due to health conditions. Your data has been removed.'); window.history.back();</script>`);
-  //   });
-
-  //   return;
-  // }
+  // Basic validation
+  if (
+    !uniqueID ||
+    !dependantName ||
+    !dependantAadhar ||
+    !dependantAge ||
+    !totalDependants ||
+    healthApproval === undefined
+  ) {
+    return res.send(`<script>alert('Please fill all required fields.'); window.history.back();</script>`);
+  }
 
   const sql = `
-    INSERT INTO userHealth_Dependants (uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval)
+    INSERT INTO userHealth_Dependants (
+      uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
+      dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
+    )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  db.query(sql, [uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval], (err) => {
+  const values = [
+    parseInt(uniqueID),
+    parseInt(diabetes),
+    parseInt(bp_condition),
+    parseInt(obese),
+    parseInt(cardiac_surgery),
+    dependantName,
+    parseInt(dependantAadhar),
+    parseInt(dependantAge),
+    parseInt(totalDependants),
+    parseInt(healthApproval)
+  ];
+
+  db.query(sql, values, (err) => {
     if (err) {
-      if (err.code === 'ER_DUP_ENTRY') { 
-        res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.send(`<script>alert('The dependant Aadhar already exists.'); window.history.back();</script>`);
       } else {
+        console.error("Database error:", err);
         res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
       }
     } else {
@@ -314,18 +428,6 @@ app.post("/submitPrecondition", (req, res) => {
   });
 });
 
-
-// Login Check
-// app.post("/loginCheck", (req, res) => {
-//   const { uniqueID, pass } = req.body;
-//   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
-
-//   db.query(sql, [uniqueID, pass], (err, result) => {
-//     if (err) return res.status(500).send("Internal Server Error");
-//     if (result.length > 0) return res.redirect("/dashboard");
-//     res.status(401).send("Invalid Unique ID or Password");
-//   });
-// });
 
 app.post("/loginCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
@@ -355,7 +457,7 @@ app.get("/dashboardContent", (req, res) => {
 
   // Base SQL Query
   let sql = `
-    SELECT user_data.uniqueID, user_data.email, user_data.lastUpdate,
+    SELECT user_data.uniqueID, user_data.email,user_data.phone, user_data.lastUpdate,
            userHealth_Dependants.totalDependants, userHealth_Dependants.dependantAge
     FROM user_data
     INNER JOIN userHealth_Dependants ON user_data.uniqueID = userHealth_Dependants.uniqueID
@@ -421,6 +523,7 @@ app.post("/confirmUpdate1", (req, res) => {
     uniqueID, 
     name, 
     email, 
+    phone,
     govtID, 
     pass, 
     age, 
@@ -455,10 +558,10 @@ app.post("/confirmUpdate1", (req, res) => {
   // Update donor general data in user_data table
   const donorDataQuery = `
     UPDATE user_data
-    SET name = ?, email = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
+    SET name = ?, email = ?,phone = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
     WHERE uniqueID = ?
   `;
-  const donorDataValues = [name, email, govtID, pass, age, gender, city, bloodGroup, uniqueID];
+  const donorDataValues = [name, email, phone, govtID, pass, age, gender, city, bloodGroup, uniqueID];
 
   db.query(donorDataQuery, donorDataValues, (err, result) => {
     if (err) {
@@ -544,7 +647,31 @@ app.post("/confirmUpdate2", (req, res) => {
 
   db.query(sql, values, (err) => {
     if (err) return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-    res.send(`<script>alert("Preconditions & Dependants updated successfully for UniqueID: ${uniqueID}"); window.location.href = "/";</script>`);
+    // res.send(`<script>alert("Preconditions & Dependants updated successfully for UniqueID: ${uniqueID}"); window.location.href = "/";</script>`);
+ res.send(`
+  <html>
+    <head>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+      <script>
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated Successfully!',
+          text: 'Preconditions & Dependants updated for UniqueID: ${uniqueID}',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didClose: () => {
+            window.location.href = "/";
+          }
+        });
+      </script>
+    </body>
+  </html>
+`);
+
+ 
   });
 });
 
@@ -581,6 +708,7 @@ app.get("/getUser/:uniqueID", (req, res) => {
         uniqueID: row.uniqueID,
         name: row.name,
         email: row.email,
+        phone: row.phone,
         govtID: row.govtID,
         pass: row.pass,
         age: row.age,
