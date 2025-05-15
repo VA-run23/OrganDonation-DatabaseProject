@@ -613,67 +613,198 @@ app.post("/confirmUpdate1", (req, res) => {
 
 
 
-// Confirm Update Step 2
+// // Confirm Update Step 2
+// app.post("/confirmUpdate2", (req, res) => {
+//   const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
+
+//   const sql = `
+//     INSERT INTO userHealth_Dependants (
+//       uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
+//       dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
+//     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//     ON DUPLICATE KEY UPDATE
+//       diabetes = VALUES(diabetes),
+//       bp_condition = VALUES(bp_condition),
+//       obese = VALUES(obese),
+//       cardiac_surgery = VALUES(cardiac_surgery),
+//       dependantName = VALUES(dependantName),
+//       dependantAadhar = VALUES(dependantAadhar),
+//       dependantAge = VALUES(dependantAge),
+//       totalDependants = VALUES(totalDependants),
+//       healthApproval = VALUES(healthApproval)
+//   `;
+
+//   const values = [
+//     uniqueID,
+//     Number(diabetes || 0),
+//     Number(bp_condition || 0),
+//     Number(obese || 0),
+//     Number(cardiac_surgery || 0),
+//     dependantName,
+//     dependantAadhar,
+//     dependantAge,
+//     totalDependants,
+//     (healthApproval === "on" || healthApproval === "1") ? 1 : 0
+//   ];
+
+//   db.query(sql, values, (err) => {
+//     if (err) return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+//     // res.send(`<script>alert("Preconditions & Dependants updated successfully for UniqueID: ${uniqueID}"); window.location.href = "/";</script>`);
+//  res.send(`
+//   <html>
+//     <head>
+//       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+//     </head>
+//     <body>
+//       <script>
+//         Swal.fire({
+//           icon: 'success',
+//           title: 'Updated Successfully!',
+//           text: 'Preconditions & Dependants updated for UniqueID: ${uniqueID}',
+//           showConfirmButton: false,
+//           timer: 3000,
+//           timerProgressBar: true,
+//           didClose: () => {
+//             window.location.href = "/";
+//           }
+//         });
+//       </script>
+//     </body>
+//   </html>
+// `);
+
+ 
+//   });
+// });
+
+
+
 app.post("/confirmUpdate2", (req, res) => {
-  const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
-
-  const sql = `
-    INSERT INTO userHealth_Dependants (
-      uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
-      dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE
-      diabetes = VALUES(diabetes),
-      bp_condition = VALUES(bp_condition),
-      obese = VALUES(obese),
-      cardiac_surgery = VALUES(cardiac_surgery),
-      dependantName = VALUES(dependantName),
-      dependantAadhar = VALUES(dependantAadhar),
-      dependantAge = VALUES(dependantAge),
-      totalDependants = VALUES(totalDependants),
-      healthApproval = VALUES(healthApproval)
-  `;
-
-  const values = [
+  const {
     uniqueID,
-    Number(diabetes || 0),
-    Number(bp_condition || 0),
-    Number(obese || 0),
-    Number(cardiac_surgery || 0),
     dependantName,
     dependantAadhar,
     dependantAge,
     totalDependants,
-    (healthApproval === "on" || healthApproval === "1") ? 1 : 0
-  ];
+    diabetes,
+    bp_condition,
+    obese,
+    cardiac_surgery,
+    healthApproval
+  } = req.body;
 
-  db.query(sql, values, (err) => {
-    if (err) return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-    // res.send(`<script>alert("Preconditions & Dependants updated successfully for UniqueID: ${uniqueID}"); window.location.href = "/";</script>`);
- res.send(`
-  <html>
-    <head>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
-    <body>
-      <script>
-        Swal.fire({
-          icon: 'success',
-          title: 'Updated Successfully!',
-          text: 'Preconditions & Dependants updated for UniqueID: ${uniqueID}',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didClose: () => {
-            window.location.href = "/";
+  const healthData = {
+    diabetes: Number(diabetes || 0),
+    bp_condition: Number(bp_condition || 0),
+    obese: Number(obese || 0),
+    cardiac_surgery: Number(cardiac_surgery || 0),
+    healthApproval: (healthApproval === "on" || healthApproval === "1") ? 1 : 0,
+  };
+
+  db.beginTransaction(err => {
+    if (err) return res.status(500).json({ message: "Transaction error", error: err });
+
+    // Step 1: INSERT or UPDATE dependant
+    const upsertDependantSQL = `
+      INSERT INTO userDependants (uniqueID, dependantName, dependantAadhar, dependantAge, totalDependants)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        dependantName = VALUES(dependantName),
+        dependantAge = VALUES(dependantAge),
+        totalDependants = VALUES(totalDependants)
+    `;
+
+    const dependantValues = [
+      uniqueID,
+      dependantName,
+      dependantAadhar,
+      dependantAge,
+      totalDependants
+    ];
+
+    db.query(upsertDependantSQL, dependantValues, (err, result) => {
+      if (err) {
+        return db.rollback(() =>
+          res.status(500).json({ message: "Error inserting/updating dependant", error: err.sqlMessage })
+        );
+      }
+
+      // Step 2: Get the dependantID (either from insertId or SELECT)
+      const getIDSQL = `
+        SELECT dependantID FROM userDependants WHERE dependantAadhar = ?
+      `;
+
+      db.query(getIDSQL, [dependantAadhar], (err, rows) => {
+        if (err || rows.length === 0) {
+          return db.rollback(() =>
+            res.status(500).json({ message: "Could not fetch dependantID", error: err?.sqlMessage || "Not found" })
+          );
+        }
+
+        const dependantID = rows[0].dependantID;
+
+        // Step 3: INSERT or UPDATE health info
+        const healthSQL = `
+          INSERT INTO userHealth (dependantID, diabetes, bp_condition, obese, cardiac_surgery, healthApproval)
+          VALUES (?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            diabetes = VALUES(diabetes),
+            bp_condition = VALUES(bp_condition),
+            obese = VALUES(obese),
+            cardiac_surgery = VALUES(cardiac_surgery),
+            healthApproval = VALUES(healthApproval)
+        `;
+
+        const healthValues = [
+          dependantID,
+          healthData.diabetes,
+          healthData.bp_condition,
+          healthData.obese,
+          healthData.cardiac_surgery,
+          healthData.healthApproval
+        ];
+
+        db.query(healthSQL, healthValues, (err) => {
+          if (err) {
+            return db.rollback(() =>
+              res.status(500).json({ message: "Error updating health data", error: err.sqlMessage })
+            );
           }
-        });
-      </script>
-    </body>
-  </html>
-`);
 
- 
+          db.commit(err => {
+            if (err) {
+              return db.rollback(() =>
+                res.status(500).json({ message: "Transaction commit failed", error: err.sqlMessage })
+              );
+            }
+
+            // Success
+            res.send(`
+              <html>
+                <head>
+                  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                </head>
+                <body>
+                  <script>
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Updated Successfully!',
+                      text: 'Health & Dependant data updated for Aadhar: ${dependantAadhar}',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true,
+                      didClose: () => {
+                        window.location.href = "/";
+                      }
+                    });
+                  </script>
+                </body>
+              </html>
+            `);
+          });
+        });
+      });
+    });
   });
 });
 
@@ -750,16 +881,25 @@ app.get("/updatePreconditionsAndDependants", (req, res) => {
 
 // Fetch precondition data
 app.get("/getPrecondition/:uniqueID", (req, res) => {
-  const { uniqueID } = req.params;
-  if (!uniqueID) return res.status(400).json({ error: "Unique ID is required!" });
+  const uniqueID = req.params.uniqueID;
 
-  const query = "SELECT * FROM userHealth_Dependants WHERE uniqueID = ?";
-  db.query(query, [uniqueID], (err, results) => {
-    if (err) return res.status(500).json({ error: "Internal server error!" });
-    if (results.length > 0) res.json(results[0]);
-    else res.status(404).json({ message: "No data found for uniqueID" });
+  const sql = `
+    SELECT d.dependantID, d.dependantName, d.dependantAadhar, d.dependantAge, d.totalDependants,
+           h.diabetes, h.bp_condition, h.obese, h.cardiac_surgery, h.healthApproval
+    FROM userDependants d
+    LEFT JOIN userHealth h ON d.dependantID = h.dependantID
+    WHERE d.uniqueID = ?
+    ORDER BY d.dependantID DESC
+    LIMIT 1  -- if showing only one dependant
+  `;
+
+  db.query(sql, [uniqueID], (err, result) => {
+    if (err) return res.status(500).json({ error: "Failed to fetch data.", details: err });
+    if (result.length === 0) return res.status(404).json({ error: "No dependant data found." });
+    res.json(result[0]);
   });
 });
+
 
 // DELETE USER ENDPOINT
 app.post("/deleteUser", (req, res) => {
