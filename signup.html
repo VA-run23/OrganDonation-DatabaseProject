@@ -149,114 +149,120 @@ footer {
   <div class="container">
     <div class="card shadow">
       <!-- Original Form Maintained As-Is -->
-<form action="/submit" style="padding: 20px 15px 30px;  margin-bottom: 70px;" method="post">
-          <!-- This submit action will trigger the Express server in server.js -->
-          <div class="form-group">
-            <input type="text" name="name" placeholder="Enter Name" required class="form-control">
-          </div>
-          <div class="form-group">
-            <input type="email" name="email" placeholder="Enter Email" class="form-control">
-          </div>
-          <div class="form-group">
-            <input type="number" name="govtID" placeholder="Enter Aadhaar ID" required class="form-control">
-            <!-- Added unique ID field -->
-          </div>
-          <div class="form-group">
-            <input type="text" name="pass" placeholder="Enter password" required class="form-control">
-          </div>
-          <div class="form-group">
-            <input type="number" name="age" placeholder="Enter Age" min="1" class="form-control">
-            <!-- Age field added -->
-          </div>
+  <form action="/submit" style="padding: 20px 15px 30px;  margin-bottom: 70px;" method="post">
+            <!-- This submit action will trigger the Express server in server.js -->
+            <div class="form-group">
+              <input type="text" name="name" placeholder="Enter Name" required class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="email" name="email" placeholder="Enter Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="tel" name="phone" placeholder="Enter Phone Number" class="form-control"
+                    pattern="\d{10}" maxlength="10" title="Enter a 10-digit phone number">
+            </div>
 
-          <div class="form-group">
-            <label for="gender">Choose Gender:</label>
-            <select id="gender" name="gender" class="form-control">
-                <option value="">-- Select --</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-          </div>
 
-          <div class="form-group">
-            <label for="city">Choose City:</label>
-            <select id="city" name="city" class="form-control">
-                <option value="">-- Select --</option>
-                <option value="Mysore">Mysore</option>
-                <option value="Bangalore">Bangalore</option>
-                <option value="Chikmagalur">Chikmagalur</option>
-                <option value="Kolar">Kolar</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <input type="number" name="govtID" placeholder="Enter Aadhaar ID" required class="form-control">
+              <!-- Added unique ID field -->
+            </div>
+            <div class="form-group">
+              <input type="text" name="pass" placeholder="Enter password" required class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="number" name="age" placeholder="Enter Age" min="1" class="form-control">
+              <!-- Age field added -->
+            </div>
 
-          <div class="form-group">
-            <label for="bloodGroup">Choose Blood Group:</label>
-            <select id="bloodGroup" name="bloodGroup" required class="form-control">
-                <option value="">-- Select --</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label for="gender">Choose Gender:</label>
+              <select id="gender" name="gender" class="form-control">
+                  <option value="">-- Select --</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+              </select>
+            </div>
 
-          <fieldset class="form-group">
-            <legend>Organs transplanted in you so far:</legend>
-            <div class="form-check">
-              <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney" class="form-check-input">
-              <label for="transplanted_kidney" class="form-check-label">Kidney</label>
+            <div class="form-group">
+              <label for="city">Choose City:</label>
+              <select id="city" name="city" class="form-control">
+                  <option value="">-- Select --</option>
+                  <option value="Mysore">Mysore</option>
+                  <option value="Bangalore">Bangalore</option>
+                  <option value="Chikmagalur">Chikmagalur</option>
+                  <option value="Kolar">Kolar</option>
+              </select>
             </div>
-            <div class="form-check">
-              <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver" class="form-check-input">
-              <label for="transplanted_liver" class="form-check-label">Liver</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung" class="form-check-input">
-              <label for="transplanted_lung" class="form-check-label">Lung</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine" class="form-check-input">
-              <label for="transplanted_intestine" class="form-check-label">Intestine</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas" class="form-check-input">
-              <label for="transplanted_pancreas" class="form-check-label">Pancreas</label>
-            </div>
-          </fieldset>
 
-          <fieldset class="form-group">
-            <legend>Choose organs (part of organ) willing to donate while alive:</legend>
-            <div class="form-check">
-              <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney" class="form-check-input">
-              <label for="donated_kidney" class="form-check-label">Kidney</label>
+            <div class="form-group">
+              <label for="bloodGroup">Choose Blood Group:</label>
+              <select id="bloodGroup" name="bloodGroup" required class="form-control">
+                  <option value="">-- Select --</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+              </select>
             </div>
-            <div class="form-check">
-              <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver" class="form-check-input">
-              <label for="donated_liver" class="form-check-label">Liver</label>
+
+            <fieldset class="form-group">
+              <legend>Organs transplanted in you so far:</legend>
+              <div class="form-check">
+                <input type="checkbox" id="transplanted_kidney" name="transplantedOrgans" value="Kidney" class="form-check-input">
+                <label for="transplanted_kidney" class="form-check-label">Kidney</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="transplanted_liver" name="transplantedOrgans" value="Liver" class="form-check-input">
+                <label for="transplanted_liver" class="form-check-label">Liver</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="transplanted_lung" name="transplantedOrgans" value="Lung" class="form-check-input">
+                <label for="transplanted_lung" class="form-check-label">Lung</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="transplanted_intestine" name="transplantedOrgans" value="Intestine" class="form-check-input">
+                <label for="transplanted_intestine" class="form-check-label">Intestine</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="transplanted_pancreas" name="transplantedOrgans" value="Pancreas" class="form-check-input">
+                <label for="transplanted_pancreas" class="form-check-label">Pancreas</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-group">
+              <legend>Choose organs (part of organ) willing to donate while alive:</legend>
+              <div class="form-check">
+                <input type="checkbox" id="donated_kidney" name="donatedOrgans" value="Kidney" class="form-check-input">
+                <label for="donated_kidney" class="form-check-label">Kidney</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="donated_liver" name="donatedOrgans" value="Liver" class="form-check-input">
+                <label for="donated_liver" class="form-check-label">Liver</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung" class="form-check-input">
+                <label for="donated_lung" class="form-check-label">Lung</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine" class="form-check-input">
+                <label for="donated_intestine" class="form-check-label">Intestine</label>
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas" class="form-check-input">
+                <label for="donated_pancreas" class="form-check-label">Pancreas</label>
+              </div>
+            </fieldset>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">Submit</button> <!-- Fixed button -->
             </div>
-            <div class="form-check">
-              <input type="checkbox" id="donated_lung" name="donatedOrgans" value="Lung" class="form-check-input">
-              <label for="donated_lung" class="form-check-label">Lung</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" id="donated_intestine" name="donatedOrgans" value="Intestine" class="form-check-input">
-              <label for="donated_intestine" class="form-check-label">Intestine</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" id="donated_pancreas" name="donatedOrgans" value="Pancreas" class="form-check-input">
-              <label for="donated_pancreas" class="form-check-label">Pancreas</label>
-            </div>
-          </fieldset>
-          <div class="d-flex justify-content-between align-items-center mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">Submit</button> <!-- Fixed button -->
-          </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
 
 <!-- Fixed Footer -->
 <footer style="margin-top: 30px;" class="bg-light fixed-bottom">
