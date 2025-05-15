@@ -92,7 +92,7 @@ drop table userHealth_Dependants;
 
 
 delete  from user_data;
-delete from userhealth_dependants;
+delete from userhealth_dependants ;
 
 INSERT INTO transplanted_organs (uniqueID, kidney, liver, lung, intestine, pancreas) VALUES
 (1, 1, 0, 0, 0, 0),

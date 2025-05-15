@@ -130,6 +130,7 @@
             <tr>
                 <th>Unique ID</th>
                 <th>Email</th>
+                <th>Contact Number</th>
                 <th>Number of Dependants</th>
                 <th>Primary Dependant Age</th>
                 <th>Last Update</th>
@@ -140,6 +141,7 @@
                     <tr>
                         <td><%= donor.uniqueID %></td>
                         <td><%= donor.email %></td>
+                        <td><%= donor.phone %></td>
                         <td><%= donor.totalDependants %></td>
                         <td><%= donor.dependantAge %></td>
                         <td><%= new Date(donor.lastUpdate).toLocaleString() %></td>
