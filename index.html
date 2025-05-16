@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VOrgans | Organ Donation Platform</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -48,34 +47,26 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .hover-area {
-      position: relative;
-    }
 
-    .hover-area p {
-      transition: color 0.3s ease;
-      color: black;
-    }
 
-    .hover-area:hover p {
-      color: #10b981;
-    }
+#move {
+  background-color: #6bffa4;
+  display: flex;
+  padding: 3vw 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 5rem; /* Rounded corners */
+  margin: 2rem; /* Optional: spacing from other elements */
+}
 
-    #move {
-      background-color: #6bffa4;
-      display: flex;
-      padding: 3vw 0;
-      overflow: hidden;
-      white-space: nowrap;
-    }
+.marque {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0 3vw;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: bold;
+}
 
-    .marque {
-      display: inline-block;
-      white-space: nowrap;
-      padding: 0 3vw;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body class="text-gray-800">
@@ -83,37 +74,33 @@
 
   <!-- Video Background -->
   <div class="relative h-screen overflow-hidden">
-    <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
+    <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0" poster="/images/video-fallback.jpg">
       <source src="videos/LOOP_Video.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
     <div class="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
     <div class="absolute top-0 right-0 z-20 p-6 max-w-xl text-right">
-      <h1 class="text-5xl font-bold text-white mb-4">Welcome to <span class="text-green-400">VOrgans</span></h1>
+      <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">Welcome to <span class="text-green-400">VOrgans</span></h1>
       <p class="text-lg text-gray-100 mb-6">
         Become a potential organ donor or recipient. Keep your details up to date and check your emails regularly so you can be available to save lives.
       </p>
       <div class="flex flex-col items-end gap-4">
-        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/login'" tabindex="0" role="button">Login</div>
-        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/signup'" tabindex="0" role="button">Sign Up</div>
-        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/preUpdate'" tabindex="0" role="button">Update Details</div>
+        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/login'">Login</div>
+        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/signup'">Sign Up</div>
+        <div class="card bg-white px-6 py-3 rounded-xl shadow-lg cursor-pointer" onclick="window.location.href='/preUpdate'">Update Details</div>
       </div>
     </div>
   </div>
 
   <!-- Guidelines Section -->
-  <section class="guidelines-section py-12 px-4 bg-white">
-    <div class="max-w-5xl mx-auto">
-      <div class="mt-10">
-        <p class="text-gray-700 text-xl mb-6">Welcome to VOrgans: A Gift of Life</p>
-        <p class="text-gray-700 text-xl mb-4">Your decision to donate organs is a profound act of compassion and humanity. When you choose to help, you are not just offering an organ—you are giving someone a second chance at life.</p>
-        <p class="text-gray-700 text-xl mb-4">By registering with VOrgans, you join a community that believes in hope, resilience, and the transformative power of giving. Every donor writes a story of courage, and every act of kindness inspires others to do the same.</p>
-        <p class="text-gray-700 text-xl">Be a Hero, Save Lives. Embrace the power of compassion and let your legacy be one of hope. Together, we can transform lives and build a healthier future for all.</p>
+  <section class="py-12 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Welcome to VOrgans: A Gift of Life</h2>
+        <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+          Your decision to donate organs is a profound act of compassion and humanity. You’re not just offering an organ — you're giving someone a second chance at life.
+        </p>
       </div>
-
-      <br><br>
-
-      <!-- Smooth Scrolling Marquee -->
       <div id="move">
         <div class="marque">Donate Organs Save Lives</div>
         <div class="marque">Donate Organs Save Lives</div>
@@ -122,50 +109,115 @@
         <div class="marque">Donate Organs Save Lives</div>
         <div class="marque">Donate Organs Save Lives</div>
       </div>
+      <br><br> <br>
+      <!-- How it Works -->
+     <div class="grid md:grid-cols-3 gap-8 mb-16">
+  <div class="rounded-2xl shadow-lg p-6 text-center" style="background-color: #E6E6FA;">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Eligibility</h3>
+    <p class="text-gray-600">Users must be between 18 and 60 years of age to be eligible for organ donation.</p>
+  </div>
+  <div class="rounded-2xl shadow-lg p-6 text-center" style="background-color: #E6E6FA;">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Donation Limit</h3>
+    <p class="text-gray-600">A donor may not donate more than 3 organs to ensure personal well-being and ethical integrity.</p>
+  </div>
+  <div class="rounded-2xl shadow-lg p-6 text-center" style="background-color: #E6E6FA;">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Easy Registration</h3>
+    <p class="text-gray-600">Register seamlessly using your Aadhar ID and join a movement that saves lives.</p>
+  </div>
+</div>
 
-      <br><br>
+<!-- Testimonials -->
+<div>
+  <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">What Users Say</h2>
+  <div class="swiper testimonialSwiper">
+    <div class="swiper-wrapper">
 
-      <!-- Guidelines Header -->
-      <div class="flex items-start justify-between">
-        <div class="min-w-[150px]">
-          <h2 class="text-6xl font-bold text-gray-900">Guidelines</h2>
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Donating through VOrgans changed my life. It’s the most fulfilling thing I’ve ever done."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Aarav M.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"The registration process was easy, and the support was amazing. Highly recommend."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Sneha K.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Being a donor gave me a sense of purpose. VOrgans made it all possible."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Rajesh T.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"I never imagined helping others this way. Thank you VOrgans!"</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Meera D.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"The platform is user-friendly and encourages people to contribute."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Kunal V.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Quick, smooth, and ethical. Great experience from start to finish."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Alisha B.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"I registered within minutes and now feel proud to be a donor."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Varun R.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Great initiative with a noble cause. Highly recommended!"</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Nisha L.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Was skeptical at first, but VOrgans exceeded my expectations."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Harish C.</div>
+      </div>
+
+      <div class="swiper-slide bg-gray-50 p-6 rounded-xl shadow-md">
+        <p class="text-lg text-gray-700">"Truly inspiring. I recommend everyone to become a part of this life-saving network."</p>
+        <div class="mt-4 text-right text-gray-500 font-medium">— Priya S.</div>
+      </div>
+
+    </div>
+    <div class="swiper-pagination mt-4"></div>
+  </div>
+</div>
+
+  </section>
+
+  <!-- Carousel Section -->
+<section class="py-12 bg-gray-100" aria-label="Organ Donation Awareness Carousel">
+  <div class="max-w-5xl mx-auto">
+    <div class="swiper imageSwiper" style="height: 320px;">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_1.png" alt="Poster about becoming a donor" class="w-full h-full object-cover rounded-xl" />
         </div>
-        <div class="min-w-[250px] text-right">
-          <p class="text-gray-700 text-xl mb-3">Users must be at least 18 years old and less than 60 years old.</p>
-          <p class="text-gray-700 text-xl mb-3">You cannot donate more than 3 organs for the betterment of the user itself.</p>
-          <p class="text-gray-700 text-xl mb-3">You can register using your Aadhar ID.</p>
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_2.png" alt="Organ donation process visual" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_3.jpg" alt="Donate organs save lives graphic" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_4.PNG" alt="Be a hero, be a donor" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_5.png" alt="Awareness infographic" class="w-full h-full object-contain rounded-xl" />
+        </div>
+        <div class="swiper-slide flex justify-center items-center p-4">
+          <img src="./images/IMG_6.png" alt="Organ recipient gratitude" class="w-full h-full object-cover rounded-xl" />
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Swiper Carousel -->
-  <section class="py-12 bg-gray-100">
-    <div class="max-w-5xl mx-auto">
-      <div class="swiper" style="height: 320px;">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_1.png" alt="Organ donation awareness 1" class="carousel-img" />
-          </div>
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_2.png" alt="Organ donation awareness 2" class="carousel-img" />
-          </div>
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_3.jpg" alt="Organ donation awareness 3" class="carousel-img" />
-          </div>
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_4.PNG" alt="Organ donation awareness 4" class="carousel-img" />
-          </div>
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_5.png" alt="Organ donation awareness 5" class="carousel-img" />
-          </div>
-          <div class="swiper-slide flex justify-center items-center p-4">
-            <img src="./images/IMG_6.png" alt="Organ donation awareness 6" class="carousel-img" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- Footer -->
   <footer class="bg-white text-center py-6">
@@ -173,77 +225,79 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
   <script>
-    document.addEventListener("mousemove", function (e) {
-      const paragraphs = document.querySelectorAll(".hover-area p");
-      const radius = 75;
-      paragraphs.forEach(p => {
-        const rect = p.getBoundingClientRect();
-        const pX = rect.left + rect.width / 2;
-        const pY = rect.top + rect.height / 2;
-        const dist = Math.sqrt(Math.pow(e.clientX - pX, 2) + Math.pow(e.clientY - pY, 2));
-        p.style.color = dist < radius ? "green" : "black";
+    document.addEventListener("DOMContentLoaded", function () {
+      const testimonialSwiper = new Swiper(".testimonialSwiper", {
+        loop: true,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
       });
-    });
 
-    const swiper = new Swiper('.swiper', {
-      loop: true,
-      autoplay: {
-        delay: 3000
-      },
-      slidesPerView: 1,
-      spaceBetween: 20,
-      breakpoints: {
-        640: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 }
-      },
-    });
-
-    gsap.from(".card", {
-      duration: 1,
-      y: 50,
-      opacity: 0,
-      stagger: 0.2,
-      ease: "power3.out"
-    });
-
-    gsap.from("h1", {
-      duration: 1,
-      y: -30,
-      opacity: 0,
-      ease: "power3.out"
-    });
-
-    gsap.from("p", {
-      duration: 1.2,
-      opacity: 0,
-      delay: 0.5
-    });
-
-    const cursor = document.querySelector('#cursor');
-    document.addEventListener('mousemove', (e) => {
-      gsap.to(cursor, {
-        x: e.clientX,
-        y: e.clientY,
-        ease: 'back.out',
-        delay: 0.0001,
-        duration: 0.3
+      const imageSwiper = new Swiper(".imageSwiper", {
+        loop: true,
+        autoplay: {
+          delay: 3000
+        },
+        slidesPerView: 1,
+        spaceBetween: 20,
+        breakpoints: {
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 }
+        },
       });
-    });
 
-    // Smooth infinite marquee animation
-    const marquees = gsap.utils.toArray(".marque");
-    const marqueeTimeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } });
+      gsap.from(".card", {
+        duration: 1,
+        y: 50,
+        opacity: 0,
+        stagger: 0.2,
+        ease: "power3.out"
+      });
 
-    marqueeTimeline.fromTo(marquees, {
-      xPercent: 0
-    }, {
-      xPercent: -100,
-      duration: 20,
-      modifiers: {
-        xPercent: gsap.utils.wrap(-100, 0)
-      }
+      gsap.from("h1", {
+        duration: 1,
+        y: -30,
+        opacity: 0,
+        ease: "power3.out"
+      });
+
+      gsap.from("p", {
+        duration: 1.2,
+        opacity: 0,
+        delay: 0.5
+      });
+
+      const cursor = document.querySelector('#cursor');
+      document.addEventListener('mousemove', (e) => {
+        gsap.to(cursor, {
+          x: e.clientX,
+          y: e.clientY,
+          ease: 'back.out',
+          delay: 0.001,
+          duration: 0.5
+        });
+      });
+
+      const marquees = gsap.utils.toArray(".marque");
+      const marqueeTimeline = gsap.timeline({ repeat: -1, defaults: { ease: "none" } });
+
+      marqueeTimeline.fromTo(marquees, {
+        xPercent: 0
+      }, {
+        xPercent: -100,
+        duration: 3,
+        modifiers: {
+          xPercent: gsap.utils.wrap(-100, 0)
+        }
+      });
     });
   </script>
 </body>
