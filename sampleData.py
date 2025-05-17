@@ -26,7 +26,36 @@ last_names = [
     "Nair", "Desai", "Rao", "Joshi", "Bhat", "Das", "Kumar", "Dutta", "Mishra", "Patil", "Sen"
 ]
 
-cities = ['Mysore', 'Bangalore', 'Chikmagalur', 'Kolar']
+cities = [
+    "Bagalkot",
+    "Ballari",
+    "Belagavi",
+    "Bengaluru Rural",
+    "Bengaluru Urban",
+    "Bidar",
+    "Chamarajanagar",
+    "Chikkaballapur",
+    "Chikkamagaluru",
+    "Chitradurga",
+    "Dakshina Kannada",
+    "Davanagere",
+    "Dharwad",
+    "Gadag",
+    "Hassan",
+    "Haveri",
+    "Kalaburagi",
+    "Kodagu",
+    "Kolar",
+    "Koppal",
+    "Mandya",
+    "Mysuru",
+    "Raichur",
+    "Ramanagara",
+    "Shivamogga",
+    "Tumakuru",
+    "Udupi",
+    "Vijayapura"
+]
 genders = ['Male', 'Female']
 blood_groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 organs = ['kidney', 'liver', 'lung', 'intestine', 'pancreas']
@@ -35,9 +64,14 @@ def generate_email(name, num):
     email_name = name.lower().replace(' ', '') + str(num)
     return f"{email_name}@gmail.com"
 
+
 def random_phone(existing_phones):
     while True:
-        phone = ''.join(random.choices(string.digits, k=10))
+        # Choose a valid starting digit
+        start_digit = random.choice(['9', '8', '7', '6'])
+        # Generate the remaining 9 digits
+        remaining_digits = ''.join(random.choices(string.digits, k=9))
+        phone = start_digit + remaining_digits
         if phone not in existing_phones:
             existing_phones.add(phone)
             return phone
