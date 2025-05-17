@@ -182,7 +182,7 @@ app.post("/submit", (req, res) => {
     return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
   }
   if (age > 80) {
-    return res.send(`<script>alert("Age must be 80 or below. You are not eligible to donate any organs as it may harm the donor."); window.history.back();</script>`);
+    return res.send(`<script>alert("Age must be 60 or below. You are not eligible to donate any organs as it may harm the donor."); window.history.back();</script>`);
   }
 
   // Ensure donatedOrgans and transplantedOrgans are arrays.
@@ -442,7 +442,7 @@ app.get("/dashboardContent", (req, res) => {
     LEFT JOIN (
       SELECT 
         uniqueID, 
-        COUNT(*) AS totalDependants,
+        MAX(totalDependants) AS totalDependants,   -- Pick stored value per uniqueID
         MIN(dependantAge) AS dependantAge
       FROM userDependants
       GROUP BY uniqueID
@@ -453,7 +453,7 @@ app.get("/dashboardContent", (req, res) => {
 
   const filters = [bloodGroup, city];
 
-  // Add organ filter dynamically
+  // Add organ filter dynamically if provided
   if (organ) {
     sql += ` AND o.${organ.toLowerCase()} = 1`;
   }
@@ -465,17 +465,18 @@ app.get("/dashboardContent", (req, res) => {
       console.error("Error executing dashboard query:", err);
       return res.status(500).send("Internal Server Error");
     }
-    
-    // Handle null values for dependant info
+
+    // Map results to handle nulls and pass to template
     const donors = result.map(donor => ({
       ...donor,
-      totalDependants: donor.totalDependants || 0,
-      dependantAge: donor.dependantAge || 'N/A'
+      totalDependants: donor.totalDependants !== null ? donor.totalDependants : 0,
+      dependantAge: donor.dependantAge !== null ? donor.dependantAge : 'N/A'
     }));
-    
+
     res.render("dashboardContent", { donors });
   });
 });
+
 
 
 app.post("/preUpdateCheck", (req, res) => {
@@ -497,7 +498,6 @@ app.post("/preUpdateCheck", (req, res) => {
 });
 
 
-// // Confirm Update Step 1
 app.post("/confirmUpdate1", (req, res) => {
   const { 
     uniqueID, 
@@ -514,7 +514,6 @@ app.post("/confirmUpdate1", (req, res) => {
     transplantedOrgans 
   } = req.body;
 
-  // Ensure donatedOrgans and transplantedOrgans are arrays
   const safeDonatedOrgans = donatedOrgans 
     ? (Array.isArray(donatedOrgans) ? donatedOrgans : [donatedOrgans])
     : [];
@@ -522,23 +521,18 @@ app.post("/confirmUpdate1", (req, res) => {
     ? (Array.isArray(transplantedOrgans) ? transplantedOrgans : [transplantedOrgans])
     : [];
 
-  // Define the organ types
   const organs = ["Kidney", "Liver", "Lung", "Intestine", "Pancreas"];
-
-  // Create flag arrays: a value of 1 indicates the organ is selected
   const donatedFlags = organs.map(o => safeDonatedOrgans.includes(o) ? 1 : 0);
   const transplantedFlags = organs.map(o => safeTransplantedOrgans.includes(o) ? 1 : 0);
 
-  // Check for conflict: an organ cannot be both donated and transplanted
   const conflictOrgans = organs.filter((o, index) => donatedFlags[index] === 1 && transplantedFlags[index] === 1);
   if (conflictOrgans.length > 0) {
     return res.send(`<script>alert("Conflict detected: You cannot donate an organ that has already been transplanted (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
   }
 
-  // Update donor general data in user_data table
   const donorDataQuery = `
     UPDATE user_data
-    SET name = ?, email = ?,phone = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
+    SET name = ?, email = ?, phone = ?, govtID = ?, pass = ?, age = ?, gender = ?, city = ?, bloodGroup = ?
     WHERE uniqueID = ?
   `;
   const donorDataValues = [name, email, phone, govtID, pass, age, gender, city, bloodGroup, uniqueID];
@@ -550,7 +544,6 @@ app.post("/confirmUpdate1", (req, res) => {
     }
 
     if (result.affectedRows > 0) {
-      // Update donor_organs table with the donated organ flags
       const updateDonorOrgansQuery = `
         UPDATE donor_organs
         SET kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
@@ -564,7 +557,6 @@ app.post("/confirmUpdate1", (req, res) => {
           return res.status(500).json({ message: "Internal server error!", error: orgErr.sqlMessage });
         }
 
-        // Update transplanted_organs table with the transplanted organ flags
         const updateTransplantedOrgansQuery = `
           UPDATE transplanted_organs
           SET kidney = ?, liver = ?, lung = ?, intestine = ?, pancreas = ?
@@ -578,8 +570,16 @@ app.post("/confirmUpdate1", (req, res) => {
             return res.status(500).json({ message: "Internal server error!", error: transErr.sqlMessage });
           }
 
-          // On successful updates, redirect to the next preconditions update page
-          res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
+          // ✅ Add the lastUpdate timestamp here (safely)
+          db.query("UPDATE user_data SET lastUpdate = CURRENT_TIMESTAMP WHERE uniqueID = ?", [uniqueID], (updateErr) => {
+            if (updateErr) {
+              console.error("Failed to update lastUpdate:", updateErr);
+              return res.status(500).json({ message: "Failed to update lastUpdate" });
+            }
+
+            // ✅ All done, redirect
+            res.redirect(`/updatePreconditionsAndDependants?uniqueID=${uniqueID}`);
+          });
         });
       });
     } else {
@@ -680,6 +680,7 @@ app.post("/confirmUpdate2", (req, res) => {
             );
           }
 
+          // Commit transaction first
           db.commit(err => {
             if (err) {
               return db.rollback(() =>
@@ -687,29 +688,41 @@ app.post("/confirmUpdate2", (req, res) => {
               );
             }
 
-            // Success
-            res.send(`
-              <html>
-                <head>
-                  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                </head>
-                <body>
-                  <script>
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Updated Successfully!',
-                      text: 'Health & Dependant data updated for Aadhar: ${dependantAadhar}',
-                      showConfirmButton: false,
-                      timer: 3000,
-                      timerProgressBar: true,
-                      didClose: () => {
-                        window.location.href = "/";
-                      }
-                    });
-                  </script>
-                </body>
-              </html>
-            `);
+            // Now update lastUpdate timestamp
+            db.query(
+              "UPDATE user_data SET lastUpdate = CURRENT_TIMESTAMP WHERE uniqueID = ?",
+              [uniqueID],
+              (err) => {
+                if (err) {
+                  console.error("Error updating lastUpdate timestamp:", err);
+                  // Not critical enough to fail the entire operation, so just log
+                }
+
+                // Success response with SweetAlert
+                res.send(`
+                  <html>
+                    <head>
+                      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    </head>
+                    <body>
+                      <script>
+                        Swal.fire({
+                          icon: 'success',
+                          title: 'Updated Successfully!',
+                          text: 'Health & Dependant data updated for Aadhar: ${dependantAadhar}',
+                          showConfirmButton: false,
+                          timer: 3000,
+                          timerProgressBar: true,
+                          didClose: () => {
+                            window.location.href = "/";
+                          }
+                        });
+                      </script>
+                    </body>
+                  </html>
+                `);
+              }
+            );
           });
         });
       });
