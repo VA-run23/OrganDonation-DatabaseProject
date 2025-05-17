@@ -21,7 +21,13 @@ This project aims to create a **user-friendly interface** for tracking organ don
 
 ## Project Status
 
-This project is currently under development, following agile principles. It will be continuously refined and enhanced in future commits to improve functionality and user experience.
+This project is currently under development(99.22% complete), following agile principles. It will be continuously refined and enhanced in future commits to improve functionality and user experience.
+
+
+## Future Improvements will be done soon
+*. Adding all states and districts
+*. Hospital Integration
+*. Hospital Distance from current location
 
 ## Installation
 1. Clone the repository:
