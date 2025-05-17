@@ -19,15 +19,17 @@ This project aims to create a **user-friendly interface** for tracking organ don
 - **Bootstrap**: Enhances responsive design and usability.
 
 
+
 ## Project Status
 
 This project is currently under development(99.22% complete), following agile principles. It will be continuously refined and enhanced in future commits to improve functionality and user experience.
 
 
-## Future Improvements will be done soon
-*. Adding all states and districts
-*. Hospital Integration
-*. Hospital Distance from current location
+## Future Improvements
+- *Expanded Geographical Data*: Incorporate all states and districts to provide comprehensive coverage.
+- *Hospital Integration*: Enable direct integration with hospitals for real-time updates and streamlined coordination.
+- *Location-Based Services*: Implement functionalities to calculate hospital distances from the donor’s current location for improved logistical planning.
+
 
 ## Installation
 1. Clone the repository:
