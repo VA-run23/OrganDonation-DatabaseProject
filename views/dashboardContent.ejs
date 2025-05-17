@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <style>
-
-
     /* Navigation Styles */
     nav {
       background: linear-gradient(90deg, #008080, #006666);
@@ -75,40 +73,45 @@
       color: #ccf;
     }
     
+    /* Empty value styling */
+    .empty-value {
+      color: #888;
+      font-style: italic;
+    }
   
-          /* Footer styling */
-          footer {
-            background: linear-gradient(90deg, #008080, #006666);
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 14px;
-            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-          }
-        
-          /* Responsive Design */
-          @media (max-width: 768px) {
-            section {
-              flex-direction: column;
-              flex-wrap: wrap;
-              align-items: center;
-            }
-        
-            .text, .video, .carousel, .noble {
-              max-width: 100%;
-              flex: 1 1 100%;
-            }
-        
-            .swiper {
-              height: 200px;
-            }
-        
-            .card {
-              width: 100%;
-              max-width: 300px;
-            }
-          }
-  </style>
+    /* Footer styling */
+    footer {
+      background: linear-gradient(90deg, #008080, #006666);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    }
+  
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      section {
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+  
+      .text, .video, .carousel, .noble {
+        max-width: 100%;
+        flex: 1 1 100%;
+      }
+  
+      .swiper {
+        height: 200px;
+      }
+  
+      .card {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+    </style>
 </head>
 <body class="bg-light">
     <nav>
@@ -127,31 +130,34 @@
         <h2 class="mb-4">Filtered Donor Information</h2>
 
         <table border="1" class="table table-striped table-bordered">
-            <tr>
-                <th>Unique ID</th>
-                <th>Email</th>
-                <th>Contact Number</th>
-                <th>Number of Dependants</th>
-                <th>Primary Dependant Age</th>
-                <th>Last Update</th>
-            </tr>
-
-            <% if (donors.length > 0) { %>
-                <% donors.forEach(donor => { %>
-                    <tr>
-                        <td><%= donor.uniqueID %></td>
-                        <td><%= donor.email %></td>
-                        <td><%= donor.phone %></td>
-                        <td><%= donor.totalDependants %></td>
-                        <td><%= donor.dependantAge %></td>
-                        <td><%= new Date(donor.lastUpdate).toLocaleString() %></td>
-                    </tr>
-                <% }); %>
-            <% } else { %>
+            <thead>
                 <tr>
-                    <td colspan="5">No matching donors found.</td>
+                    <th>Unique ID</th>
+                    <th>Email</th>
+                    <th>Contact Number</th>
+                    <th>Number of Dependants</th>
+                    <th>Primary Dependant Age</th>
+                    <th>Last Update</th>
                 </tr>
-            <% } %>
+            </thead>
+            <tbody>
+                <% if (donors && donors.length > 0) { %>
+                    <% donors.forEach(donor => { %>
+                        <tr>
+                            <td><%= donor.uniqueID %></td>
+                            <td><%= donor.email %></td>
+                            <td><%= donor.phone %></td>
+                            <td><%= donor.totalDependants !== null ? donor.totalDependants : '<span class="empty-value">None</span>' %></td>
+                            <td><%= donor.dependantAge ? donor.dependantAge : '<span class="empty-value">N/A</span>' %></td>
+                            <td><%= new Date(donor.lastUpdate).toLocaleString() %></td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" class="text-center">No matching donors found.</td>
+                    </tr>
+                <% } %>
+            </tbody>
         </table>
 
         <div style="margin-top: 20px;">

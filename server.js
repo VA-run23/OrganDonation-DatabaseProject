@@ -440,7 +440,10 @@ app.get("/dashboardContent", (req, res) => {
       d.dependantAge
     FROM user_data u
     LEFT JOIN (
-      SELECT uniqueID, MIN(dependantAge) AS dependantAge, MAX(totalDependants) AS totalDependants
+      SELECT 
+        uniqueID, 
+        COUNT(*) AS totalDependants,
+        MIN(dependantAge) AS dependantAge
       FROM userDependants
       GROUP BY uniqueID
     ) d ON u.uniqueID = d.uniqueID
@@ -452,7 +455,7 @@ app.get("/dashboardContent", (req, res) => {
 
   // Add organ filter dynamically
   if (organ) {
-    sql += ` AND o.${organ} = 1`;
+    sql += ` AND o.${organ.toLowerCase()} = 1`;
   }
 
   sql += ` ORDER BY u.lastUpdate DESC`;
@@ -462,7 +465,15 @@ app.get("/dashboardContent", (req, res) => {
       console.error("Error executing dashboard query:", err);
       return res.status(500).send("Internal Server Error");
     }
-    res.render("dashboardContent", { donors: result });
+    
+    // Handle null values for dependant info
+    const donors = result.map(donor => ({
+      ...donor,
+      totalDependants: donor.totalDependants || 0,
+      dependantAge: donor.dependantAge || 'N/A'
+    }));
+    
+    res.render("dashboardContent", { donors });
   });
 });
 
@@ -776,36 +787,42 @@ app.get("/updatePreconditionsAndDependants", (req, res) => {
   if (!uniqueID) return res.status(400).send("Unique ID is required!");
   res.sendFile(path.join(__dirname, "updatePreconditionsAndDependants.html"));
 });
-
 // Fetch precondition data
 app.get("/getPrecondition/:uniqueID", (req, res) => {
   const uniqueID = req.params.uniqueID;
 
   const sql = `
-SELECT u.uniqueID, u.email, u.contactNumber,
-       d.totalDependants,
-       d.dependantAge AS primaryDependantAge,
-       u.lastUpdate
-FROM userTable u
-LEFT JOIN (
-    SELECT d1.*
-    FROM userDependants d1
-    JOIN (
-        SELECT uniqueID, MAX(dependantID) AS latestDepID
-        FROM userDependants
+    SELECT u.uniqueID, u.email, u.phone,
+           d.dependantName, d.dependantAadhar, d.dependantAge, d.totalDependants,
+           h.diabetes, h.bp_condition, h.obese, h.cardiac_surgery, h.healthApproval
+    FROM user_data u
+    LEFT JOIN (
+      SELECT * FROM userDependants 
+      WHERE (uniqueID, dependantID) IN (
+        SELECT uniqueID, MAX(dependantID) 
+        FROM userDependants 
         GROUP BY uniqueID
-    ) d2 ON d1.uniqueID = d2.uniqueID AND d1.dependantID = d2.latestDepID
-) d ON u.uniqueID = d.uniqueID
-
+      )
+    ) d ON u.uniqueID = d.uniqueID
+    LEFT JOIN userHealth h ON d.dependantID = h.dependantID
+    WHERE u.uniqueID = ?
   `;
 
   db.query(sql, [uniqueID], (err, result) => {
-    if (err) return res.status(500).json({ error: "Failed to fetch data.", details: err });
-    if (result.length === 0) return res.status(404).json({ error: "No dependant data found." });
+    if (err) {
+      console.error("Error fetching precondition data:", err);
+      return res.status(500).json({ error: "Failed to fetch data.", details: err.message });
+    }
+    
+    // Return empty object with uniqueID if no results found
+    // This way the form still works for new entries
+    if (result.length === 0) {
+      return res.json({ uniqueID: uniqueID });
+    }
+    
     res.json(result[0]);
   });
 });
-
 
 // DELETE USER ENDPOINT
 app.post("/deleteUser", (req, res) => {

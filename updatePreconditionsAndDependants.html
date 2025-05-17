@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preconditions</title>
+  <title>Update Preconditions</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <!-- GSAP -->
@@ -42,178 +42,245 @@
           padding: 20px;
       }
 
-
       /* Navigation Styles */
+      nav {
+        background: linear-gradient(90deg, #008080, #006666);
+        padding: 15px;
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      nav > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      nav a {
+        color: white;
+        font-size: 26px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .nav-links ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+      }
+
+      .nav-links ul li {
+        margin-left: 20px;
+      }
+
+      .nav-links ul li a {
+        position: relative;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s;
+      }
+
+      /* Animated underline */
+      .nav-links ul li a::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #ccf;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .nav-links ul li a:hover::after {
+        transform: scaleX(1);
+      }
+
+      .nav-links ul li a:hover {
+        color: #ccf;
+      }
+
+      /* Footer styling */
+      footer {
+        background: linear-gradient(90deg, #008080, #006666);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+      }
       
-    /* Navigation Styles */
-    nav {
-      background: linear-gradient(90deg, #008080, #006666);
-      padding: 15px;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    nav > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    nav a {
-      color: white;
-      font-size: 26px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .nav-links ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-    }
-
-    .nav-links ul li {
-      margin-left: 20px;
-    }
-
-    .nav-links ul li a {
-      position: relative;
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
-
-    /* Animated underline */
-    .nav-links ul li a::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #ccf;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .nav-links ul li a:hover::after {
-      transform: scaleX(1);
-    }
-
-    .nav-links ul li a:hover {
-      color: #ccf;
-    }
-  
-
-        /* Footer styling */
-        footer {
-          background: linear-gradient(90deg, #008080, #006666);
-          color: white;
-          text-align: center;
-          padding: 15px;
-          font-size: 14px;
-          box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        section {
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: center;
         }
       
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          section {
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-items: center;
-          }
-      
-          .text, .video, .carousel, .noble {
-            max-width: 100%;
-            flex: 1 1 100%;
-          }
-      
-          .swiper {
-            height: 200px;
-          }
-      
-          .card {
-            width: 100%;
-            max-width: 300px;
-          }
+        .text, .video, .carousel, .noble {
+          max-width: 100%;
+          flex: 1 1 100%;
         }
+      
+        .swiper {
+          height: 200px;
+        }
+      
+        .card {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+
+      /* Loading spinner */
+      .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #008080;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 10px auto;
+        display: none;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
 </style>
  
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
+    // Get the uniqueID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const uniqueIDFromURL = urlParams.get("uniqueID");
-
+    
+    // Reference to uniqueID field in the form
     const uniqueIDField = document.getElementById("uniqueID");
-
+    const loader = document.getElementById("loader");
+    
     if (uniqueIDFromURL) {
+      // Set the uniqueID value in the form
       uniqueIDField.value = uniqueIDFromURL;
+      
+      // Show loading spinner
+      loader.style.display = "block";
+      
       try {
+        // Fetch user and precondition data
         await fetchPreconditionData(uniqueIDFromURL);
       } catch (error) {
         console.error("Error loading precondition data:", error);
+        alert("Failed to load user data. Please try again.");
+      } finally {
+        // Hide loading spinner
+        loader.style.display = "none";
       }
     } else {
       console.error("Unique ID not provided in URL.");
       uniqueIDField.placeholder = "Unique ID not provided";
+      alert("No Unique ID provided. Please go back and try again.");
     }
   });
 
   async function fetchPreconditionData(uniqueID) {
     try {
+      // Make API call to get precondition data
       const response = await fetch(`/getPrecondition/${uniqueID}`);
-      if (!response.ok) throw new Error("Failed to fetch precondition data");
-
-      const data = await response.json();
-
-      if (!data || data.message) {
-        console.log("No precondition data available for uniqueID:", uniqueID);
-        return;
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch precondition data");
       }
 
+      // Parse the JSON response
+      const data = await response.json();
+      console.log("Retrieved data:", data);
+
+      // Helper function to set radio button checked state
       const setChecked = (id, condition) => {
         const el = document.getElementById(id);
         if (el) el.checked = condition;
       };
 
-      setChecked("diabetes_yes", parseInt(data.diabetes) === 1);
-      setChecked("diabetes_no", parseInt(data.diabetes) === 0);
-
-      switch (parseInt(data.bp_condition)) {
-        case 1:
-          setChecked("hypertension", true);
-          break;
-        case 2:
-          setChecked("hypotension", true);
-          break;
-        default:
-          setChecked("none_bp", true);
+      // Populate form fields with data
+      
+      // Set diabetes radio buttons
+      if (data.diabetes !== undefined) {
+        setChecked("diabetes_yes", parseInt(data.diabetes) === 1);
+        setChecked("diabetes_no", parseInt(data.diabetes) === 0);
       }
 
-      setChecked("obese_yes", parseInt(data.obese) === 1);
-      setChecked("obese_no", parseInt(data.obese) === 0);
+      // Set blood pressure condition radio buttons
+      if (data.bp_condition !== undefined) {
+        const bpValue = parseInt(data.bp_condition);
+        setChecked("hypertension", bpValue === 1);
+        setChecked("hypotension", bpValue === 2);
+        setChecked("none_bp", bpValue === 0);
+      }
 
-      setChecked("cardiac_yes", parseInt(data.cardiac_surgery) === 1);
-      setChecked("cardiac_no", parseInt(data.cardiac_surgery) === 0);
+      // Set obesity radio buttons
+      if (data.obese !== undefined) {
+        setChecked("obese_yes", parseInt(data.obese) === 1);
+        setChecked("obese_no", parseInt(data.obese) === 0);
+      }
 
-      if (data.dependantName) document.getElementById("dependantName").value = data.dependantName;
-      if (data.dependantAadhar) document.getElementById("dependantAadhar").value = data.dependantAadhar;
-      if (data.dependantAge) document.getElementById("dependantAge").value = data.dependantAge;
-      if (data.totalDependants) document.getElementById("totalDependants").value = data.totalDependants;
+      // Set cardiac surgery radio buttons
+      if (data.cardiac_surgery !== undefined) {
+        setChecked("cardiac_yes", parseInt(data.cardiac_surgery) === 1);
+        setChecked("cardiac_no", parseInt(data.cardiac_surgery) === 0);
+      }
 
-      setChecked("healthApproval", parseInt(data.healthApproval) === 1);
+      // Populate dependant information
+      if (data.dependantName) {
+        document.getElementById("dependantName").value = data.dependantName;
+        // Make the field editable if there's existing data
+        document.getElementById("dependantName").readOnly = false;
+      }
+      
+      if (data.dependantAadhar) {
+        document.getElementById("dependantAadhar").value = data.dependantAadhar;
+        // Make the field editable if there's existing data
+        document.getElementById("dependantAadhar").readOnly = false;
+      }
+      
+      if (data.dependantAge) {
+        document.getElementById("dependantAge").value = data.dependantAge;
+      }
+      
+      if (data.totalDependants) {
+        document.getElementById("totalDependants").value = data.totalDependants;
+      }
+
+      // Set health approval checkbox
+      if (data.healthApproval !== undefined) {
+        setChecked("healthApproval", parseInt(data.healthApproval) === 1);
+      }
+      
+      // Show success message if data was loaded
+      document.getElementById("dataStatus").textContent = "User data loaded successfully!";
+      document.getElementById("dataStatus").className = "alert alert-success";
+      
     } catch (err) {
       console.error("Error fetching precondition data:", err);
+      document.getElementById("dataStatus").textContent = "Error loading data: " + err.message;
+      document.getElementById("dataStatus").className = "alert alert-danger";
+      
+      // Enable all dependant fields for new entry if no existing data found
+      document.getElementById("dependantName").readOnly = false;
+      document.getElementById("dependantAadhar").readOnly = false;
     }
   }
 </script>
-
 
 </head>
 <body>
@@ -229,9 +296,18 @@
             </ul>
           </div>
         </div>
-      </nav>
+    </nav>
+  
   <div class="container">
     <div class="card shadow">
+      <h2 class="text-center mb-4">Update Health & Dependant Information</h2>
+      
+      <!-- Status message area -->
+      <div id="dataStatus" class="alert alert-info">Loading user data...</div>
+      
+      <!-- Loading spinner -->
+      <div id="loader" class="loader"></div>
+      
       <form action="/confirmUpdate2" method="post">
           <!-- Unique ID field dynamically filled -->
           <div class="form-group">
@@ -296,19 +372,20 @@
               <legend>Primary Dependant Information</legend>
               <div class="form-group">
                 <label for="dependantName">Dependant Name:</label>
-                <input type="text" id="dependantName" name="dependantName" required readonly class="form-control">
+                <input type="text" id="dependantName" name="dependantName" required class="form-control">
               </div>
               <div class="form-group">
                 <label for="dependantAadhar">Dependant Aadhar Number:</label>
-                <input type="number" id="dependantAadhar" name="dependantAadhar" required readonly class="form-control">
+                <input type="number" id="dependantAadhar" name="dependantAadhar" required class="form-control" 
+                       min="100000000000" max="999999999999" placeholder="12-digit Aadhar number">
               </div>
               <div class="form-group">
                 <label for="dependantAge">Dependant Age:</label>
-                <input type="number" id="dependantAge" name="dependantAge" required class="form-control">
+                <input type="number" id="dependantAge" name="dependantAge" required class="form-control" min="1">
               </div>
               <div class="form-group">
                 <label for="totalDependants">Total Number of Dependants:</label>
-                <input type="number" id="totalDependants" name="totalDependants" required class="form-control">
+                <input type="number" id="totalDependants" name="totalDependants" required class="form-control" min="1">
               </div>
           </fieldset>
   
@@ -316,7 +393,7 @@
           <fieldset class="mb-3">
               <legend>Approval Statement</legend>
               <div class="form-check">
-                  <input type="checkbox" id="healthApproval" name="healthApproval" value="1" required class="form-check-input">
+                  <input type="checkbox" id="healthApproval" name="healthApproval" class="form-check-input" required>
                   <label for="healthApproval" class="form-check-label">
                       I agree that my health is alright and has been approved by a medical professional.
                       I confirm that the selected organs are healthy and I am able to donate part of them 
@@ -326,12 +403,14 @@
           </fieldset>
   
           <div class="text-center">
-              <input type="submit" value="Submit" class="btn btn-success btn-lg">
+              <button type="submit" class="btn btn-success btn-lg">Update Information</button>
+              <a href="/" class="btn btn-secondary ml-2">Cancel</a>
           </div>
       </form>
     </div>
   </div>
-  <footer>
+  
+  <footer class="mt-5">
     <small>&copy; 2025 VOrgans. All rights reserved.</small>
   </footer>
 
@@ -339,7 +418,7 @@
   <script>
       gsap.from(".card", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
       gsap.from("form", { duration: 1, opacity: 0, delay: 0.5, y: 20, ease: "power1.out" });
-      gsap.from("input[type='submit']", { duration: 1, opacity: 0, delay: 1, y: 20, ease: "power1.out" });
+      gsap.from("button[type='submit']", { duration: 1, opacity: 0, delay: 1, y: 20, ease: "power1.out" });
   </script>
   
 </body>
