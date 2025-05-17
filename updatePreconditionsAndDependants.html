@@ -144,89 +144,77 @@
           }
         }
 </style>
-  <script>
-      document.addEventListener("DOMContentLoaded", () => {
-          // Get uniqueID from the URL query parameters.
-          const urlParams = new URLSearchParams(window.location.search);
-          const uniqueIDFromURL = urlParams.get("uniqueID");
-          if (uniqueIDFromURL) {
-              document.getElementById("uniqueID").value = uniqueIDFromURL;
-              fetchPreconditionData(uniqueIDFromURL);
-          } else {
-              // If needed, you can implement a /getUniqueID endpoint to fetch it.
-              console.error("Unique ID not provided in URL.");
-              document.getElementById("uniqueID").placeholder = "Unique ID not provided";
-          }
-      });
+ 
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uniqueIDFromURL = urlParams.get("uniqueID");
 
-      function fetchPreconditionData(uniqueID) {
-          fetch(`/getPrecondition/${uniqueID}`)
-              .then(response => {
-                  if (!response.ok) {
-                      throw new Error("Network response was not ok");
-                  }
-                  return response.json();
-              })
-              .then(data => {
-                  if (data && !data.message) {
-                      // Diabetes
-                      if (data.diabetes !== undefined) {
-                          if (parseInt(data.diabetes) === 1) {
-                              document.getElementById("diabetes_yes").checked = true;
-                          } else {
-                              document.getElementById("diabetes_no").checked = true;
-                          }
-                      }
-                      // Blood pressure condition
-                      if (data.bp_condition !== undefined) {
-                          if (parseInt(data.bp_condition) === 1) {
-                              document.getElementById("hypertension").checked = true;
-                          } else if (parseInt(data.bp_condition) === 2) {
-                              document.getElementById("hypotension").checked = true;
-                          } else {
-                              document.getElementById("none_bp").checked = true;
-                          }
-                      }
-                      // Obesity
-                      if (data.obese !== undefined) {
-                          if (parseInt(data.obese) === 1) {
-                              document.getElementById("obese_yes").checked = true;
-                          } else {
-                              document.getElementById("obese_no").checked = true;
-                          }
-                      }
-                      // Cardiac surgery
-                      if (data.cardiac_surgery !== undefined) {
-                          if (parseInt(data.cardiac_surgery) === 1) {
-                              document.getElementById("cardiac_yes").checked = true;
-                          } else {
-                              document.getElementById("cardiac_no").checked = true;
-                          }
-                      }
-                      // Dependant Information
-                      if (data.dependantName) {
-                          document.getElementById("dependantName").value = data.dependantName;
-                      }
-                      if (data.dependantAadhar) {
-                          document.getElementById("dependantAadhar").value = data.dependantAadhar;
-                      }
-                      if (data.dependantAge) {
-                          document.getElementById("dependantAge").value = data.dependantAge;
-                      }
-                      if (data.totalDependants) {
-                          document.getElementById("totalDependants").value = data.totalDependants;
-                      }
-                      // Health Approval - checking the box if approved (assuming 1 means approved)
-                      if (data.healthApproval !== undefined) {
-                          document.getElementById("healthApproval").checked = parseInt(data.healthApproval) === 1;
-                      }
-                  } else {
-                      console.log("No precondition data available for uniqueID:", uniqueID);
-                  }
-              })
-              .catch(error => console.error("Error fetching precondition data:", error));
+    const uniqueIDField = document.getElementById("uniqueID");
+
+    if (uniqueIDFromURL) {
+      uniqueIDField.value = uniqueIDFromURL;
+      try {
+        await fetchPreconditionData(uniqueIDFromURL);
+      } catch (error) {
+        console.error("Error loading precondition data:", error);
       }
-  </script>
+    } else {
+      console.error("Unique ID not provided in URL.");
+      uniqueIDField.placeholder = "Unique ID not provided";
+    }
+  });
+
+  async function fetchPreconditionData(uniqueID) {
+    try {
+      const response = await fetch(`/getPrecondition/${uniqueID}`);
+      if (!response.ok) throw new Error("Failed to fetch precondition data");
+
+      const data = await response.json();
+
+      if (!data || data.message) {
+        console.log("No precondition data available for uniqueID:", uniqueID);
+        return;
+      }
+
+      const setChecked = (id, condition) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = condition;
+      };
+
+      setChecked("diabetes_yes", parseInt(data.diabetes) === 1);
+      setChecked("diabetes_no", parseInt(data.diabetes) === 0);
+
+      switch (parseInt(data.bp_condition)) {
+        case 1:
+          setChecked("hypertension", true);
+          break;
+        case 2:
+          setChecked("hypotension", true);
+          break;
+        default:
+          setChecked("none_bp", true);
+      }
+
+      setChecked("obese_yes", parseInt(data.obese) === 1);
+      setChecked("obese_no", parseInt(data.obese) === 0);
+
+      setChecked("cardiac_yes", parseInt(data.cardiac_surgery) === 1);
+      setChecked("cardiac_no", parseInt(data.cardiac_surgery) === 0);
+
+      if (data.dependantName) document.getElementById("dependantName").value = data.dependantName;
+      if (data.dependantAadhar) document.getElementById("dependantAadhar").value = data.dependantAadhar;
+      if (data.dependantAge) document.getElementById("dependantAge").value = data.dependantAge;
+      if (data.totalDependants) document.getElementById("totalDependants").value = data.totalDependants;
+
+      setChecked("healthApproval", parseInt(data.healthApproval) === 1);
+    } catch (err) {
+      console.error("Error fetching precondition data:", err);
+    }
+  }
+</script>
+
+
 </head>
 <body>
 

@@ -148,8 +148,8 @@ CREATE TABLE IF NOT EXISTS userDependants (
   
   db.query(createDonorHealth, (err) =>
     err 
-      ? console.error("Error creating userHealth_Dependants:", err.message) 
-      : console.log(`[${new Date().toISOString()}] userHealth_Dependants table ensured.`)
+      ? console.error("Error creating userHelth", err.message) 
+      : console.log(`[${new Date().toISOString()}] userHealth table ensured.`)
   );
   
 });
@@ -427,39 +427,6 @@ app.post("/loginCheck", (req, res) => {
   });
 });
 
-// // Dashboard Filter
-// app.get("/dashboardContent", (req, res) => {
-//   const { organ, bloodGroup, city } = req.query;
-
-//   // Base SQL Query
-//   let sql = `
-//     SELECT user_data.uniqueID, user_data.email,user_data.phone, user_data.lastUpdate,
-//            userHealth_Dependants.totalDependants, userHealth_Dependants.dependantAge
-//     FROM user_data
-//     INNER JOIN userHealth_Dependants ON user_data.uniqueID = userHealth_Dependants.uniqueID
-//     LEFT JOIN donor_organs ON user_data.uniqueID = donor_organs.uniqueID
-//     WHERE user_data.bloodGroup = ? AND user_data.city = ?
-//   `;
-  
-//   const filters = [bloodGroup, city];
-
-//   // Adding Organ Filter if Provided
-//   if (organ) {
-//     sql += ` AND donor_organs.${organ} = 1`;
-//   }
-
-//   // Sorting by Last Update
-//   sql += ` ORDER BY user_data.lastUpdate DESC`;
-
-//   // Execute Query
-//   db.query(sql, filters, (err, result) => {
-//     if (err) return res.status(500).send("Internal Server Error");
-//     res.render("dashboardContent", { donors: result });
-//   });
-// });
-
-
-
 app.get("/dashboardContent", (req, res) => {
   const { organ, bloodGroup, city } = req.query;
 
@@ -609,75 +576,6 @@ app.post("/confirmUpdate1", (req, res) => {
     }
   });
 });
-
-
-
-
-// // Confirm Update Step 2
-// app.post("/confirmUpdate2", (req, res) => {
-//   const { uniqueID, diabetes, bp_condition, obese, cardiac_surgery, dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval } = req.body;
-
-//   const sql = `
-//     INSERT INTO userHealth_Dependants (
-//       uniqueID, diabetes, bp_condition, obese, cardiac_surgery,
-//       dependantName, dependantAadhar, dependantAge, totalDependants, healthApproval
-//     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//     ON DUPLICATE KEY UPDATE
-//       diabetes = VALUES(diabetes),
-//       bp_condition = VALUES(bp_condition),
-//       obese = VALUES(obese),
-//       cardiac_surgery = VALUES(cardiac_surgery),
-//       dependantName = VALUES(dependantName),
-//       dependantAadhar = VALUES(dependantAadhar),
-//       dependantAge = VALUES(dependantAge),
-//       totalDependants = VALUES(totalDependants),
-//       healthApproval = VALUES(healthApproval)
-//   `;
-
-//   const values = [
-//     uniqueID,
-//     Number(diabetes || 0),
-//     Number(bp_condition || 0),
-//     Number(obese || 0),
-//     Number(cardiac_surgery || 0),
-//     dependantName,
-//     dependantAadhar,
-//     dependantAge,
-//     totalDependants,
-//     (healthApproval === "on" || healthApproval === "1") ? 1 : 0
-//   ];
-
-//   db.query(sql, values, (err) => {
-//     if (err) return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
-//     // res.send(`<script>alert("Preconditions & Dependants updated successfully for UniqueID: ${uniqueID}"); window.location.href = "/";</script>`);
-//  res.send(`
-//   <html>
-//     <head>
-//       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-//     </head>
-//     <body>
-//       <script>
-//         Swal.fire({
-//           icon: 'success',
-//           title: 'Updated Successfully!',
-//           text: 'Preconditions & Dependants updated for UniqueID: ${uniqueID}',
-//           showConfirmButton: false,
-//           timer: 3000,
-//           timerProgressBar: true,
-//           didClose: () => {
-//             window.location.href = "/";
-//           }
-//         });
-//       </script>
-//     </body>
-//   </html>
-// `);
-
- 
-//   });
-// });
-
-
 
 app.post("/confirmUpdate2", (req, res) => {
   const {
@@ -884,13 +782,21 @@ app.get("/getPrecondition/:uniqueID", (req, res) => {
   const uniqueID = req.params.uniqueID;
 
   const sql = `
-    SELECT d.dependantID, d.dependantName, d.dependantAadhar, d.dependantAge, d.totalDependants,
-           h.diabetes, h.bp_condition, h.obese, h.cardiac_surgery, h.healthApproval
-    FROM userDependants d
-    LEFT JOIN userHealth h ON d.dependantID = h.dependantID
-    WHERE d.uniqueID = ?
-    ORDER BY d.dependantID DESC
-    LIMIT 1  -- if showing only one dependant
+SELECT u.uniqueID, u.email, u.contactNumber,
+       d.totalDependants,
+       d.dependantAge AS primaryDependantAge,
+       u.lastUpdate
+FROM userTable u
+LEFT JOIN (
+    SELECT d1.*
+    FROM userDependants d1
+    JOIN (
+        SELECT uniqueID, MAX(dependantID) AS latestDepID
+        FROM userDependants
+        GROUP BY uniqueID
+    ) d2 ON d1.uniqueID = d2.uniqueID AND d1.dependantID = d2.latestDepID
+) d ON u.uniqueID = d.uniqueID
+
   `;
 
   db.query(sql, [uniqueID], (err, result) => {
