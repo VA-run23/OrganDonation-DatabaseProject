@@ -13,11 +13,8 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 app.use('/images', express.static('public/images'));
 app.use('/videos', express.static('public/videos'));
-
-
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -30,17 +27,11 @@ app.set("views", "./views");
 
 // Serve static HTML pages
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "/index.html")));
-
 app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "/signup.html")));
-
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "/login.html")));
-
 app.get("/updateProfile", (req, res) => res.sendFile(path.join(__dirname, "/updateProfile.html")));
-
 app.get("/preUpdate", (req, res) => res.sendFile(path.join(__dirname, "/preUpdate.html")));
-
 app.get("/existingconditions", (req, res) => res.sendFile(path.join(__dirname, "/existingconditions.html")));
-
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "/dashboard.html")));
 
 const db = mysql.createConnection({
@@ -48,114 +39,246 @@ const db = mysql.createConnection({
   user: "root",
   password: process.env.DB_PASSWORD,
   database: "dbb",
+  multipleStatements: true
 });
 
 db.connect((err) => {
-  if (err) return console.error("Connection failed:", err);
+  if (err) {
+    console.error("Connection failed:", err);
+    process.exit(1);
+  }
   console.log("Connected to database!");
 
-  const createDonorData = `
-CREATE TABLE IF NOT EXISTS user_data (
-  uniqueID INT AUTO_INCREMENT PRIMARY KEY,
-govtID VARCHAR(12) NOT NULL UNIQUE CHECK (govtID ~ '^[1-9][0-9]{11}$'),
+  // Create tables
+  const createTablesSQL = `
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      action_type VARCHAR(30) NOT NULL,
+      user_id INT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      details TEXT
+    );
 
-  name VARCHAR(50),
-  email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
-  phone VARCHAR(10) UNIQUE CHECK (phone REGEXP '^[0-9]{10}$'),
-  pass VARCHAR(255),
-  age INT CHECK (age >= 18),
-  gender ENUM('Male', 'Female'),
-  city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
-  bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
-  lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+    CREATE TABLE IF NOT EXISTS user_data (
+      uniqueID INT AUTO_INCREMENT PRIMARY KEY,
+      govtID VARCHAR(12) NOT NULL UNIQUE CHECK (govtID >= '100000000000' AND govtID <= '999999999999'),
+      name VARCHAR(50),
+      email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
+      phone VARCHAR(10) UNIQUE CHECK (phone REGEXP '^[0-9]{10}$'),
+      pass VARCHAR(255),
+      age INT CHECK (age >= 18),
+      gender ENUM('Male', 'Female'),
+      city ENUM('Mysore', 'Bangalore', 'Chikmagalur', 'Kolar'),
+      bloodGroup ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'),
+      lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS transplanted_organs (
+      organID INT AUTO_INCREMENT PRIMARY KEY,
+      uniqueID INT NOT NULL,
+      kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
+      liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
+      lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
+      intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
+      pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
+      FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS donor_organs (
+      organID INT AUTO_INCREMENT PRIMARY KEY,
+      uniqueID INT NOT NULL,
+      kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
+      liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
+      lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
+      intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
+      pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
+      FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS userDependants (
+      dependantID INT AUTO_INCREMENT PRIMARY KEY,
+      uniqueID INT NOT NULL,
+      dependantName VARCHAR(255) NOT NULL,
+      dependantAadhar BIGINT NOT NULL UNIQUE CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
+      dependantAge INT NOT NULL,
+      totalDependants INT NOT NULL,
+      FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS userHealth (
+      dependantID INT PRIMARY KEY,
+      diabetes TINYINT DEFAULT 0,
+      bp_condition TINYINT DEFAULT 0,
+      obese TINYINT DEFAULT 0,
+      cardiac_surgery TINYINT DEFAULT 0,
+      healthApproval TINYINT DEFAULT 0,
+      FOREIGN KEY (dependantID) REFERENCES userDependants(dependantID) ON DELETE CASCADE
+    );
   `;
 
+  db.query(createTablesSQL, (err) => {
+    if (err) {
+      console.error("Error creating tables:", err);
+      process.exit(1);
+    }
+    console.log("All tables ensured.");
 
-  const createTransplantedOrgans = `
-CREATE TABLE IF NOT EXISTS transplanted_organs (
-  organID INT AUTO_INCREMENT PRIMARY KEY,
-  uniqueID INT NOT NULL,
-  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
-  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
-  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
-  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
-  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
-);
-`;
+    // Now create triggers (must be one by one or as one string without DELIMITER)
+    // Here triggers are separated by semicolon and BEGIN...END blocks, without DELIMITER statements.
+    const createTriggersSQL = `
+      DROP TRIGGER IF EXISTS user_data_after_insert;
+      CREATE TRIGGER user_data_after_insert
+      AFTER INSERT ON user_data
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('REGISTER', NEW.uniqueID, CONCAT('User registered: ', NEW.name, ', email: ', NEW.email));
+      END;
 
-  const createDonorOrgans = `
-CREATE TABLE IF NOT EXISTS donor_organs (
-  organID INT AUTO_INCREMENT PRIMARY KEY,
-  uniqueID INT NOT NULL,
-  kidney TINYINT(1) DEFAULT 0 CHECK (kidney IN (0, 1)),
-  liver TINYINT(1) DEFAULT 0 CHECK (liver IN (0, 1)),
-  lung TINYINT(1) DEFAULT 0 CHECK (lung IN (0, 1)),
-  intestine TINYINT(1) DEFAULT 0 CHECK (intestine IN (0, 1)),
-  pancreas TINYINT(1) DEFAULT 0 CHECK (pancreas IN (0, 1)),
-  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
-);
-  `;
+      DROP TRIGGER IF EXISTS user_data_after_update;
+      CREATE TRIGGER user_data_after_update
+      AFTER UPDATE ON user_data
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('UPDATE_USER', NEW.uniqueID, CONCAT('Profile updated: ', NEW.name, ', email: ', NEW.email));
+      END;
 
+      DROP TRIGGER IF EXISTS user_data_after_delete;
+      CREATE TRIGGER user_data_after_delete
+      AFTER DELETE ON user_data
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('DELETE_USER', OLD.uniqueID, CONCAT('User deleted. Name: ', OLD.name));
+      END;
 
-  const createDonorHealth = `
-CREATE TABLE IF NOT EXISTS userHealth (
-  dependantID INT PRIMARY KEY,
-  diabetes TINYINT DEFAULT 0,
-  bp_condition TINYINT DEFAULT 0,
-  obese TINYINT DEFAULT 0,
-  cardiac_surgery TINYINT DEFAULT 0,
-  healthApproval TINYINT DEFAULT 0,
-  FOREIGN KEY (dependantID) REFERENCES userDependants(dependantID) ON DELETE CASCADE
-);
+      DROP TRIGGER IF EXISTS transplanted_organs_after_insert;
+      CREATE TRIGGER transplanted_organs_after_insert
+      AFTER INSERT ON transplanted_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('INSERT_TRANSPLANTED_ORGANS', NEW.uniqueID, CONCAT('Transplanted organs added. OrganID: ', NEW.organID));
+      END;
 
-  `;
-  const createuserDependants=` 
-CREATE TABLE IF NOT EXISTS userDependants (
-  dependantID INT AUTO_INCREMENT PRIMARY KEY,
-  uniqueID INT NOT NULL,
-  dependantName VARCHAR(255) NOT NULL,
-  dependantAadhar BIGINT NOT NULL UNIQUE CHECK (dependantAadhar BETWEEN 100000000000 AND 999999999999),
-  dependantAge INT NOT NULL,
-  totalDependants INT NOT NULL,
-  FOREIGN KEY (uniqueID) REFERENCES user_data(uniqueID) ON DELETE CASCADE
-);
-  `;
+      DROP TRIGGER IF EXISTS transplanted_organs_after_update;
+      CREATE TRIGGER transplanted_organs_after_update
+      AFTER UPDATE ON transplanted_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('UPDATE_TRANSPLANTED_ORGANS', NEW.uniqueID, CONCAT('Transplanted organs updated. OrganID: ', NEW.organID));
+      END;
 
-  db.query(createuserDependants, (err) =>
-    err
-      ? console.error("Error creating userDependants:", err.message)
-      : console.log(`[${new Date().toISOString()}] userDependants table ensured.`)
-  );
+      DROP TRIGGER IF EXISTS transplanted_organs_after_delete;
+      CREATE TRIGGER transplanted_organs_after_delete
+      AFTER DELETE ON transplanted_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('DELETE_TRANSPLANTED_ORGANS', OLD.uniqueID, CONCAT('Transplanted organs deleted. OrganID: ', OLD.organID));
+      END;
 
-  db.query(createDonorData, (err) =>
-    err
-      ? console.error("Error creating user_data:", err.message)
-      : console.log(`[${new Date().toISOString()}] user_data table ensured.`)
-  );
+      DROP TRIGGER IF EXISTS donor_organs_after_insert;
+      CREATE TRIGGER donor_organs_after_insert
+      AFTER INSERT ON donor_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('INSERT_DONOR_ORGANS', NEW.uniqueID, CONCAT('Donor organs added. OrganID: ', NEW.organID));
+      END;
 
-  db.query(createTransplantedOrgans, (err) => {
-    err
-      ? console.error("Error creating transplanted_organs:", err.message)
-      : console.log(`[${new Date().toISOString()}] transplanted_organs table ensured.`);
+      DROP TRIGGER IF EXISTS donor_organs_after_update;
+      CREATE TRIGGER donor_organs_after_update
+      AFTER UPDATE ON donor_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('UPDATE_DONOR_ORGANS', NEW.uniqueID, CONCAT('Donor organs updated. OrganID: ', NEW.organID));
+      END;
+
+      DROP TRIGGER IF EXISTS donor_organs_after_delete;
+      CREATE TRIGGER donor_organs_after_delete
+      AFTER DELETE ON donor_organs
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('DELETE_DONOR_ORGANS', OLD.uniqueID, CONCAT('Donor organs deleted. OrganID: ', OLD.organID));
+      END;
+
+      DROP TRIGGER IF EXISTS userHealth_after_insert;
+      CREATE TRIGGER userHealth_after_insert
+      AFTER INSERT ON userHealth
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('INSERT_USER_HEALTH', NEW.dependantID, 'User health record added.');
+      END;
+
+      DROP TRIGGER IF EXISTS userHealth_after_update;
+      CREATE TRIGGER userHealth_after_update
+      AFTER UPDATE ON userHealth
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('UPDATE_USER_HEALTH', NEW.dependantID, 'User health record updated.');
+      END;
+
+      DROP TRIGGER IF EXISTS userHealth_after_delete;
+      CREATE TRIGGER userHealth_after_delete
+      AFTER DELETE ON userHealth
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('DELETE_USER_HEALTH', OLD.dependantID, 'User health record deleted.');
+      END;
+
+      DROP TRIGGER IF EXISTS userDependants_after_insert;
+      CREATE TRIGGER userDependants_after_insert
+      AFTER INSERT ON userDependants
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('INSERT_DEPENDANT', NEW.uniqueID, CONCAT('Dependant added: ', NEW.dependantName));
+      END;
+
+      DROP TRIGGER IF EXISTS userDependants_after_update;
+      CREATE TRIGGER userDependants_after_update
+      AFTER UPDATE ON userDependants
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('UPDATE_DEPENDANT', NEW.uniqueID, CONCAT('Dependant updated: ', OLD.dependantName, ' → ', NEW.dependantName));
+      END;
+
+      DROP TRIGGER IF EXISTS userDependants_after_delete;
+      CREATE TRIGGER userDependants_after_delete
+      AFTER DELETE ON userDependants
+      FOR EACH ROW
+      BEGIN
+          INSERT INTO audit_logs (action_type, user_id, details)
+          VALUES ('DELETE_DEPENDANT', OLD.uniqueID, CONCAT('Dependant deleted: ', OLD.dependantName));
+      END;
+    `;
+
+    db.query(createTriggersSQL, (err) => {
+      if (err) {
+        console.error("Error creating triggers:", err);
+      } else {
+        console.log("All audit triggers created successfully.");
+      }
+    });
   });
-  
-  db.query(createDonorOrgans, (err) =>
-    err 
-      ? console.error("Error creating donor_organs:", err.message) 
-      : console.log(`[${new Date().toISOString()}] donor_organs table ensured.`)
-  );
-  
-  db.query(createDonorHealth, (err) =>
-    err 
-      ? console.error("Error creating userHelth", err.message) 
-      : console.log(`[${new Date().toISOString()}] userHealth table ensured.`)
-  );
-  
 });
 
-// Routes
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+/** Routes */
 // Registration
 app.post("/submit", (req, res) => {
   const { 
@@ -172,7 +295,6 @@ app.post("/submit", (req, res) => {
     transplantedOrgans 
   } = req.body;
 
-  
   // Validate Government ID
 if (govtID < 100000000000 || govtID > 999999999999) {
   return res.send(`
@@ -624,8 +746,6 @@ app.get("/dashboardContent", (req, res) => {
   });
 });
 
-
-
 app.post("/preUpdateCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
@@ -658,7 +778,6 @@ if (result.length > 0) {
   return res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
 }
 
-
 res.send(`
   <script>
     const script = document.createElement('script');
@@ -677,10 +796,8 @@ res.send(`
     document.head.appendChild(script);
   </script>
 `);
-
   });
 });
-
 
 app.post("/confirmUpdate1", (req, res) => {
   const { 
@@ -731,7 +848,6 @@ if (conflictOrgans.length > 0) {
   `;
   return res.send(conflictScript);
 }
-
 
   const donorDataQuery = `
     UPDATE user_data
