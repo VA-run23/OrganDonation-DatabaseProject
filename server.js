@@ -57,7 +57,8 @@ db.connect((err) => {
   const createDonorData = `
 CREATE TABLE IF NOT EXISTS user_data (
   uniqueID INT AUTO_INCREMENT PRIMARY KEY,
-  govtID BIGINT NOT NULL UNIQUE CHECK (govtID BETWEEN 100000000000 AND 999999999999),
+govtID VARCHAR(12) NOT NULL UNIQUE CHECK (govtID ~ '^[1-9][0-9]{11}$'),
+
   name VARCHAR(50),
   email VARCHAR(50) UNIQUE CHECK (email LIKE '%@%.%'),
   phone VARCHAR(10) UNIQUE CHECK (phone REGEXP '^[0-9]{10}$'),
@@ -173,17 +174,70 @@ app.post("/submit", (req, res) => {
 
   
   // Validate Government ID
-  if (govtID < 100000000000 || govtID > 999999999999) {
-    return res.send(`<script>alert("Government ID must be a 12-digit number."); window.history.back();</script>`);
-  }
+if (govtID < 100000000000 || govtID > 999999999999) {
+  return res.send(`
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Government ID',
+          text: 'Government ID must be a 12-digit number.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go Back'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `);
+}
 
-  // Validate Age
-  if (age < 18) {
-    return res.send(`<script>alert("Age must be 18 or older."); window.history.back();</script>`);
-  }
-  if (age > 80) {
-    return res.send(`<script>alert("Age must be 60 or below. You are not eligible to donate any organs as it may harm the donor."); window.history.back();</script>`);
-  }
+// Validate Age
+if (age < 18) {
+  return res.send(`
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Age Restriction',
+          text: 'Age must be 18 or older.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go Back'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `);
+}
+
+if (age > 80) {
+  return res.send(`
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Age Restriction',
+          text: 'Age must be 60 or below. You are not eligible to donate any organs as it may harm the donor.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go Back'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `);
+}
+
 
   // Ensure donatedOrgans and transplantedOrgans are arrays.
   // If a single checkbox is checked, it might come as a string; convert it to an array.
@@ -381,13 +435,52 @@ app.post("/submitPrecondition", (req, res) => {
   `;
 
   db.query(insertDependantSql, [uniqueID, dependantName, dependantAadhar, dependantAge, totalDependants], (err, result) => {
-    if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.send(`<script>alert('The dependant Aadhar already exists'); window.history.back();</script>`);
-      } else {
-        return res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
-      }
-    }
+if (err) {
+  let scriptResponse = '';
+
+  if (err.code === 'ER_DUP_ENTRY') {
+    scriptResponse = `
+      <script>
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+        script.onload = () => {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Duplicate Entry',
+            text: 'The dependant Aadhar already exists.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Go Back'
+          }).then(() => {
+            window.history.back();
+          });
+        };
+        document.head.appendChild(script);
+      </script>
+    `;
+  } else {
+    scriptResponse = `
+      <script>
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+        script.onload = () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Internal Server Error',
+            text: 'Something went wrong. Please try again later.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Go Back'
+          }).then(() => {
+            window.history.back();
+          });
+        };
+        document.head.appendChild(script);
+      </script>
+    `;
+  }
+
+  return res.send(scriptResponse);
+}
+
 
     const dependantID = result.insertId;
 
@@ -399,9 +492,28 @@ app.post("/submitPrecondition", (req, res) => {
     `;
 
     db.query(insertHealthSql, [dependantID, diabetes, bp_condition, obese, cardiac_surgery, healthApproval], (err2) => {
-      if (err2) {
-        return res.send(`<script>alert('Internal Server Error'); window.history.back();</script>`);
-      }
+if (err2) {
+  const errorScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Internal Server Error',
+          text: 'Something went wrong. Please try again.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go Back'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+  return res.send(errorScript);
+}
+
       res.redirect("/");
     });
   });
@@ -413,17 +525,52 @@ app.post("/loginCheck", (req, res) => {
   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
-    if (err) {
-      return res.send(`<script>alert("Internal Server Error"); window.location.href = "/existingconditions";</script>`);
-    }
+if (err) {
+  const errorScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Internal Server Error',
+          text: 'Something went wrong while processing your request.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Back'
+        }).then(() => {
+          window.location.href = '/existingconditions';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+  return res.send(errorScript);
+}
+
 
     if (result.length > 0) {
       // Login success – redirect to dashboard
       return res.redirect("/dashboard");
     }
+res.send(`
+  <script>
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+    script.onload = () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Invalid credentials. Please try again.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        window.location.href = '/login';
+      });
+    };
+    document.head.appendChild(script);
+  </script>
+`);
 
-    // Invalid credentials – show alert and redirect
-    res.send(`<script>alert("Invalid credentials"); window.location.href = "/login";</script>`);
   });
 });
 
@@ -484,16 +631,53 @@ app.post("/preUpdateCheck", (req, res) => {
   const sql = "SELECT * FROM user_data WHERE uniqueID = ? AND pass = ?";
 
   db.query(sql, [uniqueID, pass], (err, result) => {
-    if (err) {
-      return res.send(`<script>alert("Internal Server Error"); window.location.href = "/preUpdate";</script>`);
-    }
+if (err) {
+  const errorScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Internal Server Error',
+          text: 'Something went wrong on the server. Please try again later.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Back'
+        }).then(() => {
+          window.location.href = '/preUpdate';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+  return res.send(errorScript);
+}
 
-    if (result.length > 0) {
-      req.session.uniqueID = uniqueID;
-      return res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
-    }
+if (result.length > 0) {
+  req.session.uniqueID = uniqueID;
+  return res.redirect(`/updateProfile?uniqueID=${uniqueID}`);
+}
 
-    res.send(`<script>alert("Invalid credentials"); window.location.href = "/preUpdate";</script>`);
+
+res.send(`
+  <script>
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+    script.onload = () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Credentials',
+        text: 'Please check your unique ID and password.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Try Again'
+      }).then(() => {
+        window.location.href = '/preUpdate';
+      });
+    };
+    document.head.appendChild(script);
+  </script>
+`);
+
   });
 });
 
@@ -526,9 +710,28 @@ app.post("/confirmUpdate1", (req, res) => {
   const transplantedFlags = organs.map(o => safeTransplantedOrgans.includes(o) ? 1 : 0);
 
   const conflictOrgans = organs.filter((o, index) => donatedFlags[index] === 1 && transplantedFlags[index] === 1);
-  if (conflictOrgans.length > 0) {
-    return res.send(`<script>alert("Conflict detected: You cannot donate an organ that has already been transplanted (${conflictOrgans.join(", ")})."); window.history.back();</script>`);
-  }
+if (conflictOrgans.length > 0) {
+  const conflictScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Conflict Detected',
+          html: 'You cannot donate an organ that has already been transplanted: <strong>${conflictOrgans.join(", ")}</strong>.',
+          confirmButtonText: 'Go Back',
+          confirmButtonColor: '#d33'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+  return res.send(conflictScript);
+}
+
 
   const donorDataQuery = `
     UPDATE user_data
@@ -846,28 +1049,57 @@ app.post("/deleteUser", (req, res) => {
   }
 
   const deleteQuery = "DELETE FROM user_data WHERE uniqueID = ?";
-  db.query(deleteQuery, [uniqueID], (err, result) => {
-    if (err) {
-      console.error("Error deleting user:", err);
-      return res.status(500).json({ message: "Internal server error!" });
-    }
-    if (result.affectedRows > 0) {
-      res.send(`
-        <script>
-          alert('User deleted successfully.');
-          window.location.href = '/'; // Redirect to index page
-        </script>
-      `);
-    } else {
-      res.send(`
-        <script>
-          alert('User not found or could not be deleted.');
-          window.location.href = '/'; // Redirect to index page
-        </script>
-      `);
-    }
-    
-  });
+db.query(deleteQuery, [uniqueID], (err, result) => {
+  if (err) {
+    console.error("Error deleting user:", err);
+    return res.status(500).json({ message: "Internal server error!" });
+  }
+
+  const successScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'User deleted successfully.',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          window.location.href = '/';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+
+  const failureScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'User not found or could not be deleted.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go back'
+        }).then(() => {
+          window.location.href = '/';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+
+  if (result.affectedRows > 0) {
+    res.send(successScript);
+  } else {
+    res.send(failureScript);
+  }
+});
+
 });
 
 
