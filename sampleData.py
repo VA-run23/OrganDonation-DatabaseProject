@@ -15,15 +15,15 @@ import string
 
 # Expanded Indian-style names
 first_names = [
-    "Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Karthik", "Riya",
-    "Ashish", "Diya", "Isha", "Neha", "Rohan", "Saanvi", "Anjali", "Pranav",
-    "Lakshmi", "Manish", "Divya", "Nikhil", "Pooja", "Kavya", "Raj", "Simran"
+    "Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Karthik", "Riya","Murali", 
+    "Ashish", "Diya", "Isha", "Neha", "Rohan", "Saanvi", "Anjali", "Pranav", 
+    "Lakshmi", "Manish", "Divya", "Nikhil", "Pooja", "Kavya", "Raj", "Simran", "Usha", "Priyanka", "Rashmi", "Mahesha"
 ]
 
 last_names = [
-    "Patel", "Sharma", "Reddy", "Naidu", "Kumar", "Mehta", "Joshi", "Verma",
-    "Kapoor", "Bose", "Singh", "Gupta", "Malhotra", "Chatterjee", "Iyer",
-    "Nair", "Desai", "Rao", "Joshi", "Bhat", "Das", "Khan", "Dutta", "Mishra"
+    "Patel", "Sharma", "Reddy", "Naidu", "Kumar", "Mehta", "Joshi", "Verma","Patil", "Bam", "Raina", "Malhan"
+    "Kapoor", "Bose", "Singh", "Gupta", "Malhotra", "Chatterjee", "Iyer","Chanchani",
+    "Nair", "Desai", "Rao", "Joshi", "Bhat", "Das", "Kumar", "Dutta", "Mishra", "Patil", "Sen"
 ]
 
 cities = ['Mysore', 'Bangalore', 'Chikmagalur', 'Kolar']
@@ -61,7 +61,7 @@ health_values = []
 
 # Step 1: Generate 1000 users
 dependants_per_user = {}
-for uniqueID in range(1, 5001):
+for uniqueID in range(1, 50001):
     fname = random.choice(first_names)
     lname = random.choice(last_names)
     full_name = f"{fname} {lname}"
@@ -105,7 +105,7 @@ for uniqueID in range(1, 5001):
 
 # Step 2: Create only one dependant per user, include total count
 dependant_id_counter = 1
-for uniqueID in range(1, 5001):
+for uniqueID in range(1, 50001):
     total_dependants = dependants_per_user[uniqueID]
 
     # Generate a single primary dependant

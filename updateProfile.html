@@ -9,109 +9,101 @@
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
-    /* Original inline styles preserved; additional professional enhancements added */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 20px;
-      background-color: #f8f9fa;
-    }
-    fieldset {
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-    legend {
-      font-weight: bold;
-    }
-    label {
-      display: inline-block;
-      width: 150px;
-    }
-    input, select {
-      margin-bottom: 10px;
-    }
-    /* Additional custom styles */
-    .navbar {
-      margin-bottom: 30px;
-    }
-    .footer {
-      background-color: #343a40;
-      color: #fff;
-      padding: 10px 0;
-      margin-top: 30px;
-    }
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          padding: 20px;
+          background-color: #f8f9fa;
+        }
+        fieldset {
+          margin-bottom: 15px;
+          padding: 10px;
+          border: 1px solid #ccc;
+        }
+        legend {
+          font-weight: bold;
+        }
+        label {
+          display: inline-block;
+          width: 150px;
+        }
+        input, select {
+          margin-bottom: 10px;
+        }
+        /* Additional custom styles */
+        .navbar {
+          margin-bottom: 30px;
+        }
+        .footer {
+          background-color: #343a40;
+          color: #fff;
+          padding: 10px 0;
+          margin-top: 30px;
+        }
 
+        nav {
+          background: linear-gradient(90deg, #008080, #006666);
+          padding: 15px;
+          color: white;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
 
-      /* Navigation Styles */
-     
-    /* Navigation Styles */
-    nav {
-      background: linear-gradient(90deg, #008080, #006666);
-      padding: 15px;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
+        nav > div {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
 
-    nav > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        nav a {
+          color: white;
+          font-size: 26px;
+          text-decoration: none;
+          font-weight: bold;
+        }
 
-    nav a {
-      color: white;
-      font-size: 26px;
-      text-decoration: none;
-      font-weight: bold;
-    }
+        .nav-links ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+        }
 
-    .nav-links ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-    }
+        .nav-links ul li {
+          margin-left: 20px;
+        }
 
-    .nav-links ul li {
-      margin-left: 20px;
-    }
+        .nav-links ul li a {
+          position: relative;
+          color: white;
+          text-decoration: none;
+          font-size: 16px;
+          transition: color 0.3s;
+        }
 
-    .nav-links ul li a {
-      position: relative;
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
+        .nav-links ul li a::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #ccf;
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s ease-in-out;
+        }
 
-    /* Animated underline */
-    .nav-links ul li a::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #ccf;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s ease-in-out;
-    }
+        .nav-links ul li a:hover::after {
+          transform: scaleX(1);
+        }
 
-    .nav-links ul li a:hover::after {
-      transform: scaleX(1);
-    }
-
-    .nav-links ul li a:hover {
-      color: #ccf;
-    }
+        .nav-links ul li a:hover {
+          color: #ccf;
+        }
   
-
-        /* Footer styling */
         footer {
           background: linear-gradient(90deg, #008080, #006666);
           color: white;
@@ -170,12 +162,12 @@
           document.getElementById("name").value = data.name || "";
           document.getElementById("email").value = data.email || "";
           document.getElementById("govtID").value = data.govtID || "";
-                    document.getElementById("phone").value = data.phone || "";
+          document.getElementById("phone").value = data.phone || "";
           document.getElementById("pass").value = data.pass || "";
           document.getElementById("age").value = data.age || "";
           document.getElementById("city").value = data.city || "";
-document.getElementById("bloodGroup").value = (data.bloodGroup || "").trim().toUpperCase();
-document.getElementById("gender").value = (data.gender || "").trim();
+          document.getElementById("bloodGroup").value = (data.bloodGroup || "").trim().toUpperCase();
+          document.getElementById("gender").value = (data.gender || "").trim();
 
   
           // Populate organ data if available.

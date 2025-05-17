@@ -472,7 +472,7 @@ if (err.code === "ER_DUP_ENTRY") {
 }
 
       console.error("Database Error:", err);
-      return res.status(500).send("Internal Server Error");
+      return res.status(500).send("Internal Server Error :: "+ err.message);
     }
 
     const uniqueID = result.insertId;
@@ -487,7 +487,7 @@ if (err.code === "ER_DUP_ENTRY") {
     db.query(donatedOrgansQuery, donatedOrgansValues, (donatedErr) => {
       if (donatedErr) {
         console.error("Donor Organs Error:", donatedErr);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error :: "+ donatedErr.message);
       }
 
       // Insert Transplanted Organs into transplanted_organs table
@@ -500,7 +500,7 @@ if (err.code === "ER_DUP_ENTRY") {
       db.query(transplantedOrgansQuery, transplantedOrgansValues, (transplantedErr) => {
         if (transplantedErr) {
           console.error("Transplanted Organs Error:", transplantedErr);
-          return res.status(500).send("Internal Server Error");
+          return res.status(500).send("Internal Server Error :: "+ transplantedErr.message);
         }
 
         req.session.uniqueID = uniqueID;
@@ -587,7 +587,7 @@ if (err) {
         script.onload = () => {
           Swal.fire({
             icon: 'error',
-            title: 'Internal Server Error',
+            title: 'Enter valid details',
             text: 'Something went wrong. Please try again later.',
             confirmButtonColor: '#d33',
             confirmButtonText: 'Go Back'
@@ -622,7 +622,7 @@ if (err2) {
       script.onload = () => {
         Swal.fire({
           icon: 'error',
-          title: 'Internal Server Error',
+          title: 'Enter valid details',
           text: 'Something went wrong. Please try again.',
           confirmButtonColor: '#d33',
           confirmButtonText: 'Go Back'
@@ -655,7 +655,7 @@ if (err) {
       script.onload = () => {
         Swal.fire({
           icon: 'error',
-          title: 'Internal Server Error',
+          title: 'Enter valid credentials',
           text: 'Something went wrong while processing your request.',
           confirmButtonColor: '#d33',
           confirmButtonText: 'Back'
@@ -732,7 +732,7 @@ app.get("/dashboardContent", (req, res) => {
   db.query(sql, filters, (err, result) => {
     if (err) {
       console.error("Error executing dashboard query:", err);
-      return res.status(500).send("Internal Server Error");
+      return res.status(500).send("Internal Server Error :: " + err.message);
     }
 
     // Map results to handle nulls and pass to template
@@ -759,7 +759,7 @@ if (err) {
       script.onload = () => {
         Swal.fire({
           icon: 'error',
-          title: 'Internal Server Error',
+          title: 'Enter valid credentials',
           text: 'Something went wrong on the server. Please try again later.',
           confirmButtonColor: '#d33',
           confirmButtonText: 'Back'
@@ -859,7 +859,7 @@ if (conflictOrgans.length > 0) {
   db.query(donorDataQuery, donorDataValues, (err, result) => {
     if (err) {
       console.error("Error updating user_data:", err);
-      return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+      return res.status(500).json({ message: "Internal server error!", error: err.message });
     }
 
     if (result.affectedRows > 0) {
@@ -873,7 +873,7 @@ if (conflictOrgans.length > 0) {
       db.query(updateDonorOrgansQuery, donorOrgansValues, (orgErr, orgResult) => {
         if (orgErr) {
           console.error("Error updating donor_organs:", orgErr);
-          return res.status(500).json({ message: "Internal server error!", error: orgErr.sqlMessage });
+          return res.status(500).json({ message: "Internal server error!", error: orgErr.message });
         }
 
         const updateTransplantedOrgansQuery = `
@@ -886,7 +886,7 @@ if (conflictOrgans.length > 0) {
         db.query(updateTransplantedOrgansQuery, transplantedOrgansValues, (transErr, transResult) => {
           if (transErr) {
             console.error("Error updating transplanted_organs:", transErr);
-            return res.status(500).json({ message: "Internal server error!", error: transErr.sqlMessage });
+            return res.status(500).json({ message: "Internal server error!", error: transErr.message });
           }
 
           // ✅ Add the lastUpdate timestamp here (safely)
@@ -1073,7 +1073,7 @@ app.get("/getUser/:uniqueID", (req, res) => {
 
   db.query(sql, [uniqueID], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: "Internal server error!", error: err.sqlMessage });
+      return res.status(500).json({ message: "Internal server error!", error: err.message });
     }
     if (result.length > 0) {
       const row = result[0];
@@ -1168,7 +1168,7 @@ app.post("/deleteUser", (req, res) => {
 db.query(deleteQuery, [uniqueID], (err, result) => {
   if (err) {
     console.error("Error deleting user:", err);
-    return res.status(500).json({ message: "Internal server error!" });
+    return res.status(500).json({ message: "Internal server error!", error: err.message });
   }
 
   const successScript = `
