@@ -18,7 +18,7 @@
 
     .card:hover {
       transform: scale(1.05);
-      background-color: #3af66f;
+      background-color: #34D399;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
@@ -26,9 +26,9 @@
       height: 20px;
       width: 20px;
       border-radius: 50%;
-      background-color: #fff;
+      background-color: #c9f5ff;
       position: fixed;
-      box-shadow: whitesmoke 3px;
+      box-shadow: rgba(204, 255, 160, 0.979) 3px;
       font-size: 3px;
       display: flex;
       align-items: center;
@@ -120,7 +120,7 @@
     <h3 class="text-2xl font-semibold text-gray-800 mb-4">Easy Registration</h3>
     <p class="text-gray-600">Register seamlessly using your Aadhar ID and join a movement that saves lives.</p>
   </div>
-  <div class="rounded-2xl shadow-lg p-6 text-center" style="background-color: #ffda9d;">
+  <div class="rounded-2xl shadow-lg p-6 text-center" style="background-color: #fcdfb1;">
     <h3 class="text-2xl font-semibold text-gray-800 mb-4">Donation Limit</h3>
     <p class="text-gray-600">A donor may not donate more than 3 organs to ensure personal well-being and ethical integrity.</p>
   </div>
@@ -297,7 +297,7 @@
       marqueeTimeline.fromTo(marquees, {
         xPercent: 0
       }, {
-        xPercent: -100,
+        xPercent: 100,
         duration: 3,
         modifiers: {
           xPercent: gsap.utils.wrap(-100, 0)
