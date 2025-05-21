@@ -369,7 +369,7 @@ if (age < 18) {
   `);
 }
 
-if (age > 80) {
+if (age > 60) {
   return res.send(`
     <script>
       const script = document.createElement('script');
