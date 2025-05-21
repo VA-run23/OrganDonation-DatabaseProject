@@ -302,32 +302,13 @@ db.connect((err) => {
   });
 });
 
-// Helper function for SweetAlert responses
-function sendSweetAlert(res, options) {
-  const defaultOptions = {
-    icon: 'success',
-    confirmButtonColor: '#3085d6',
-    timer: 3000,
-    timerProgressBar: true
-  };
-  
-  const finalOptions = { ...defaultOptions, ...options };
-  
-  return res.send(`
-    <html>
-      <head>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      </head>
-      <body>
-        <script>
-          Swal.fire(${JSON.stringify(finalOptions)});
-        </script>
-      </body>
-    </html>
-  `);
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-// /** Routes */
+
+/** Routes */
 // Registration
 app.post("/submit", (req, res) => {
   const { 
@@ -345,16 +326,25 @@ app.post("/submit", (req, res) => {
   } = req.body;
 
   // Validate Government ID
-if (govtID < 100000000000 || govtID > 999999999999) {  return sendSweetAlert(res, {
-    icon: 'warning',
-    title: 'Invalid Government ID',
-    text: 'Government ID must be a 12-digit number.',
-    confirmButtonColor: '#d33',
-    confirmButtonText: 'Go Back',
-    didClose: () => {
-      window.history.back();
-    }
-  });
+if (govtID < 100000000000 || govtID > 999999999999) {
+  return res.send(`
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Government ID',
+          text: 'Government ID must be a 12-digit number.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go Back'
+        }).then(() => {
+          window.history.back();
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `);
 }
 
 // Validate Age
@@ -541,16 +531,32 @@ if (err.code === "ER_DUP_ENTRY") {
         if (transplantedErr) {
           console.error("Transplanted Organs Error:", transplantedErr);
           return res.status(500).send("Internal Server Error :: "+ transplantedErr.message);
-        }        req.session.uniqueID = uniqueID;
-        return sendSweetAlert(res, {
+        }
+
+        req.session.uniqueID = uniqueID;
+res.send(`
+  <html>
+    <head>
+      <!-- Include SweetAlert2 from CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+      <script>
+        Swal.fire({
           icon: 'success',
           title: '✅ Registered!',
-          text: `Your Unique Donor ID is: ${uniqueID}`,
+          text: 'Your Unique Donor ID is: ${uniqueID}',
           showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
           didClose: () => {
             window.location.href = "/existingconditions";
           }
         });
+      </script>
+    </body>
+  </html>
+`);
 
       });
     });
@@ -698,22 +704,85 @@ if (err) {
       // Login success – redirect to dashboard
       return res.redirect("/dashboard");
     }
-return sendSweetAlert(res, {
-      icon: 'error',
-      title: 'Login Failed',
-      text: 'Invalid credentials. Please try again.',
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'OK',
-      didClose: () => {
+res.send(`
+  <script>
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+    script.onload = () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Invalid credentials. Please try again.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      }).then(() => {
         window.location.href = '/login';
-      }
-    });
+      });
+    };
+    document.head.appendChild(script);
+  </script>
+`);
 
   });
 });
 
-app.get("/dashboardContent", (req, res) => {
-  const { organ, bloodGroup, city } = req.query;
+
+
+// // this is older version
+// app.get("/dashboardContent", (req, res) => {
+//   const { organ, bloodGroup, city } = req.query;
+
+//   let sql = `
+//     SELECT 
+//       u.uniqueID, 
+//       u.email, 
+//       u.phone, 
+//       u.lastUpdate,
+//       d.totalDependants,
+//       d.dependantAge
+//     FROM user_data u
+//     LEFT JOIN (
+//       SELECT 
+//         uniqueID, 
+//         MAX(totalDependants) AS totalDependants,   -- Pick stored value per uniqueID
+//         MIN(dependantAge) AS dependantAge
+//       FROM userDependants
+//       GROUP BY uniqueID
+//     ) d ON u.uniqueID = d.uniqueID
+//     LEFT JOIN donor_organs o ON u.uniqueID = o.uniqueID
+//     WHERE u.bloodGroup = ? AND u.city = ?
+//   `;
+
+//   const filters = [bloodGroup, city];
+
+//   // Add organ filter dynamically if provided
+//   if (organ) {
+//     sql += ` AND o.${organ.toLowerCase()} = 1`;
+//   }
+
+//   sql += ` ORDER BY u.lastUpdate DESC`;
+
+//   db.query(sql, filters, (err, result) => {
+//     if (err) {
+//       console.error("Error executing dashboard query:", err);
+//       return res.status(500).send("Internal Server Error :: " + err.message);
+//     }
+
+//     // Map results to handle nulls and pass to template
+//     const donors = result.map(donor => ({
+//       ...donor,
+//       totalDependants: donor.totalDependants !== null ? donor.totalDependants : 0,
+//       dependantAge: donor.dependantAge !== null ? donor.dependantAge : 'N/A'
+//     }));
+
+//     res.render("dashboardContent", { donors });
+//   });
+// });
+
+
+
+app.get("/dashboardContent", (req, res) => {//newer version
+  const { organ, bloodGroup, city, gender } = req.query;
 
   let sql = `
     SELECT 
@@ -721,13 +790,14 @@ app.get("/dashboardContent", (req, res) => {
       u.email, 
       u.phone, 
       u.lastUpdate,
+      u.gender,
       d.totalDependants,
       d.dependantAge
     FROM user_data u
     LEFT JOIN (
       SELECT 
         uniqueID, 
-        MAX(totalDependants) AS totalDependants,   -- Pick stored value per uniqueID
+        MAX(totalDependants) AS totalDependants,
         MIN(dependantAge) AS dependantAge
       FROM userDependants
       GROUP BY uniqueID
@@ -737,6 +807,12 @@ app.get("/dashboardContent", (req, res) => {
   `;
 
   const filters = [bloodGroup, city];
+
+  // Add gender condition if provided
+  if (gender) {
+    sql += ` AND u.gender = ?`;
+    filters.push(gender);
+  }
 
   // Add organ filter dynamically if provided
   if (organ) {
@@ -761,6 +837,7 @@ app.get("/dashboardContent", (req, res) => {
     res.render("dashboardContent", { donors });
   });
 });
+
 
 app.post("/preUpdateCheck", (req, res) => {
   const { uniqueID, pass } = req.body;
@@ -1186,27 +1263,49 @@ db.query(deleteQuery, [uniqueID], (err, result) => {
     console.error("Error deleting user:", err);
     return res.status(500).json({ message: "Internal server error!", error: err.message });
   }
+
+  const successScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'User deleted successfully.',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          window.location.href = '/';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+
+  const failureScript = `
+    <script>
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+      script.onload = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'User not found or could not be deleted.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Go back'
+        }).then(() => {
+          window.location.href = '/';
+        });
+      };
+      document.head.appendChild(script);
+    </script>
+  `;
+
   if (result.affectedRows > 0) {
-    return sendSweetAlert(res, {
-      icon: 'success',
-      title: 'Deleted!',
-      text: 'User deleted successfully.',
-      confirmButtonText: 'OK',
-      didClose: () => {
-        window.location.href = '/';
-      }
-    });
+    res.send(successScript);
   } else {
-    return sendSweetAlert(res, {
-      icon: 'error',
-      title: 'Oops...',
-      text: 'User not found or could not be deleted.',
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Go back',
-      didClose: () => {
-        window.location.href = '/';
-      }
-    });
+    res.send(failureScript);
   }
 });
 
@@ -1214,7 +1313,6 @@ db.query(deleteQuery, [uniqueID], (err, result) => {
 
 
 // Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log("🚀 Server running at http://localhost:3000");
 });
