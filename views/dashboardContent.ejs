@@ -88,6 +88,23 @@
       font-size: 14px;
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
     }
+    
+    /* Pagination styling */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .pagination-btn {
+      margin: 0 5px;
+    }
+    
+    .pagination-info {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #555;
+    }
   
     /* Responsive Design */
     @media (max-width: 768px) {
@@ -128,6 +145,10 @@
       </nav>
     <div class="container my-5">
         <h2 class="mb-4">Filtered Donor Information</h2>
+        
+        <div class="pagination-info">
+            <span id="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+        </div>
 
         <table border="1" class="table table-striped table-bordered">
             <thead>
@@ -140,7 +161,7 @@
                     <th>Last Update</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="donors-table-body">
                 <% if (donors && donors.length > 0) { %>
                     <% donors.forEach(donor => { %>
                         <tr>
@@ -160,6 +181,11 @@
             </tbody>
         </table>
 
+        <div class="pagination-container">
+            <button id="prev-page" class="btn btn-outline-primary pagination-btn" disabled>Previous</button>
+            <button id="next-page" class="btn btn-outline-primary pagination-btn" disabled>Next</button>
+        </div>
+
         <div style="margin-top: 20px;">
             <button onclick="history.back()" class="btn btn-secondary mr-2">Back</button>
             <button onclick="window.location.href='/'" class="btn btn-primary">Logout</button>
@@ -167,20 +193,138 @@
     </div>
     <footer>
         <small>&copy; 2025 VOrgans. All rights reserved.</small>
-      </footer>
+    </footer>
     
     <!-- GSAP for smooth animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script>
-        // Animate the heading, table, and buttons using GSAP
-        gsap.from("h2", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
-        gsap.from("table", { duration: 1, opacity: 0, y: 30, delay: 0.5, ease: "power1.out" });
-        gsap.from("button", { duration: 1, opacity: 0, y: 30, delay: 1, stagger: 0.2, ease: "power1.out" });
-    </script>
     
     <!-- Bootstrap JS and dependencies (jQuery and Popper.js) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        // Pagination script
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store all donors in a JavaScript array
+            let allDonors = [];
+            
+            // Get all donor rows from the table
+            const rows = document.querySelectorAll('#donors-table-body tr');
+            rows.forEach(row => {
+                // Create donor object from row data
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 6) { // Make sure it's a valid donor row
+                    const donor = {
+                        uniqueID: cells[0].innerHTML,
+                        email: cells[1].innerHTML,
+                        phone: cells[2].innerHTML,
+                        totalDependants: cells[3].innerHTML,
+                        dependantAge: cells[4].innerHTML,
+                        lastUpdate: cells[5].innerHTML
+                    };
+                    allDonors.push(donor);
+                }
+            });
+            
+            // Pagination variables
+            const itemsPerPage = 10;
+            let currentPage = 1;
+            const totalPages = Math.ceil(allDonors.length / itemsPerPage) || 1;
+            
+            // Update pagination info
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('total-pages').textContent = totalPages;
+            
+            // Enable/disable pagination buttons
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+            
+            updatePaginationButtons();
+            
+            // Display donors for the current page
+            displayDonors();
+            
+            // Event listeners for pagination buttons
+            prevButton.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayDonors();
+                    updatePaginationButtons();
+                    // Animate the table
+                    animateTable();
+                }
+            });
+            
+            nextButton.addEventListener('click', function() {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayDonors();
+                    updatePaginationButtons();
+                    // Animate the table
+                    animateTable();
+                }
+            });
+            
+            // Function to display donors for the current page
+            function displayDonors() {
+                const tableBody = document.getElementById('donors-table-body');
+                tableBody.innerHTML = '';
+                
+                // Calculate start and end indices for the current page
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, allDonors.length);
+                
+                // No donors case
+                if (allDonors.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="6" class="text-center">No matching donors found.</td>';
+                    tableBody.appendChild(row);
+                    return;
+                }
+                
+                // Add donors for the current page
+                for (let i = startIndex; i < endIndex; i++) {
+                    const donor = allDonors[i];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${donor.uniqueID}</td>
+                        <td>${donor.email}</td>
+                        <td>${donor.phone}</td>
+                        <td>${donor.totalDependants}</td>
+                        <td>${donor.dependantAge}</td>
+                        <td>${donor.lastUpdate}</td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+                
+                // Update pagination info
+                document.getElementById('current-page').textContent = currentPage;
+            }
+            
+            // Function to update pagination buttons
+            function updatePaginationButtons() {
+                prevButton.disabled = currentPage === 1;
+                nextButton.disabled = currentPage === totalPages;
+            }
+            
+            // Function to animate the table when changing pages
+            function animateTable() {
+                gsap.from("#donors-table-body tr", {
+                    duration: 0.5,
+                    opacity: 0,
+                    y: 10,
+                    stagger: 0.02,
+                    ease: "power1.out"
+                });
+            }
+            
+            // Initial animation
+            gsap.from("h2", { duration: 1, opacity: 0, y: -50, ease: "power1.out" });
+            gsap.from("table", { duration: 1, opacity: 0, y: 30, delay: 0.5, ease: "power1.out" });
+            gsap.from(".pagination-container", { duration: 1, opacity: 0, y: 30, delay: 0.8, ease: "power1.out" });
+            gsap.from("button:not(.pagination-btn)", { duration: 1, opacity: 0, y: 30, delay: 1, stagger: 0.2, ease: "power1.out" });
+        });
+    </script>
 </body>
 </html>
