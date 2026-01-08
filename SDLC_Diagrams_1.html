@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organ Donation System - All Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .diagram-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            page-break-inside: avoid;
+        }
+        .diagram-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .diagram-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .mermaid {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .diagram-section {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Organ Donation Management System</h1>
+            <p>Complete System Diagrams</p>
+        </div>
+
+        <!-- 1. Architecture Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">1. System Architecture Diagram</h2>
+            <p class="diagram-description">Shows the overall system architecture with layers and components</p>
+            <div class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser]
+        Mobile[Mobile App]
+    end
+    
+    subgraph "Presentation Layer"
+        HTML[HTML Pages]
+        EJS[EJS Templates]
+        Static[Static Assets]
+    end
+    
+    subgraph "Application Layer"
+        Express[Express.js Server]
+        Router[Route Handlers]
+        Session[Session Management]
+        Middleware[Middleware]
+    end
+    
+    subgraph "Business Logic Layer"
+        Auth[Authentication Logic]
+        Validation[Data Validation]
+        OrganMgmt[Organ Management]
+        UserMgmt[User Management]
+    end
+    
+    subgraph "Data Access Layer"
+        MySQL[MySQL Database]
+        Triggers[Database Triggers]
+    end
+    
+    subgraph "Database Tables"
+        UserData[(user_data)]
+        DonorOrgans[(donor_organs)]
+        TransplantedOrgans[(transplanted_organs)]
+        Dependants[(userDependants)]
+        Health[(userHealth)]
+        AuditLogs[(audit_logs)]
+    end
+    
+    Browser --> HTML
+    Mobile --> HTML
+    HTML --> Express
+    EJS --> Express
+    Static --> Express
+    Express --> Router
+    Router --> Middleware
+    Middleware --> Session
+    Router --> Auth
+    Router --> Validation
+    Router --> OrganMgmt
+    Router --> UserMgmt
+    Auth --> MySQL
+    Validation --> MySQL
+    OrganMgmt --> MySQL
+    UserMgmt --> MySQL
+    MySQL --> Triggers
+    Triggers --> AuditLogs
+    MySQL --> UserData
+    MySQL --> DonorOrgans
+    MySQL --> TransplantedOrgans
+    MySQL --> Dependants
+    MySQL --> Health
+            </div>
+        </div>
+
+        <!-- 2. Activity Diagram - Registration -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">2. Activity Diagram - User Registration</h2>
+            <p class="diagram-description">Shows the complete flow of user registration process</p>
+            <div class="mermaid">
+graph TD
+    Start([User Starts Registration]) --> EnterDetails[Enter Personal Details]
+    EnterDetails --> ValidateGovtID{Validate Govt ID<br/>12 digits?}
+    ValidateGovtID -->|Invalid| ShowIDError[Show Error: Invalid Govt ID]
+    ShowIDError --> EnterDetails
+    ValidateGovtID -->|Valid| ValidateAge{Validate Age<br/>18-60?}
+    ValidateAge -->|Less than 18| ShowAgeError1[Show Error: Must be 18+]
+    ShowAgeError1 --> EnterDetails
+    ValidateAge -->|Greater than 60| ShowAgeError2[Show Error: Max age 60]
+    ShowAgeError2 --> EnterDetails
+    ValidateAge -->|Valid| SelectOrgans[Select Donated/Transplanted Organs]
+    SelectOrgans --> CheckConflict{Check Organ<br/>Conflicts}
+    CheckConflict -->|Conflict Found| ShowConflictError[Show Error: Cannot donate<br/>transplanted organs]
+    ShowConflictError --> SelectOrgans
+    CheckConflict -->|No Conflict| CheckDonationLimit{More than<br/>3 organs?}
+    CheckDonationLimit -->|Yes| ShowLimitError[Show Error: Max 3 organs]
+    ShowLimitError --> SelectOrgans
+    CheckDonationLimit -->|No| InsertUserData[Insert into user_data]
+    InsertUserData --> CheckDuplicate{Duplicate<br/>Entry?}
+    CheckDuplicate -->|Yes| ShowDupError[Show Error: Already registered]
+    ShowDupError --> EnterDetails
+    CheckDuplicate -->|No| InsertDonorOrgans[Insert into donor_organs]
+    InsertDonorOrgans --> InsertTransplantedOrgans[Insert into transplanted_organs]
+    InsertTransplantedOrgans --> TriggerAudit[Trigger: Log Registration]
+    TriggerAudit --> CreateSession[Create Session with uniqueID]
+    CreateSession --> ShowSuccess[Show Success: Display uniqueID]
+    ShowSuccess --> RedirectToPreconditions[Redirect to Preconditions Form]
+    RedirectToPreconditions --> End([End])
+            </div>
+        </div>
+
+        <!-- 3. Activity Diagram - Login -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">3. Activity Diagram - Login Process</h2>
+            <p class="diagram-description">Shows the login authentication flow</p>
+            <div class="mermaid">
+graph TD
+    Start([User Opens Login Page]) --> EnterCreds[Enter uniqueID and Password]
+    EnterCreds --> SubmitLogin[Submit Login Form]
+    SubmitLogin --> QueryDB[Query user_data table]
+    QueryDB --> CheckCreds{Credentials<br/>Match?}
+    CheckCreds -->|No| ShowError[Show Error: Invalid Credentials]
+    ShowError --> ReturnToLogin[Return to Login Page]
+    ReturnToLogin --> EnterCreds
+    CheckCreds -->|Yes| CreateSession[Create User Session]
+    CreateSession --> RedirectDashboard[Redirect to Dashboard]
+    RedirectDashboard --> End([End: User Logged In])
+            </div>
+        </div>
+
+        <!-- 4. Sequence Diagram - Registration -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">4. Sequence Diagram - Registration Flow</h2>
+            <p class="diagram-description">Shows interactions between components during registration</p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant Browser
+    participant ExpressServer
+    participant Validator
+    participant Database
+    participant Triggers
+    participant Session
+    
+    User->>Browser: Fill registration form
+    Browser->>ExpressServer: POST /submit
+    ExpressServer->>Validator: Validate govtID
+    Validator-->>ExpressServer: Validation result
+    alt Invalid govtID
+        ExpressServer-->>Browser: Error: Invalid ID
+        Browser-->>User: Show error alert
+    else Valid govtID
+        ExpressServer->>Validator: Validate age (18-60)
+        Validator-->>ExpressServer: Validation result
+        alt Age invalid
+            ExpressServer-->>Browser: Error: Age restriction
+            Browser-->>User: Show error alert
+        else Age valid
+            ExpressServer->>Validator: Check organ conflicts
+            Validator-->>ExpressServer: Conflict result
+            alt Conflicts found
+                ExpressServer-->>Browser: Error: Organ conflict
+                Browser-->>User: Show error alert
+            else No conflicts
+                ExpressServer->>Database: INSERT user_data
+                Database->>Triggers: Fire user_data_after_insert
+                Triggers->>Database: INSERT audit_logs
+                Database-->>ExpressServer: uniqueID created
+                ExpressServer->>Database: INSERT donor_organs
+                Database->>Triggers: Fire donor_organs_after_insert
+                Triggers->>Database: INSERT audit_logs
+                Database-->>ExpressServer: Success
+                ExpressServer->>Database: INSERT transplanted_organs
+                Database->>Triggers: Fire transplanted_organs_after_insert
+                Triggers->>Database: INSERT audit_logs
+                Database-->>ExpressServer: Success
+                ExpressServer->>Session: Store uniqueID
+                Session-->>ExpressServer: Session created
+                ExpressServer-->>Browser: Success + uniqueID
+                Browser-->>User: Show success alert
+                Browser->>Browser: Redirect to preconditions
+            end
+        end
+    end
+            </div>
+        </div>
+
+        <!-- 5. Sequence Diagram - Update -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">5. Sequence Diagram - Profile Update</h2>
+            <p class="diagram-description">Shows the profile update process</p>
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant Browser
+    participant ExpressServer
+    participant Database
+    participant Triggers
+    
+    User->>Browser: Navigate to preUpdate
+    Browser->>ExpressServer: GET /preUpdate
+    ExpressServer-->>Browser: preUpdate.html
+    Browser-->>User: Show authentication form
+    User->>Browser: Enter uniqueID & password
+    Browser->>ExpressServer: POST /preUpdateCheck
+    ExpressServer->>Database: SELECT from user_data
+    Database-->>ExpressServer: User record
+    alt Invalid credentials
+        ExpressServer-->>Browser: Error: Invalid credentials
+        Browser-->>User: Show error alert
+    else Valid credentials
+        ExpressServer-->>Browser: Redirect with uniqueID
+        Browser->>ExpressServer: GET /updateProfile?uniqueID=X
+        ExpressServer-->>Browser: updateProfile.html
+        Browser->>ExpressServer: GET /getUser/:uniqueID
+        ExpressServer->>Database: SELECT user + organs data
+        Database-->>ExpressServer: Complete user data
+        ExpressServer-->>Browser: JSON user data
+        Browser-->>User: Pre-filled form
+        User->>Browser: Update fields
+        Browser->>ExpressServer: POST /confirmUpdate1
+        ExpressServer->>Database: UPDATE user_data
+        Database->>Triggers: Fire user_data_after_update
+        Triggers->>Database: INSERT audit_logs
+        Database-->>ExpressServer: Success
+        ExpressServer->>Database: UPDATE donor_organs
+        Database->>Triggers: Fire donor_organs_after_update
+        Triggers->>Database: INSERT audit_logs
+        Database-->>ExpressServer: Success
+        ExpressServer->>Database: UPDATE transplanted_organs
+        Database->>Triggers: Fire transplanted_organs_after_update
+        Triggers->>Database: INSERT audit_logs
+        Database-->>ExpressServer: Success
+        ExpressServer->>Database: UPDATE lastUpdate timestamp
+        Database-->>ExpressServer: Success
+        ExpressServer-->>Browser: Redirect to update preconditions
+        Browser-->>User: Navigate to preconditions form
+    end
+            </div>
+        </div>
+
+        <!-- 6. State Diagram - User -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">6. State Diagram - User Account States</h2>
+            <p class="diagram-description">Shows different states of a user account</p>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> Unregistered
+    Unregistered --> Registering: Start Registration
+    Registering --> ValidationFailed: Invalid Data
+    ValidationFailed --> Registering: Retry
+    Registering --> PendingPreconditions: Registration Success
+    PendingPreconditions --> Active: Submit Preconditions
+    Active --> LoggedIn: Login
+    LoggedIn --> Active: Logout
+    Active --> Updating: Initiate Update
+    Updating --> ValidationFailed: Invalid Update Data
+    ValidationFailed --> Updating: Retry Update
+    Updating --> Active: Update Success
+    Active --> Deleted: Delete Account
+    Deleted --> [*]
+    
+    note right of Active
+        User can login,
+        view dashboard,
+        update profile
+    end note
+    
+    note right of LoggedIn
+        Session active,
+        can access all features
+    end note
+            </div>
+        </div>
+
+        <!-- 7. State Diagram - Organ -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">7. State Diagram - Organ Donation Status</h2>
+            <p class="diagram-description">Shows states of organ donation process</p>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> NoOrgansSelected
+    NoOrgansSelected --> OrgansSelected: User selects organs
+    OrgansSelected --> Validating: Submit selection
+    Validating --> ConflictDetected: Transplanted organ selected for donation
+    ConflictDetected --> OrgansSelected: Remove conflicting organs
+    Validating --> LimitExceeded: More than 3 organs
+    LimitExceeded --> OrgansSelected: Reduce selection
+    Validating --> Registered: Validation passed
+    Registered --> Active: Profile active
+    Active --> Updating: User updates organs
+    Updating --> Validating: Validate new selection
+    Active --> Matched: Recipient match found
+    Matched --> UnderReview: Medical review
+    UnderReview --> Approved: Approved for donation
+    UnderReview --> Rejected: Not suitable
+    Rejected --> Active: Return to active pool
+    Approved --> Donated: Donation completed
+    Donated --> [*]
+            </div>
+        </div>
+
+        <!-- 8. Flowchart - Dashboard -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">8. Flowchart - Dashboard Search</h2>
+            <p class="diagram-description">Shows the organ search and matching process</p>
+            <div class="mermaid">
+graph TD
+    Start([User Accesses Dashboard]) --> EnterCriteria[Enter Search Criteria:<br/>Organ, Blood Group, City, Gender]
+    EnterCriteria --> SubmitSearch[Submit Search Request]
+    SubmitSearch --> BuildQuery[Build SQL Query]
+    BuildQuery --> AddBloodFilter[Add Blood Group Filter]
+    AddBloodFilter --> AddCityFilter[Add City Filter]
+    AddCityFilter --> CheckGender{Gender<br/>Specified?}
+    CheckGender -->|Yes| AddGenderFilter[Add Gender Filter]
+    CheckGender -->|No| CheckOrgan{Organ<br/>Specified?}
+    AddGenderFilter --> CheckOrgan
+    CheckOrgan -->|Yes| AddOrganFilter[Add Organ Filter]
+    CheckOrgan -->|No| ExecuteQuery[Execute Query]
+    AddOrganFilter --> ExecuteQuery
+    ExecuteQuery --> FetchResults[Fetch Results with:<br/>- Donor Contact<br/>- Dependants Info<br/>- Last Update]
+    FetchResults --> SortResults[Sort by Last Update DESC]
+    SortResults --> CheckResults{Results<br/>Found?}
+    CheckResults -->|No| ShowNoResults[Display: No matching donors]
+    CheckResults -->|Yes| RenderTable[Render Donor Table with:<br/>- uniqueID<br/>- Email<br/>- Phone<br/>- Gender<br/>- Dependants<br/>- Last Update]
+    ShowNoResults --> End([End])
+    RenderTable --> End
+            </div>
+        </div>
+
+        <!-- 9. Class Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">9. Class Diagram - Database Schema</h2>
+            <p class="diagram-description">Shows the database structure and relationships</p>
+            <div class="mermaid">
+classDiagram
+    class user_data {
+        +INT uniqueID PK
+        +VARCHAR(12) govtID UNIQUE
+        +VARCHAR(50) name
+        +VARCHAR(50) email UNIQUE
+        +VARCHAR(10) phone UNIQUE
+        +VARCHAR(255) pass
+        +INT age
+        +ENUM gender
+        +ENUM city
+        +ENUM bloodGroup
+        +TIMESTAMP lastUpdate
+    }
+    
+    class donor_organs {
+        +INT organID PK
+        +INT uniqueID FK
+        +TINYINT kidney
+        +TINYINT liver
+        +TINYINT lung
+        +TINYINT intestine
+        +TINYINT pancreas
+    }
+    
+    class transplanted_organs {
+        +INT organID PK
+        +INT uniqueID FK
+        +TINYINT kidney
+        +TINYINT liver
+        +TINYINT lung
+        +TINYINT intestine
+        +TINYINT pancreas
+    }
+    
+    class userDependants {
+        +INT dependantID PK
+        +INT uniqueID FK
+        +VARCHAR(255) dependantName
+        +BIGINT dependantAadhar UNIQUE
+        +INT dependantAge
+        +INT totalDependants
+    }
+    
+    class userHealth {
+        +INT dependantID PK FK
+        +TINYINT diabetes
+        +TINYINT bp_condition
+        +TINYINT obese
+        +TINYINT cardiac_surgery
+        +TINYINT healthApproval
+    }
+    
+    class audit_logs {
+        +INT id PK
+        +VARCHAR(30) action_type
+        +INT user_id
+        +DATETIME timestamp
+        +TEXT details
+    }
+    
+    user_data "1" -- "1" donor_organs : has
+    user_data "1" -- "1" transplanted_organs : has
+    user_data "1" -- "0..*" userDependants : has
+    userDependants "1" -- "1" userHealth : has
+    user_data "1" -- "0..*" audit_logs : generates
+            </div>
+        </div>
+
+        <!-- 10. Component Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">10. Component Diagram</h2>
+            <p class="diagram-description">Shows system components and their dependencies</p>
+            <div class="mermaid">
+graph TB
+    subgraph "Frontend Components"
+        SignupPage[Signup Page]
+        LoginPage[Login Page]
+        DashboardPage[Dashboard Page]
+        UpdatePage[Update Profile Page]
+        PreconditionsPage[Preconditions Page]
+    end
+    
+    subgraph "Backend Components"
+        AuthModule[Authentication Module]
+        ValidationModule[Validation Module]
+        OrganModule[Organ Management Module]
+        UserModule[User Management Module]
+        DependantModule[Dependant Module]
+    end
+    
+    subgraph "Middleware Components"
+        SessionMgmt[Session Management]
+        CORS[CORS Handler]
+        BodyParser[Body Parser]
+        StaticServer[Static File Server]
+    end
+    
+    subgraph "Database Components"
+        UserDB[User Data Store]
+        OrganDB[Organ Data Store]
+        DependantDB[Dependant Data Store]
+        AuditDB[Audit Log Store]
+        TriggerSystem[Trigger System]
+    end
+    
+    SignupPage --> AuthModule
+    LoginPage --> AuthModule
+    UpdatePage --> UserModule
+    DashboardPage --> OrganModule
+    PreconditionsPage --> DependantModule
+    
+    AuthModule --> ValidationModule
+    UserModule --> ValidationModule
+    OrganModule --> ValidationModule
+    
+    AuthModule --> SessionMgmt
+    UserModule --> SessionMgmt
+    
+    AuthModule --> UserDB
+    UserModule --> UserDB
+    OrganModule --> OrganDB
+    DependantModule --> DependantDB
+    
+    UserDB --> TriggerSystem
+    OrganDB --> TriggerSystem
+    DependantDB --> TriggerSystem
+    TriggerSystem --> AuditDB
+            </div>
+        </div>
+
+        <!-- 11. Deployment Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">11. Deployment Diagram</h2>
+            <p class="diagram-description">Shows physical deployment architecture</p>
+            <div class="mermaid">
+graph TB
+    subgraph "Client Device"
+        WebBrowser[Web Browser]
+    end
+    
+    subgraph "Web Server - Node.js"
+        ExpressApp[Express Application<br/>Port 3000]
+        SessionStore[Session Store]
+        StaticFiles[Static Assets<br/>/images, /videos]
+    end
+    
+    subgraph "Database Server"
+        MySQLServer[MySQL Server<br/>Database: dbb]
+        DBTables[Tables:<br/>user_data<br/>donor_organs<br/>transplanted_organs<br/>userDependants<br/>userHealth<br/>audit_logs]
+    end
+    
+    subgraph "External Services"
+        CDN[SweetAlert2 CDN]
+    end
+    
+    WebBrowser -->|HTTP/HTTPS| ExpressApp
+    WebBrowser -->|Load Scripts| CDN
+    ExpressApp -->|MySQL Protocol| MySQLServer
+    MySQLServer --> DBTables
+    ExpressApp --> SessionStore
+    ExpressApp --> StaticFiles
+            </div>
+        </div>
+
+        <!-- 12. Use Case Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">12. Use Case Diagram</h2>
+            <p class="diagram-description">Shows system actors and their interactions</p>
+            <div class="mermaid">
+graph TB
+    Actor1[👤 Organ Donor]
+    Actor2[👤 Recipient/Searcher]
+    Actor3[👤 System Admin]
+    
+    subgraph "Organ Donation System"
+        UC1[Register Account]
+        UC2[Login]
+        UC3[Update Profile]
+        UC4[Add Preconditions]
+        UC5[Select Donation Organs]
+        UC6[Search Donors]
+        UC7[View Donor Details]
+        UC8[Delete Account]
+        UC9[View Audit Logs]
+    end
+    
+    Actor1 --> UC1
+    Actor1 --> UC2
+    Actor1 --> UC3
+    Actor1 --> UC4
+    Actor1 --> UC5
+    Actor1 --> UC8
+    
+    Actor2 --> UC2
+    Actor2 --> UC6
+    Actor2 --> UC7
+    
+    Actor3 --> UC9
+    
+    UC1 -.includes.-> UC4
+    UC3 -.includes.-> UC5
+    UC6 -.includes.-> UC7
+            </div>
+        </div>
+
+        <!-- 13. Data Flow Level 0 -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">13. Data Flow Diagram - Level 0</h2>
+            <p class="diagram-description">Context level data flow diagram</p>
+            <div class="mermaid">
+graph LR
+    Donor[Organ Donor] -->|Registration Data| System[Organ Donation<br/>Management System]
+    Recipient[Recipient/Searcher] -->|Search Criteria| System
+    System -->|Donor List| Recipient
+    System -->|Registration Confirmation| Donor
+    System -->|Audit Logs| AuditDB[(Audit Database)]
+    System -->|User Data| UserDB[(User Database)]
+    UserDB -->|User Info| System
+    AuditDB -->|Log Records| System
+            </div>
+        </div>
+
+        <!-- 14. Data Flow Level 1 -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">14. Data Flow Diagram - Level 1</h2>
+            <p class="diagram-description">Detailed data flow showing main processes</p>
+            <div class="mermaid">
+graph TB
+    Donor[Organ Donor]
+    Recipient[Recipient]
+    
+    subgraph "System Processes"
+        P1[1.0 User Registration]
+        P2[2.0 Authentication]
+        P3[3.0 Profile Management]
+        P4[4.0 Organ Search]
+        P5[5.0 Audit Logging]
+    end
+    
+    D1[(user_data)]
+    D2[(donor_organs)]
+    D3[(audit_logs)]
+    
+    Donor -->|Registration Form| P1
+    P1 -->|User Record| D1
+    P1 -->|Organ Data| D2
+    P1 -->|Log Entry| P5
+    P1 -->|Confirmation| Donor
+    
+    Donor -->|Login Credentials| P2
+    P2 -->|Query| D1
+    P2 -->|Session| Donor
+    
+    Donor -->|Update Request| P3
+    P3 -->|Read| D1
+    P3 -->|Update| D1
+    P3 -->|Update| D2
+    P3 -->|Log Entry| P5
+    
+    Recipient -->|Search Criteria| P4
+    P4 -->|Query| D1
+    P4 -->|Query| D2
+    P4 -->|Results| Recipient
+    
+    P5 -->|Store| D3
+            </div>
+        </div>
+
+        <!-- 15. Database Relationship Diagram -->
+        <div class="diagram-section">
+            <h2 class="diagram-title">15. Database Relationship Diagram</h2>
+            <p class="diagram-description">Shows database tables and their relationships</p>
+            <div class="mermaid">
+flowchart TB
+    UD[(USER_DATA<br/>uniqueID PK<br/>govtID UNIQUE<br/>name<br/>email UNIQUE<br/>phone UNIQUE<br/>password<br/>age<br/>gender<br/>city<br/>bloodGroup<br/>lastUpdate)]
+    
+    DO[(DONOR_ORGANS<br/>organID PK<br/>uniqueID FK<br/>kidney<br/>liver<br/>lung<br/>intestine<br/>pancreas)]
+    
+    TO[(TRANSPLANTED_ORGANS<br/>organID PK<br/>uniqueID FK<br/>kidney<br/>liver<br/>lung<br/>intestine<br/>pancreas)]
+    
+    UDE[(USER_DEPENDANTS<br/>dependantID PK<br/>uniqueID FK<br/>dependantName<br/>dependantAadhar UNIQUE<br/>dependantAge<br/>totalDependants)]
+    
+    UH[(USER_HEALTH<br/>dependantID PK FK<br/>diabetes<br/>bp_condition<br/>obese<br/>cardiac_surgery<br/>healthApproval)]
+    
+    AL[(AUDIT_LOGS<br/>id PK<br/>action_type<br/>user_id FK<br/>timestamp<br/>details)]
+    
+    UD -->|1:1 has| DO
+    UD -->|1:1 has| TO
+    UD -->|1:N has| UDE
+    UDE -->|1:1 has| UH
+    UD -->|1:N generates| AL
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>
